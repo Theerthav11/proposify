@@ -26,6 +26,10 @@ function App() {
           <Route path="/new-project" element={<NewProject />} />
           <Route path="/proposal-builder" element={<ProposalBuilder />} />
           <Route path="/preview" element={<Preview />} />
+          <Route path="/product" element={<h1>Product Page</h1>} />
+<Route path="/docs" element={<h1>Docs Page</h1>} />
+<Route path="/pricing" element={<h1>Pricing Page</h1>} />
+<Route path="/industries" element={<h1>Industries Page</h1>} />
         </Routes>
       </div>
     </BrowserRouter>

@@ -5,12 +5,33 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-yellow via-primary-coral to-primary-teal">
+
       {/* Navigation */}
       <nav className="flex justify-between items-center p-6">
+
+        {/* Logo */}
         <div className="flex items-center gap-2">
           <span className="text-3xl">🤖</span>
           <h1 className="text-2xl font-bold text-primary-navy">PropoAI</h1>
         </div>
+
+        {/* NEW: Middle Navbar Links */}
+        <div className="hidden md:flex gap-6 text-primary-navy font-medium">
+          <button onClick={() => navigate("/product")} className="hover:underline">
+            Product
+          </button>
+          <button onClick={() => navigate("/docs")} className="hover:underline">
+            Docs
+          </button>
+          <button onClick={() => navigate("/pricing")} className="hover:underline">
+            Pricing
+          </button>
+          <button onClick={() => navigate("/industries")} className="hover:underline">
+            Industries
+          </button>
+        </div>
+
+        {/* Right Side Buttons */}
         <div className="flex gap-4">
           <button
             onClick={() => navigate("/login")}
@@ -35,8 +56,7 @@ export default function Home() {
             <span className="text-white">win more business</span>
           </h1>
           <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
-            PropoAI helps teams create, send, and track beautiful proposals that close deals
-            faster and smarter using AI-powered automation.
+            PropoAI helps teams create, send, and track beautiful proposals that close deals faster and smarter using AI-powered automation.
           </p>
           <div className="flex gap-4 justify-center">
             <button
