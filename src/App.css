@@ -1,0 +1,60 @@
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body */
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+/* Scrollbar (optional but looks modern) */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c4b5fd;
+  border-radius: 10px;
+}
+
+/* Reusable Utility Classes */
+
+/* Center Layout */
+.center {
+  @apply flex items-center justify-center;
+}
+
+/* Card */
+.card {
+  @apply bg-white rounded-xl shadow-md p-4;
+}
+
+/* Input */
+.input {
+  @apply w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-purple-500;
+}
+
+/* Button */
+.btn {
+  @apply bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition;
+}
+
+/* Secondary Button */
+.btn-secondary {
+  @apply bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300 transition;
+}
+
+/* Danger Button */
+.btn-danger {
+  @apply bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition;
+}
+
+/* Title */
+.title {
+  @apply text-xl font-semibold mb-4;
+}
