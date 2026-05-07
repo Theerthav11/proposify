@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 export default function Register() {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -9,93 +12,120 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-yellow via-primary-coral to-primary-teal flex items-center justify-center px-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <span className="text-4xl">🤖</span>
-            <h1 className="text-3xl font-bold text-primary-navy">PropoAI</h1>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Create your account</h2>
-          <p className="text-gray-600">Start creating winning proposals today</p>
+    <div className="min-h-screen bg-[#dfe5eb] flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-sm rounded-[35px] overflow-hidden shadow-2xl bg-white">
+        
+        {/* Top Section */}
+        <div className="relative bg-[#ea8668] h-52 flex items-center justify-center">
+          
+          {/* Decorative Shapes */}
+          <div className="absolute left-0 top-16 w-28 h-28 bg-[#d9c78d] rounded-r-full opacity-80"></div>
+
+          <div className="absolute right-0 bottom-0 w-24 h-24 bg-[#67d1b2] rounded-tl-full"></div>
+
+          {/* Heading */}
+          <h1 className="text-white text-4xl font-bold leading-tight text-center z-10">
+            Create an <br /> account
+          </h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name
-            </label>
+        {/* Form Section */}
+        <div className="bg-white rounded-t-[35px] -mt-8 px-7 pt-8 pb-6">
+          
+          {/* Google Button */}
+          <button
+            className="w-full border border-gray-300 rounded-full py-3 flex items-center justify-center gap-3 text-gray-700 font-medium hover:bg-gray-50 transition"
+          >
+            <img
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg"
+              alt="google"
+              className="w-5 h-5"
+            />
+            Sign in with Google
+          </button>
+
+          {/* OR */}
+          <div className="text-center text-gray-400 text-sm my-5">or</div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Full Name */}
             <input
               type="text"
-              placeholder="John Doe"
-              className="input"
+              placeholder="Enter your full name"
+              className="w-full bg-gray-100 rounded-full px-4 py-3 outline-none text-sm placeholder:text-gray-400"
               required
             />
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
-            </label>
+            {/* Company Email */}
             <input
               type="email"
-              placeholder="you@example.com"
-              className="input"
+              placeholder="example@company.com"
+              pattern="^[a-zA-Z0-9._%+-]+@company\.com$"
+              title="Please enter a valid company email (example@company.com)"
+              className="w-full bg-gray-100 rounded-full px-4 py-3 outline-none text-sm placeholder:text-gray-400"
               required
             />
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              placeholder="Create a strong password"
-              className="input"
-              required
-            />
-          </div>
+            {/* Password */}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                title="Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character"
+                className="w-full bg-gray-100 rounded-full px-4 py-3 outline-none text-sm placeholder:text-gray-400"
+                required
+              />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              placeholder="Confirm your password"
-              className="input"
-              required
-            />
-          </div>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
+              </button>
+            </div>
 
-          <div className="flex items-start">
-            <input type="checkbox" className="w-4 h-4 mt-1 mr-2" required />
-            <span className="text-sm text-gray-600">
-              I agree to the{" "}
-              <a href="#" className="text-primary-navy hover:underline">
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a href="#" className="text-primary-navy hover:underline">
-                Privacy Policy
-              </a>
+            {/* Password Hint */}
+            <p className="text-xs text-gray-400 px-2">
+              Password must contain uppercase, lowercase, number and special character.
+            </p>
+
+            {/* Create Account Button */}
+            <button
+              type="submit"
+              className="w-full bg-black text-white py-3 rounded-full font-semibold mt-2 hover:opacity-90 transition"
+            >
+              Create account
+            </button>
+          </form>
+
+          {/* Terms */}
+          <p className="text-[12px] text-gray-400 text-center mt-6 leading-5">
+            Signing up for a Webflow account means you agree to the{" "}
+            <span className="underline cursor-pointer">
+              Privacy Policy
+            </span>{" "}
+            and{" "}
+            <span className="underline cursor-pointer">
+              Terms of Service
             </span>
-          </div>
+            .
+          </p>
 
-          <button type="submit" className="btn w-full">
-            Create Account
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Already have an account?{" "}
+          {/* Login */}
+          <p className="text-center text-sm text-gray-600 mt-6">
+            Have an account?{" "}
             <button
               onClick={() => navigate("/login")}
-              className="text-primary-navy font-medium hover:underline"
+              className="underline font-medium"
             >
-              Sign in
+              Log in here
             </button>
           </p>
         </div>
