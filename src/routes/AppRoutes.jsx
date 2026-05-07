@@ -7,10 +7,12 @@ import Dashboard from "../pages/Dashboard";
 import NewProject from "../pages/NewProject";
 import Preview from "../pages/Preview";
 import ProposalBuilder from "../pages/ProposalBuilder";
+import Pricing from "../pages/Pricing";
 
 export default function AppRoutes() {
   return (
     <Routes>
+
       {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
@@ -21,6 +23,8 @@ export default function AppRoutes() {
       <Route path="/new-project" element={<NewProject />} />
       <Route path="/proposal-builder" element={<ProposalBuilder />} />
       <Route path="/preview" element={<Preview />} />
+      <Route path="/pricing" element={<Pricing />} />
+<Route path="/industries" element={<Industries />} />
     </Routes>
   );
 }
