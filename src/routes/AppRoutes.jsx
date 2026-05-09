@@ -19,7 +19,7 @@ export default function AppRoutes() {
       {/* App Routes */}
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/new-project" element={<NewProject />} />
-      <Route path="/proposal-builder" element={<ProposalBuilder />} />
+      <Route path="/proposalBuilder" element={<ProposalBuilder />} />
       <Route path="/preview" element={<Preview />} />
     </Routes>
   );
