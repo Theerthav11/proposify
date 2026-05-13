@@ -1,56 +1,298 @@
+// Sidebar.jsx
+
 import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
+
+import {
+  LayoutDashboard,
+  FolderKanban,
+  Mail,
+  FileText,
+  Settings,
+  Plus,
+  Bell,
+  Search,
+  Users,
+  FolderOpen,
+  ClipboardList,
+  Package,
+  Database,
+  MessageCircleMore,
+  Upload,
+  FileSearch,
+  FilePenLine,
+  FileCheck2,
+} from "lucide-react";
 
 export default function Sidebar() {
   const location = useLocation();
 
   const menuItems = [
-    { name: "Dashboard", path: "/dashboard", icon: "📊" },
-    { name: "My Projects", path: "/projects", icon: "📁" },
-    { name: "Recent Projects", path: "/recent-projects", icon: "🕒" },
-    { name: "Requests", path: "/requests", icon: "📧" },
-    { name: "Proposals", path: "/proposals", icon: "📄" },
+    {
+      title: "MAIN",
+      items: [
+        {
+          name: "Dashboard",
+          path: "/dashboard",
+          icon: LayoutDashboard,
+        },
+      ],
+    },
+
+    {
+      title: "PROJECTS",
+      items: [
+        {
+          name: "All Projects",
+          path: "/projects",
+          icon: FolderOpen,
+        },
+        {
+          name: "Shared with me",
+          path: "",
+          icon: Users,
+        },
+        {
+          name: "Templates",
+          path: "",
+          icon:  ClipboardList,
+        },
+      ],
+    },
+    
+    {
+      title: "DATA & CONTENT",
+      items: [
+        {
+          name: "Product Library ",
+          path: "",
+          icon:  Package,
+        },
+        {
+          name: "Document Library",
+          path: "",
+          icon: FileText,
+        },
+        {
+          name: "Knowledge Base",
+          path: "",
+          icon:  Database,
+        },
+      ],
+    },
+
+    {
+      title: "REQUESTS",
+      items: [
+        {
+          name: "Emails",
+          path: "/requests",
+          icon: Mail,
+        },
+        {
+          name: "Channels",
+          path: "",
+          icon: MessageCircleMore,
+        },
+        {
+          name: "Uploads",
+          path: "",
+          icon:  Upload,
+        },
+      ],
+    },
+    {
+      title: "PROPOSALS",
+      items: [
+        {
+          name: "RFPs / RFIs",
+          path: "/proposals",
+          icon:  FileSearch,
+        },
+        {
+          name: "Drafts",
+          path: "",
+          icon: FilePenLine,
+        },
+        {
+          name: "Sent Proposals",
+          path: "",
+          icon:  FileCheck2,
+        },
+      ],
+    },
+
+    {
+      title: "ADMIN",
+      items: [
+        {
+          name: "Settings",
+          path: "/settings",
+          icon: Settings,
+        },
+      ],
+    },
   ];
 
   return (
-    <div className="w-64 bg-white h-screen shadow-lg flex flex-col">
-      {/* Logo */}
-      <div className="p-6 border-b border-gray-200">
-        <h2 className="font-bold text-2xl text-primary-navy flex items-center gap-2">
-          <span className="text-3xl">🤖</span>
-          PropoAI
-        </h2>
+    <div
+      className="
+        w-[270px]
+        min-h-screen
+        bg-[#FDFCFD]
+        backdrop-blur-2xl
+        border-r
+        border-[#C6C6C6]
+        shadow-[0_8px_24px_rgba(0,0,0,0.1)]
+        flex
+        flex-col
+        justify-between
+      "
+    >
+      {/* TOP */}
+      <div>
+        {/* Logo */}
+        <div className="px-7 py-6 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div
+              className="
+                w-10
+                h-10
+                rounded-2xl
+                bg-gradient-to-br
+                from-[#242525]
+                to-[#4D4D4D]
+                flex
+                items-center
+                justify-center
+                text-white
+                font-bold
+                text-sm
+                shadow-lg
+              "
+            >
+              P
+            </div>
+
+            <div>
+              <h1 className="text-xl font-bold text-[#242525]">
+                PropoAI
+              </h1>
+
+              <p className="text-xs text-[#797979]">
+                Proposal Intelligence
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Menu */}
+        <div className="px-3 py-4 space-y-7">
+          {menuItems.map((section, index) => (
+            <div key={index}>
+              <p
+                className="
+                  text-[9px]
+                  font-bold
+                  tracking-[1.5px]
+                  text-[#797979]
+                  px-1
+                  mb-2
+                "
+              >
+                {section.title}
+              </p>
+
+              <div className="space-y-2">
+                {section.items.map((item) => {
+                  const active = location.pathname === item.path;
+                  const Icon = item.icon;
+
+                  return (
+                    <motion.div
+                      whileHover={{ x: 4 }}
+                      key={item.path}
+                    >
+                      <Link
+                        to={item.path}
+                        className={`
+                          flex
+                          items-center
+                          gap-3
+                          px-4
+                          py-3
+                          rounded-2xl
+                          transition-all
+                          duration-300
+                          text-[13px] font-medium
+                          ${
+                            active
+                              ? `
+                                bg-[#242525]
+                                text-[#FDFCFD]
+                                shadow-[0_4px_12px_rgba(0,0,0,0.3)]
+                              `
+                              : `
+                                text-[#242525]
+                                hover:bg-[#EDEDED]
+                                hover:shadow-md
+                              `
+                          }
+                        `}
+                      >
+                        <Icon size={15} />
+                        <span>{item.name}</span>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Menu Items */}
-      <nav className="flex-1 p-4">
-        <ul className="space-y-2">
-          {menuItems.map((item) => (
-            <li key={item.path}>
-              <Link
-                to={item.path}
-                className={
-                  location.pathname === item.path
-                    ? "sidebar-item-active"
-                    : "sidebar-item"
-                }
-              >
-                <span className="text-xl">{item.icon}</span>
-                <span className="font-medium">{item.name}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      {/* USER */}
+      <div className="p-5">
+        <div
+          className="
+            p-4
+            rounded-3xl
+            bg-[#EDEDED]
+            border
+            border-[#C6C6C6]
+            shadow-[0_4px_16px_rgba(0,0,0,0.1)]
+          "
+        >
+          <div className="flex items-center gap-4">
+            <div
+              className="
+                w-14
+                h-14
+                rounded-2xl
+                bg-gradient-to-br
+                from-[#242525]
+                to-[#4D4D4D]
+                text-white
+                flex
+                items-center
+                justify-center
+                font-bold
+                text-lg
+              "
+            >
+              A
+            </div>
 
-      {/* User Profile */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer">
-          <div className="w-10 h-10 bg-primary-navy rounded-full flex items-center justify-center text-white font-bold">
-            A
-          </div>
-          <div className="flex-1">
-            <p className="font-medium text-sm">Admin User</p>
-            <p className="text-xs text-gray-500">admin@example.com</p>
+            <div>
+              <h3 className="font-semibold text-[#242525]">
+                Admin User
+              </h3>
+
+              <p className="text-sm text-[#797979]">
+                admin@example.com
+              </p>
+            </div>
           </div>
         </div>
       </div>
