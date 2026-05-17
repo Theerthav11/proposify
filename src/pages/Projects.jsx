@@ -1,90 +1,292 @@
 import MainLayout from "../components/layout/MainLayout";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { FileText } from "lucide-react";
 
 export default function Projects() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
 
   const projects = [
-    { id: 1, name: "Smart Building Management System", status: "Active", updated: "3 hours ago", type: "RFP" },
-    { id: 2, name: "AI Analytics Platform", status: "Active", updated: "1 day ago", type: "RFP" },
-    { id: 3, name: "Cloud Infrastructure Solution", status: "Draft", updated: "2 days ago", type: "RFI" },
-    { id: 4, name: "Cybersecurity Suite", status: "Active", updated: "3 days ago", type: "RFP" },
-    { id: 5, name: "IoT Device Monitoring System", status: "Draft", updated: "5 days ago", type: "RFP" },
-    { id: 6, name: "Data Analytics Dashboard", status: "Completed", updated: "1 week ago", type: "RFP" },
+    {
+      id: 1,
+      name: "Smart Building Management System",
+      status: "Active",
+      updated: "3 hours ago",
+      type: "RFP",
+    },
+
+    {
+      id: 2,
+      name: "AI Analytics Platform",
+      status: "Active",
+      updated: "1 day ago",
+      type: "RFP",
+    },
+
+    {
+      id: 3,
+      name: "Cloud Infrastructure Solution",
+      status: "Draft",
+      updated: "2 days ago",
+      type: "RFI",
+    },
+
+    {
+      id: 4,
+      name: "Cybersecurity Suite",
+      status: "Active",
+      updated: "3 days ago",
+      type: "RFP",
+    },
+
+    {
+      id: 5,
+      name: "IoT Device Monitoring System",
+      status: "Draft",
+      updated: "5 days ago",
+      type: "RFP",
+    },
+
+    {
+      id: 6,
+      name: "Data Analytics Dashboard",
+      status: "Completed",
+      updated: "1 week ago",
+      type: "RFP",
+    },
   ];
 
-  const filteredProjects = filter === "all" 
-    ? projects 
-    : projects.filter(p => p.status.toLowerCase() === filter);
+  const filteredProjects =
+    filter === "all"
+      ? projects
+      : projects.filter(
+          (p) => p.status.toLowerCase() === filter
+        );
 
   return (
     <MainLayout>
-      <div className="p-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+      <div
+        className="
+          min-h-screen
+          w-full
+          bg-gradient-to-br
+          from-[#E6E6E6]
+          via-[#FDFCFD]
+          to-[#D8D8D8]
+          bg-fixed
+          p-8
+        "
+      >
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-10">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">My Projects</h1>
-            <p className="text-gray-600">Manage all your project proposals</p>
+            <h1 className="text-3xl font-bold text-[#242525] mb-2">
+              My Projects
+            </h1>
+
+            <p className="text-[#797979]">
+              Manage all your project proposals
+            </p>
           </div>
+
           <button
             onClick={() => navigate("/new-project")}
-            className="btn flex items-center gap-2"
+            className="
+              flex
+              items-center
+              gap-2
+              px-5
+              py-3
+              rounded-2xl
+              bg-[#242525]
+              text-[#FDFCFD]
+              font-medium
+              shadow-[0_6px_20px_rgba(0,0,0,0.12)]
+              hover:scale-105
+              hover:bg-[#3A3A3A]
+              transition-all
+              duration-300
+            "
           >
             <span className="text-xl">+</span>
             New Project
           </button>
         </div>
 
-        {/* Filters */}
-        <div className="flex gap-3 mb-6">
+        {/* FILTERS */}
+        <div className="flex gap-3 mb-8 flex-wrap">
           {["all", "active", "draft", "completed"].map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-lg font-medium transition ${
-                filter === f
-                  ? "bg-primary-navy text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
+              className={`
+                px-5
+                py-2.5
+                rounded-2xl
+                font-medium
+                transition-all
+                duration-300
+                shadow-sm
+                ${
+                  filter === f
+                    ? `
+                      bg-[#242525]
+                      text-[#FDFCFD]
+                      shadow-md
+                    `
+                    : `
+                      bg-[#FDFCFD]
+                      text-[#5F5F5F]
+                      border
+                      border-[#D8D8D8]
+                      hover:bg-[#EDEDED]
+                    `
+                }
+              `}
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
             </button>
           ))}
         </div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* PROJECT GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className="card hover:shadow-lg transition cursor-pointer"
               onClick={() => navigate("/proposal-builder")}
+              className="
+                group
+                bg-[#FDFCFD]/90
+                backdrop-blur-xl
+                border
+                border-[#D8D8D8]
+                rounded-[28px]
+                p-6
+                shadow-[0_10px_30px_rgba(0,0,0,0.05)]
+                hover:shadow-[0_14px_40px_rgba(0,0,0,0.08)]
+                hover:-translate-y-1
+                transition-all
+                duration-300
+                cursor-pointer
+              "
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 bg-primary-teal rounded-lg flex items-center justify-center">
-                  <span className="text-2xl">📄</span>
+              {/* TOP */}
+              <div className="flex items-start justify-between mb-5">
+
+                {/* ICON */}
+                <div
+                  className="
+                    w-14
+                    h-14
+                    rounded-2xl
+                    bg-gradient-to-br
+                    from-[#242525]
+                    to-[#4D4D4D]
+                    flex
+                    items-center
+                    justify-center
+                    shadow-md
+                  "
+                >
+                  <FileText
+                    size={26}
+                    className="
+                      text-white
+                      group-hover:scale-110
+                      transition-all
+                      duration-300
+                    "
+                  />
                 </div>
+
+                {/* STATUS */}
                 <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    project.status === "Active"
-                      ? "bg-green-100 text-green-700"
-                      : project.status === "Draft"
-                      ? "bg-gray-200 text-gray-700"
-                      : "bg-blue-100 text-blue-700"
-                  }`}
+                  className={`
+                    px-3.5
+                    py-1.5
+                    rounded-full
+                    text-[11px]
+                    font-semibold
+                    tracking-wide
+                    shadow-sm
+                    ${
+                      project.status === "Active"
+                        ? `
+                          bg-[#E6E6E6]
+                          text-[#242525]
+                          border
+                          border-[#C6C6C6]
+                        `
+                        : project.status === "Draft"
+                        ? `
+                          bg-[#F5F5F5]
+                          text-[#555555]
+                          border
+                          border-[#E0E0E0]
+                        `
+                        : `
+                          bg-[#D8D8D8]
+                          text-[#242525]
+                          border
+                          border-[#BDBDBD]
+                        `
+                    }
+                  `}
                 >
                   {project.status}
                 </span>
               </div>
-              <h3 className="font-bold text-gray-800 mb-2">{project.name}</h3>
-              <p className="text-sm text-gray-600 mb-4">Updated {project.updated}</p>
+
+              {/* CONTENT */}
+              <div>
+                <h3
+                  className="
+                    font-bold
+                    text-[#242525]
+                    text-lg
+                    leading-snug
+                    mb-2
+                  "
+                >
+                  {project.name}
+                </h3>
+
+                <p className="text-sm text-[#797979] mb-5">
+                  Updated {project.updated}
+                </p>
+              </div>
+
+              {/* FOOTER */}
               <div className="flex items-center justify-between">
-                <span className="px-2 py-1 bg-primary-navy text-white text-xs rounded">
+
+                <span
+                  className="
+                    px-3
+                    py-1.5
+                    bg-[#242525]
+                    text-[#FDFCFD]
+                    text-[11px]
+                    rounded-xl
+                    font-semibold
+                    tracking-wide
+                  "
+                >
                   {project.type}
                 </span>
-                <button className="text-primary-navy text-sm font-medium hover:underline">
+
+                <button
+                  className="
+                    text-[#242525]
+                    text-sm
+                    font-semibold
+                    group-hover:translate-x-1
+                    transition-all
+                    duration-300
+                  "
+                >
                   View →
                 </button>
               </div>

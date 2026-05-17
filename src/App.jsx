@@ -9,6 +9,10 @@ import Proposals from "./pages/Proposals";
 import NewProject from "./pages/NewProject";
 import ProposalBuilder from "./pages/ProposalBuilder";
 import Preview from "./pages/Preview";
+import SharedWithMe from "./pages/SharedWithMe";
+import Templates from "./pages/Templates";
+import ProductLibrary from "./pages/ProductLibrary";
+import Channels from "./pages/Channels";
 
 function App() {
   return (
@@ -26,6 +30,10 @@ function App() {
           <Route path="/new-project" element={<NewProject />} />
           <Route path="/proposal-builder" element={<ProposalBuilder />} />
           <Route path="/preview" element={<Preview />} />
+          <Route path="/shared-with-me" element={<SharedWithMe />} />
+          <Route path="/templates" element={<Templates />} />
+          <Route path="/product-library" element={<ProductLibrary />} />
+          <Route path="/channels" element={<Channels />} />
         </Routes>
       </div>
     </BrowserRouter>

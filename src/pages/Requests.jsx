@@ -1,6 +1,7 @@
 import MainLayout from "../components/layout/MainLayout";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Mail, MessageCircleMore, Upload } from "lucide-react";
 
 export default function Requests() {
   const navigate = useNavigate();
@@ -41,89 +42,208 @@ export default function Requests() {
 
   return (
     <MainLayout>
-      <div className="p-8">
+      <div className="min-h-screen  bg-gradient-to-br from-[#E6E6E6]
+          via-[#FDFCFD]
+          to-[#D8D8D8]
+          bg-fixed
+          p-8">
+        
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Requests</h1>
-          <p className="text-gray-600">Manage incoming RFI and RFP requests</p>
+          <h1 className="text-3xl font-bold text-[#242525] mb-2">
+            Requests
+          </h1>
+
+          <p className="text-[#797979]">
+            Manage incoming RFI and RFP requests
+          </p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-4 mb-6 border-b border-gray-200">
+        <div className="flex gap-4 mb-8 border-b border-[#C6C6C6] pb-2">
+          
           <button
             onClick={() => setSelectedTab("emails")}
-            className={`px-4 py-3 font-medium transition ${
-              selectedTab === "emails"
-                ? "text-primary-navy border-b-2 border-primary-navy"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
+            className={`
+              inline-flex
+              items-center
+              gap-2
+              px-5
+              py-3
+              rounded-xl
+              font-medium
+              transition-all
+              duration-300
+              ${
+                selectedTab === "emails"
+                  ? "bg-[#242525] text-white shadow-md"
+                  : "text-[#797979] hover:bg-[#D9D9D9]"
+              }
+            `}
           >
-            📧 Emails ({requests.length})
+            <Mail size={18} />
+            Emails ({requests.length})
           </button>
+
           <button
             onClick={() => setSelectedTab("channels")}
-            className={`px-4 py-3 font-medium transition ${
-              selectedTab === "channels"
-                ? "text-primary-navy border-b-2 border-primary-navy"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
+            className={`
+              inline-flex
+              items-center
+              gap-2
+              px-5
+              py-3
+              rounded-xl
+              font-medium
+              transition-all
+              duration-300
+              ${
+                selectedTab === "channels"
+                  ? "bg-[#242525] text-white shadow-md"
+                  : "text-[#797979] hover:bg-[#D9D9D9]"
+              }
+            `}
           >
-            💬 Channels (0)
+            <MessageCircleMore size={18} />
+             Channels (0)
           </button>
+
           <button
             onClick={() => setSelectedTab("uploads")}
-            className={`px-4 py-3 font-medium transition ${
-              selectedTab === "uploads"
-                ? "text-primary-navy border-b-2 border-primary-navy"
-                : "text-gray-600 hover:text-gray-800"
-            }`}
+            className={`
+              inline-flex
+              items-center
+              gap-2
+              px-5
+              py-3
+              rounded-xl
+              font-medium
+              transition-all
+              duration-300
+              ${
+                selectedTab === "uploads"
+                  ? "bg-[#242525] text-white shadow-md"
+                  : "text-[#797979] hover:bg-[#D9D9D9]"
+              }
+            `}
           >
-            📤 Uploads (0)
+            <Upload size={18} />
+             Uploads (0)
           </button>
         </div>
 
         {/* Requests List */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           {requests.map((request) => (
             <div
               key={request.id}
-              className="card hover:shadow-lg transition cursor-pointer"
               onClick={() => navigate("/proposal-builder")}
+              className="
+                bg-[#FDFCFD]
+                border
+                border-[#C6C6C6]
+                rounded-3xl
+                p-6
+                shadow-sm
+                hover:shadow-xl
+                hover:-translate-y-1
+                transition-all
+                duration-300
+                cursor-pointer
+              "
             >
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-primary-coral rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-xl">📧</span>
+              
+              <div className="flex items-start gap-5">
+                
+                {/* Icon */}
+                <div
+                  className="
+                    w-14
+                    h-14
+                    bg-gradient-to-br
+                    from-[#B1B2B2] to-[#797979]
+                    rounded-2xl
+                    flex
+                    items-center
+                    justify-center
+                    flex-shrink-0
+                    shadow-md
+                  "
+                >
+                  <span className="text-2xl text-white">📧</span>
                 </div>
+
+                {/* Content */}
                 <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
+                  
+                  {/* Top */}
+                  <div className="flex items-start justify-between mb-3">
+                    
                     <div>
-                      <h3 className="font-bold text-gray-800 mb-1">{request.title}</h3>
-                      <p className="text-sm text-gray-600">
+                      <h3 className="font-bold text-lg text-[#242525] mb-1">
+                        {request.title}
+                      </h3>
+
+                      <p className="text-sm text-[#797979]">
                         From: {request.from} &lt;{request.email}&gt;
                       </p>
                     </div>
-                    <span className="text-sm text-gray-500">{request.date}</span>
+
+                    <span className="text-sm text-[#797979]">
+                      {request.date}
+                    </span>
                   </div>
-                  <p className="text-sm text-gray-700 mb-3">
-                    <span className="font-medium">Subject:</span> {request.subject}
+
+                  {/* Subject */}
+                  <p className="text-sm text-[#242525] mb-3">
+                    <span className="font-semibold">
+                      Subject:
+                    </span>{" "}
+                    {request.subject}
                   </p>
-                  <p className="text-sm text-gray-600 mb-3">{request.preview}</p>
-                  <div className="flex items-center gap-3">
-                    <span className="px-3 py-1 bg-primary-navy text-white text-xs rounded">
+
+                  {/* Preview */}
+                  <p className="text-sm text-[#797979] mb-5 leading-6">
+                    {request.preview}
+                  </p>
+
+                  {/* Bottom */}
+                  <div className="flex items-center justify-between">
+                    
+                    <span
+                      className="
+                        px-4
+                        py-1.5
+                        bg-[#242525]
+                        text-white
+                        text-xs
+                        rounded-full
+                        font-medium
+                      "
+                    >
                       {request.type}
                     </span>
+
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate("/proposal-builder");
                       }}
-                      className="text-primary-navy text-sm font-medium hover:underline"
+                      className="
+                        text-[#242525]
+                        text-sm
+                        font-semibold
+                        hover:translate-x-1
+                        transition-transform
+                      "
                     >
                       Create Proposal →
                     </button>
                   </div>
+
                 </div>
               </div>
+
             </div>
           ))}
         </div>

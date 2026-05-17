@@ -5,13 +5,9 @@ import { motion } from "framer-motion";
 
 import {
   LayoutDashboard,
-  FolderKanban,
   Mail,
   FileText,
   Settings,
-  Plus,
-  Bell,
-  Search,
   Users,
   FolderOpen,
   ClipboardList,
@@ -49,12 +45,12 @@ export default function Sidebar() {
         },
         {
           name: "Shared with me",
-          path: "",
+          path: "/shared-with-me",
           icon: Users,
         },
         {
           name: "Templates",
-          path: "",
+          path: "/templates",
           icon:  ClipboardList,
         },
       ],
@@ -65,7 +61,7 @@ export default function Sidebar() {
       items: [
         {
           name: "Product Library ",
-          path: "",
+          path: "/product-library",
           icon:  Package,
         },
         {
@@ -91,7 +87,7 @@ export default function Sidebar() {
         },
         {
           name: "Channels",
-          path: "",
+          path: "/channels",
           icon: MessageCircleMore,
         },
         {
@@ -138,7 +134,10 @@ export default function Sidebar() {
     <div
       className="
         w-[270px]
-        min-h-screen
+        h-screen
+        sticky
+        top-0
+        overflow-y-auto
         bg-[#FDFCFD]
         backdrop-blur-2xl
         border-r
