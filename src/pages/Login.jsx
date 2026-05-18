@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import VariableProximity from "../components/layout/VariableProximity";
+
+
 
 export default function Login() {
   const navigate = useNavigate();
+  const containerRef = useRef(null);
 
   // STATE
   const [email, setEmail] = useState("");
@@ -27,17 +31,14 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // RESET ERRORS
     setEmailError("");
     setPasswordError("");
 
-    // EMPTY CHECK
     if (!email || !password) {
       alert("Please fill all fields");
       return;
     }
 
-    // EMAIL CHECK
     if (!validateCompanyEmail(email)) {
       setEmailError(
         "Use valid company email (example@company.com)"
@@ -45,7 +46,6 @@ export default function Login() {
       return;
     }
 
-    // PASSWORD CHECK
     if (!validatePassword(password)) {
       setPasswordError(
         "Password must contain uppercase, lowercase, number, special character and minimum 8 characters."
@@ -53,17 +53,14 @@ export default function Login() {
       return;
     }
 
-    // SUCCESS
     console.log("LOGIN SUCCESS:", {
       email,
       password,
     });
 
-    // CLEAR INPUTS
     setEmail("");
     setPassword("");
 
-    // REDIRECT
     navigate("/dashboard", { replace: true });
   };
 
@@ -76,21 +73,53 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F7FB] flex items-center justify-center p-4 overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-6 bg-gradient-to-br from-[#f8fafc] via-[#eef2ff] to-[#e0f2fe]">
 
-      {/* CONTAINER */}
-      <div className="w-full max-w-5xl h-[620px] bg-white rounded-[32px] overflow-hidden shadow-2xl grid grid-cols-1 lg:grid-cols-2">
+      {/* BACKGROUND LIGHTS */}
+      <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-[#a78bfa]/25 rounded-full blur-3xl"></div>
+
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#60a5fa]/20 rounded-full blur-3xl"></div>
+
+      <div className="absolute -bottom-40 left-1/3 w-[500px] h-[500px] bg-[#22d3ee]/20 rounded-full blur-3xl"></div>
+
+      <div className="absolute top-1/2 left-1/2 w-[450px] h-[450px] bg-white/40 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+
+      {/* GRID */}
+      <div className="absolute inset-0 opacity-[0.05]">
+        <div className="h-full w-full bg-[linear-gradient(to_right,#94a3b8_1px,transparent_1px),linear-gradient(to_bottom,#94a3b8_1px,transparent_1px)] bg-[size:70px_70px]" />
+      </div>
+
+      {/* MAIN CONTAINER */}
+      <div
+        className="
+          relative
+          z-10
+          w-full
+          max-w-6xl
+          h-[650px]
+          bg-white/80
+          backdrop-blur-2xl
+          rounded-[36px]
+          border
+          border-white/40
+          shadow-[0_20px_60px_rgba(0,0,0,0.15)]
+          grid
+          grid-cols-1
+          lg:grid-cols-2
+          overflow-hidden
+        "
+      >
 
         {/* LEFT SIDE */}
-        <div className="flex flex-col justify-center px-8 py-8 lg:px-12 bg-white">
+        <div className="flex flex-col justify-center px-10 py-10 lg:px-14 bg-white/70 backdrop-blur-xl">
 
           {/* LOGO */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-[#303C6C]">
+          <div className="mb-10">
+            <h1 className="text-5xl font-black tracking-tight text-[#242525]">
               Proposify
             </h1>
 
-            <p className="text-gray-500 mt-2 text-sm">
+            <p className="text-[#797979] mt-3 text-sm tracking-wide">
               AI Proposal Management Platform
             </p>
           </div>
@@ -104,7 +133,7 @@ export default function Login() {
 
             {/* EMAIL */}
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-600">
+              <label className="block mb-2 text-sm font-medium text-[#242525]">
                 Company Email
               </label>
 
@@ -119,7 +148,23 @@ export default function Login() {
                   setEmail(e.target.value);
                   setEmailError("");
                 }}
-                className="w-full border border-gray-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-[#58C4DD] transition"
+                className="
+                  w-full
+                  border
+                  border-[#d1d5db]
+                  bg-white/90
+                  rounded-2xl
+                  px-5
+                  py-4
+                  outline-none
+                  text-[#242525]
+                  placeholder:text-[#797979]
+                  transition-all
+                  duration-300
+                  focus:border-[#6366f1]
+                  focus:ring-4
+                  focus:ring-indigo-100
+                "
                 required
               />
 
@@ -132,7 +177,7 @@ export default function Login() {
 
             {/* PASSWORD */}
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-600">
+              <label className="block mb-2 text-sm font-medium text-[#242525]">
                 Password
               </label>
 
@@ -147,7 +192,23 @@ export default function Login() {
                   setPassword(e.target.value);
                   setPasswordError("");
                 }}
-                className="w-full border border-gray-300 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-[#58C4DD] transition"
+                className="
+                  w-full
+                  border
+                  border-[#d1d5db]
+                  bg-white/90
+                  rounded-2xl
+                  px-5
+                  py-4
+                  outline-none
+                  text-[#242525]
+                  placeholder:text-[#797979]
+                  transition-all
+                  duration-300
+                  focus:border-[#6366f1]
+                  focus:ring-4
+                  focus:ring-indigo-100
+                "
                 required
               />
 
@@ -161,27 +222,59 @@ export default function Login() {
             {/* SIGN IN BUTTON */}
             <button
               type="submit"
-              className="w-full bg-[#303C6C] hover:bg-[#26345f] transition text-white py-4 rounded-2xl font-semibold text-lg shadow-lg"
+              className="
+                w-full
+                bg-[#242525]
+                text-white
+                py-4
+                rounded-2xl
+                font-semibold
+                text-lg
+                shadow-lg
+                transition-all
+                duration-300
+                hover:scale-[1.03]
+                hover:bg-black
+                hover:shadow-[0_15px_35px_rgba(0,0,0,0.25)]
+                active:scale-95
+              "
             >
               Sign In
             </button>
 
             {/* DIVIDER */}
             <div className="flex items-center gap-4">
-              <div className="flex-1 h-[1px] bg-gray-200"></div>
+              <div className="flex-1 h-[1px] bg-[#d1d5db]"></div>
 
-              <span className="text-gray-400 text-sm">
+              <span className="text-[#797979] text-sm">
                 or
               </span>
 
-              <div className="flex-1 h-[1px] bg-gray-200"></div>
+              <div className="flex-1 h-[1px] bg-[#d1d5db]"></div>
             </div>
 
             {/* GOOGLE BUTTON */}
             <button
               type="button"
               onClick={handleGoogleLogin}
-              className="w-full border border-gray-300 rounded-2xl py-4 font-medium flex items-center justify-center gap-3 hover:bg-gray-50 transition"
+              className="
+                w-full
+                border
+                border-[#d1d5db]
+                bg-white/90
+                rounded-2xl
+                py-4
+                font-medium
+                flex
+                items-center
+                justify-center
+                gap-3
+                transition-all
+                duration-300
+                hover:scale-[1.02]
+                hover:shadow-lg
+                hover:bg-white
+              "
             >
               <img
                 src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -194,12 +287,16 @@ export default function Login() {
           </form>
 
           {/* REGISTER */}
-          <p className="text-center text-gray-500 mt-8">
+          <p className="text-center text-[#797979] mt-8">
             Don’t have an account?{" "}
 
             <button
               onClick={() => navigate("/register")}
-              className="text-[#58C4DD] font-semibold hover:underline"
+              className="
+                text-[#242525]
+                font-semibold
+                hover:underline
+              "
             >
               Create Account
             </button>
@@ -207,93 +304,197 @@ export default function Login() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="hidden lg:flex relative overflow-hidden min-h-full">
+        <div className="hidden lg:flex relative overflow-hidden">
 
-          {/* BACKGROUND */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#B4DFE5] via-[#D2FDFF] to-[#FBE8A6]" />
+          {/* RIGHT BACKGROUND */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#dbeafe] via-[#ede9fe] to-[#cffafe]" />
 
-          {/* BLUR EFFECTS */}
-          <div className="absolute top-0 right-0 w-52 h-52 bg-white/20 rounded-full blur-3xl"></div>
+          {/* LIGHTS */}
+          <div className="absolute top-[-100px] right-[-80px] w-[320px] h-[320px] bg-[#8b5cf6]/30 rounded-full blur-3xl"></div>
 
-          <div className="absolute bottom-0 left-0 w-60 h-60 bg-[#58C4DD]/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-[-100px] left-[-80px] w-[320px] h-[320px] bg-[#06b6d4]/30 rounded-full blur-3xl"></div>
+
+          {/* GLASS OVERLAY */}
+          <div className="absolute inset-6 rounded-[32px] bg-white/20 backdrop-blur-2xl border border-white/40"></div>
 
           {/* CONTENT */}
-          <div className="relative z-10 flex flex-col justify-center w-full px-10 py-10">
+          <div className="relative z-10 flex flex-col justify-center w-full px-12 py-12">
 
             {/* LABEL */}
-            <div className="mb-5">
-              <span className="bg-white/40 backdrop-blur-md border border-white/30 text-[#303C6C] px-5 py-2 rounded-full text-xs font-semibold shadow-sm">
+            <div className="mb-6">
+              <span
+                className="
+                  bg-white/70
+                  backdrop-blur-xl
+                  border
+                  border-white
+                  text-[#242525]
+                  px-5
+                  py-2
+                  rounded-full
+                  text-xs
+                  font-semibold
+                  shadow-md
+                "
+              >
                 ✨ AI Proposal Platform
               </span>
             </div>
 
             {/* TITLE */}
-            <h2 className="text-[#303C6C] text-4xl font-bold leading-tight max-w-lg">
-              AI Revolutionizing
-              <br />
-              Proposal Creation &
-              <br />
-              Documentation.
-            </h2>
+            <div
+              ref={containerRef}
+              className="max-w-lg leading-tight space-y-1 "
+            >
+             <VariableProximity
+                label="AI Revolutionizing"
+                className="
+                  block
+                  text-[#242525]
+                  text-5xl
+                  font-black
+                  cursor-pointer
+                  select-none
+                "
+              />
+
+              <VariableProximity
+                label="Proposal Creation "
+                className="
+                  block
+                  text-[#242525]
+                  text-5xl
+                  font-black
+                  cursor-pointer
+                  select-none
+                "
+              />
+
+              <VariableProximity
+                label="& Documentation."
+                className="
+                  block
+                  text-[#242525]
+                  text-5xl
+                  font-black
+                  cursor-pointer
+                  select-none
+                "
+              />
+            </div>
 
             {/* DESCRIPTION */}
-            <p className="mt-5 text-[#303C6C]/80 text-sm leading-relaxed max-w-md">
+            <p className="mt-6 text-[#5f5f5f] text-sm leading-relaxed max-w-md">
               Build intelligent RFPs, RFIs, and automated proposal workflows
               using AI-powered document generation.
             </p>
 
             {/* FEATURE CARDS */}
-            <div className="grid grid-cols-2 gap-4 mt-8 max-w-lg">
+            <div className="grid grid-cols-2 gap-5 mt-10 max-w-lg">
 
               {/* CARD 1 */}
-              <div className="bg-white/35 backdrop-blur-xl border border-white/30 rounded-2xl p-5 shadow-lg">
+              <div
+                className="
+                  bg-white/50
+                  backdrop-blur-2xl
+                  border
+                  border-white/60
+                  rounded-3xl
+                  p-5
+                  shadow-xl
+                  transition-all
+                  duration-500
+                  hover:scale-105
+                  hover:-translate-y-2
+                "
+              >
 
-                <div className="w-12 h-12 rounded-2xl bg-[#303C6C] flex items-center justify-center text-xl text-white">
+                <div className="w-12 h-12 rounded-2xl bg-[#242525] text-white flex items-center justify-center text-xl shadow-lg">
                   🤖
                 </div>
 
-                <h3 className="mt-4 text-lg font-bold text-[#303C6C]">
+                <h3 className="mt-4 text-lg font-bold text-[#242525]">
                   AI Generated
                 </h3>
 
-                <p className="mt-2 text-sm text-[#303C6C]/70 leading-relaxed">
+                <p className="mt-2 text-sm text-[#5f5f5f] leading-relaxed">
                   Generate proposal sections automatically.
                 </p>
               </div>
 
               {/* CARD 2 */}
-              <div className="bg-white/35 backdrop-blur-xl border border-white/30 rounded-2xl p-5 shadow-lg">
+              <div
+                className="
+                  bg-white/50
+                  backdrop-blur-2xl
+                  border
+                  border-white/60
+                  rounded-3xl
+                  p-5
+                  shadow-xl
+                  transition-all
+                  duration-500
+                  hover:scale-105
+                  hover:-translate-y-2
+                "
+              >
 
-                <div className="w-12 h-12 rounded-2xl bg-[#58C4DD] flex items-center justify-center text-xl text-white">
+                <div className="w-12 h-12 rounded-2xl bg-[#242525] text-white flex items-center justify-center text-xl shadow-lg">
                   📄
                 </div>
 
-                <h3 className="mt-4 text-lg font-bold text-[#303C6C]">
+                <h3 className="mt-4 text-lg font-bold text-[#242525]">
                   Smart Workflow
                 </h3>
 
-                <p className="mt-2 text-sm text-[#303C6C]/70 leading-relaxed">
+                <p className="mt-2 text-sm text-[#5f5f5f] leading-relaxed">
                   Manage revisions and final proposal documents.
                 </p>
               </div>
             </div>
 
             {/* STATUS */}
-            <div className="flex flex-wrap gap-4 mt-8">
+            <div className="flex flex-wrap gap-4 mt-10">
 
-              <div className="bg-white/40 backdrop-blur-md border border-white/30 rounded-full px-5 py-3 flex items-center gap-2 shadow-md">
-                <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+              <div
+                className="
+                  bg-white/50
+                  backdrop-blur-xl
+                  border
+                  border-white/60
+                  rounded-full
+                  px-5
+                  py-3
+                  shadow-lg
+                  flex
+                  items-center
+                  gap-2
+                "
+              >
+                <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse"></div>
 
-                <span className="text-[#303C6C] text-sm font-medium">
+                <span className="text-[#242525] text-sm font-medium">
                   AI Engine Active
                 </span>
               </div>
 
-              <div className="bg-white/40 backdrop-blur-md border border-white/30 rounded-full px-5 py-3 shadow-md">
-                <span className="text-[#303C6C] text-sm font-medium">
+              <div
+                className="
+                  bg-white/50
+                  backdrop-blur-xl
+                  border
+                  border-white/60
+                  rounded-full
+                  px-5
+                  py-3
+                  shadow-lg
+                "
+              >
+                <span className="text-[#242525] text-sm font-medium">
                   Proposal Automation
                 </span>
               </div>
+
             </div>
           </div>
         </div>

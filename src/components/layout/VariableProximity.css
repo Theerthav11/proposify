@@ -1,0 +1,15 @@
+.variable-proximity {
+  display: inline-block;
+}
+
+.variable-proximity span {
+  transition:
+    transform 0.25s ease,
+    text-shadow 0.25s ease,
+    color 0.25s ease;
+}
+
+.variable-proximity span:hover {
+  transform: scale(1.25);
+  text-shadow: 0 10px 25px rgba(48, 60, 108, 0.35);
+}

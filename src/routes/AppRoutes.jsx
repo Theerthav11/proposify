@@ -5,21 +5,18 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Dashboard from "../pages/Dashboard";
 import NewProject from "../pages/NewProject";
-import Preview from "../pages/Preview";
 import ProposalBuilder from "../pages/ProposalBuilder";
+import Preview from "../pages/Preview";
 
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Public Routes */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-
-      {/* App Routes */}
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/new-project" element={<NewProject />} />
-      <Route path="/proposalBuilder" element={<ProposalBuilder />} />
+      <Route path="/proposal-builder" element={<ProposalBuilder />} />
       <Route path="/preview" element={<Preview />} />
     </Routes>
   );

@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 * {
   margin: 0;
   padding: 0;
@@ -9,39 +8,6 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-@layer components {
-  .input {
-    @apply w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-navy;
-  }
-
-  .btn {
-    @apply bg-primary-navy text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition;
-  }
-
-  .btn-secondary {
-    @apply bg-primary-coral text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition;
-  }
-
-  .btn-white {
-    @apply bg-white text-primary-navy px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition;
-  }
-
-  .card {
-    @apply bg-white p-6 rounded-lg shadow-sm border border-gray-200;
-  }
-
-  .sidebar-item {
-    @apply flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-100 cursor-pointer transition;
-  }
-
-  .sidebar-item-active {
-    @apply flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-navy text-white cursor-pointer;
-  }
+  font-family: Arial, Helvetica, sans-serif;
+  background: #e6e6e6;
 }
