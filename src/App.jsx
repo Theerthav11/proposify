@@ -13,6 +13,8 @@ import SharedWithMe from "./pages/SharedWithMe";
 import Templates from "./pages/Templates";
 import ProductLibrary from "./pages/ProductLibrary";
 import Channels from "./pages/Channels";
+import Uploads from "./pages/Uploads";
+import Drafts from "./pages/Drafts";
 
 function App() {
   return (
@@ -34,6 +36,8 @@ function App() {
           <Route path="/templates" element={<Templates />} />
           <Route path="/product-library" element={<ProductLibrary />} />
           <Route path="/channels" element={<Channels />} />
+          <Route path="/uploads" element={<Uploads />} />
+          <Route path="/drafts" element={<Drafts />} />
         </Routes>
       </div>
     </BrowserRouter>

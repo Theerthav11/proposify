@@ -2,7 +2,7 @@ import MainLayout from "../components/layout/MainLayout";
 import { useNavigate } from "react-router-dom";
 
 import {
-  FileText,
+  FileSearch,
   Pencil,
   Eye,
 } from "lucide-react";
@@ -186,7 +186,7 @@ export default function Proposals() {
                           shadow-sm
                         "
                       >
-                        <FileText
+                        <FileSearch
                           size={18}
                           className="text-white"
                         />

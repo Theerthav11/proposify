@@ -92,7 +92,7 @@ export default function Sidebar() {
         },
         {
           name: "Uploads",
-          path: "",
+          path: "/uploads",
           icon:  Upload,
         },
       ],
@@ -107,7 +107,7 @@ export default function Sidebar() {
         },
         {
           name: "Drafts",
-          path: "",
+          path: "/drafts",
           icon: FilePenLine,
         },
         {

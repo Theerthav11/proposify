@@ -86,7 +86,7 @@ export default function Requests() {
           </button>
 
           <button
-            onClick={() => setSelectedTab("channels")}
+            onClick={() => navigate("/channels")}
             className={`
               inline-flex
               items-center
@@ -109,7 +109,7 @@ export default function Requests() {
           </button>
 
           <button
-            onClick={() => setSelectedTab("uploads")}
+            onClick={() => navigate("/uploads")}
             className={`
               inline-flex
               items-center
@@ -155,23 +155,27 @@ export default function Requests() {
               
               <div className="flex items-start gap-5">
                 
-                {/* Icon */}
-                <div
-                  className="
-                    w-14
-                    h-14
-                    bg-gradient-to-br
-                    from-[#B1B2B2] to-[#797979]
-                    rounded-2xl
-                    flex
-                    items-center
-                    justify-center
-                    flex-shrink-0
-                    shadow-md
-                  "
-                >
-                  <span className="text-2xl text-white">📧</span>
-                </div>
+                {/* ICON */}
+                  <div
+                    className="
+                      w-14
+                      h-14
+                      rounded-2xl
+                      bg-gradient-to-br
+                      from-[#242525]
+                      to-[#4D4D4D]
+                      flex
+                      items-center
+                      justify-center
+                      text-white
+                      shadow-md
+                      flex-shrink-0
+                    "
+                  >
+                    <Mail
+                      size={18} 
+                    />
+                  </div>
 
                 {/* Content */}
                 <div className="flex-1">
