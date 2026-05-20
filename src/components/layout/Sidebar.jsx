@@ -55,24 +55,23 @@ export default function Sidebar() {
         },
       ],
     },
-    
     {
-      title: "DATA & CONTENT",
+      title: "PROPOSALS",
       items: [
         {
-          name: "Product Library ",
-          path: "/product-library",
-          icon:  Package,
+          name: "RFPs / RFIs",
+          path: "/proposals",
+          icon:  FileSearch,
         },
         {
-          name: "Document Library",
-          path: "",
-          icon: FileText,
+          name: "Drafts",
+          path: "/drafts",
+          icon: FilePenLine,
         },
         {
-          name: "Knowledge Base",
-          path: "",
-          icon:  Database,
+          name: "Sent Proposals",
+          path: "/sent-proposals",
+          icon:  FileCheck2,
         },
       ],
     },
@@ -98,23 +97,23 @@ export default function Sidebar() {
       ],
     },
     {
-      title: "PROPOSALS",
+      title: "DATA & CONTENT",
       items: [
         {
-          name: "RFPs / RFIs",
-          path: "/proposals",
-          icon:  FileSearch,
+          name: "Product Library ",
+          path: "/product-library",
+          icon:  Package,
         },
-        {
-          name: "Drafts",
-          path: "/drafts",
-          icon: FilePenLine,
-        },
-        {
-          name: "Sent Proposals",
-          path: "/sent-proposals",
-          icon:  FileCheck2,
-        },
+        // {
+        //   name: "Document Library",
+        //   path: "",
+        //   icon: FileText,
+        // },
+        // {
+        //   name: "Knowledge Base",
+        //   path: "",
+        //   icon:  Database,
+        // },
       ],
     },
 
