@@ -15,6 +15,8 @@ import ProductLibrary from "./pages/ProductLibrary";
 import Channels from "./pages/Channels";
 import Uploads from "./pages/Uploads";
 import Drafts from "./pages/Drafts";
+import SentProposals from "./pages/SentProposals";
+import Settings from "./pages/Settings";
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
           <Route path="/channels" element={<Channels />} />
           <Route path="/uploads" element={<Uploads />} />
           <Route path="/drafts" element={<Drafts />} />
+          <Route path="/sent-proposals" element={<SentProposals />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </div>
     </BrowserRouter>

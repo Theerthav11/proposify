@@ -112,7 +112,7 @@ export default function Sidebar() {
         },
         {
           name: "Sent Proposals",
-          path: "",
+          path: "/sent-proposals",
           icon:  FileCheck2,
         },
       ],
