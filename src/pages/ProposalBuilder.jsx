@@ -1,5 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {DragDropContext,  Droppable,  Draggable} from "@hello-pangea/dnd";
+
 
 export default function ProposalBuilder() {
   const navigate = useNavigate();
@@ -138,6 +140,14 @@ export default function ProposalBuilder() {
     },
   ];
 });
+  useEffect(() => {
+
+    localStorage.setItem(
+      "proposalSections",
+      JSON.stringify(sections)
+    );
+
+  }, [sections]);
 
 
   // const mails = [
@@ -258,15 +268,46 @@ This content can be edited, regenerated and version controlled.
   );
 
 };
+const toggleSection = (sectionId) => {
 
-  const toggleSection = (sectionId) => {
-    setSections(
-      sections.map((section) =>
-        section.id === sectionId
-          ? { ...section, checked: !section.checked }
-          : section
-      )
+  setSections(
+
+    sections.map((section) =>
+
+      section.id === sectionId
+
+        ? {
+            ...section,
+            checked: !section.checked,
+          }
+
+        : section
+
+    )
+
+  );
+
+};
+
+  const handleDragEnd = (result) => {
+
+    if (!result.destination) return;
+
+    const items = Array.from(sections);
+
+    const [reorderedItem] = items.splice(
+      result.source.index,
+      1
     );
+
+    items.splice(
+      result.destination.index,
+      0,
+      reorderedItem
+    );
+
+    setSections(items);
+
   };
 
   const toggleSubsection = (sectionId, subsectionId) => {
@@ -312,74 +353,128 @@ This content can be edited, regenerated and version controlled.
           </div>
 
           {/* SECTION LIST */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <DragDropContext onDragEnd={handleDragEnd}>
 
-            {sections.map((section) => (
+          <Droppable droppableId="sections">
+
+            {(provided) => (
+
               <div
-                key={section.id}
-
-                onClick={() => {
-
-                  setActiveSectionId(section.id);
-
-                  sectionRefs.current[
-                    section.id
-                  ]?.scrollIntoView({
-
-                    behavior: "smooth",
-
-                    block: "start",
-
-                  });
-
-                }}
-
-                className={`
-                  border
-                  rounded-2xl
-                  p-3
-                  transition
-                  cursor-pointer
-
-                  ${
-                    activeSectionId === section.id
-                      ? "bg-[#F3E8FF] border-[#7C3AED]"
-                      : "bg-white border-[#E9D5FF] hover:bg-[#F5F3FF]"
-                  }
-                `}
+                className="flex-1 overflow-y-auto p-4 space-y-4"
+                {...provided.droppableProps}
+                ref={provided.innerRef}
               >
-                <div className="flex items-center justify-between">
 
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={section.checked}
-                      onChange={() => toggleSection(section.id)}
-                      className="w-5 h-5 accent-[#7C3AED]"
-                    />
+                {sections.map((section, index) => (
 
-                    <span className="font-medium text-[#4C1D95] text-sm">
-                      {section.name}
-                    </span>
-                  </div>
+                  <Draggable
+                    key={section.id.toString()}
+                    draggableId={section.id.toString()}
+                    index={index}
+                  >
 
-                  {section.checked && (
-                    <div className="w-6 h-6 bg-[#7C3AED] rounded-md flex items-center justify-center text-white text-xs">
-                      ✓
-                    </div>
-                  )}
-                </div>
+                    {(provided) => (
+
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+
+                        onClick={() => {
+
+                          setActiveSectionId(section.id);
+
+                          sectionRefs.current[
+                            section.id
+                          ]?.scrollIntoView({
+
+                            behavior: "smooth",
+
+                            block: "start",
+
+                          });
+
+                        }}
+
+                        className={`
+                          border
+                          rounded-2xl
+                          p-3
+                          transition
+                          cursor-pointer
+
+                          ${
+                            activeSectionId === section.id
+                              ? "bg-[#EDE9FE] border-[#7C3AED]"
+                              : "bg-white border-[#E9D5FF] hover:bg-[#F5F3FF]"
+                          }
+                        `}
+                      >
+
+                        <div className="flex items-center justify-between">
+
+                          <div className="flex items-center gap-3">
+
+                            <input
+                              type="checkbox"
+                              checked={section.checked}
+                              onChange={() =>
+                                toggleSection(section.id)
+                              }
+                              className="w-5 h-5 accent-[#7C3AED]"
+                            />
+
+                            <span className="font-medium text-[#4C1D95] text-sm">
+                              {section.name}
+                            </span>
+
+                          </div>
+
+                          {section.checked && (
+
+                            <div className="w-6 h-6 bg-[#7C3AED] rounded-md flex items-center justify-center text-white text-xs">
+                              ✓
+                            </div>
+
+                          )}
+
+                        </div>
+
+                      </div>
+
+                    )}
+
+                  </Draggable>
+
+                ))}
+
+                {provided.placeholder}
+
+                {/* ADD SECTION BUTTON */}
+
+                <button
+                  onClick={addSection}
+                  className="
+                    w-full
+                    bg-[#7C3AED]
+                    text-white
+                    py-3
+                    rounded-2xl
+                    font-medium
+                    hover:bg-[#4C1D95]
+                    transition
+                  "
+                >
+                  + Add Section
+                </button>
+
               </div>
-            ))}
 
-            {/* ADD SECTION */}
-            <button
-              onClick={addSection}
-              className="w-full bg-[#7C3AED] text-white py-3 rounded-2xl font-medium hover:bg-[#4C1D95] transition"
-            >
-              + Add Section
-            </button>
-          </div>
+            )}
+
+          </Droppable>
+
+        </DragDropContext>
         </div>
 
         {/* EMAIL PANEL */}
@@ -993,7 +1088,11 @@ This content can be edited, regenerated and version controlled.
                                           s.id === sub.id
                                             ? {
                                                 ...s,
-                                                document: file,
+                                                document: {
+                                                  name: file.name,
+                                                  size: file.size,
+                                                  type: file.type,
+                                                },
                                               }
                                             : s
                                         ),
@@ -1203,7 +1302,7 @@ This content can be edited, regenerated and version controlled.
               </button> */}
 
               <button
-                onClick={() => navigate("/preview")}
+                onClick={() => navigate("/generate")}
                 className="bg-[#4C1D95] text-white px-6 py-3 rounded-xl font-medium hover:bg-[#7C3AED]"
               >
                Generate

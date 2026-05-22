@@ -8,6 +8,7 @@ import Requests from "./pages/Requests";
 import Proposals from "./pages/Proposals";
 import NewProject from "./pages/NewProject";
 import ProposalBuilder from "./pages/ProposalBuilder";
+import Generate from "./pages/Generate";
 import Preview from "./pages/Preview";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route path="/proposals" element={<Proposals />} />
           <Route path="/new-project" element={<NewProject />} />
           <Route path="/proposal-builder" element={<ProposalBuilder />} />
+          <Route path="/generate" element={<Generate />} />
           <Route path="/preview" element={<Preview />} />
         </Routes>
       </div>

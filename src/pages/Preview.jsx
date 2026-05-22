@@ -24,7 +24,7 @@ export default function Preview() {
 
           {/* BACK */}
           <button
-            onClick={() => navigate("/proposal-builder")}
+            onClick={() => navigate("/Generate")}
             className="border border-[#E9D5FF] bg-white px-5 py-3 rounded-2xl font-medium text-[#4C1D95] hover:bg-[#F5F3FF] transition shadow-sm"
           >
             ← Back
