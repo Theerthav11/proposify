@@ -174,7 +174,7 @@ export default function Sidebar() {
 
             <div>
               <h1 className="text-xl font-bold text-[#242525]">
-                PropoAI
+                Proposify
               </h1>
 
               <p className="text-xs text-[#797979]">

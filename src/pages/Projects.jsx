@@ -64,6 +64,26 @@ export default function Projects() {
           (p) => p.status.toLowerCase() === filter
         );
 
+  const handleProjectNavigation = (
+    project
+  ) => {
+    if (project.status === "Draft") {
+      navigate("/new-project");
+    }
+
+    else if (
+      project.status === "Active"
+    ) {
+      navigate("/proposal-builder");
+    }
+
+    else if (
+      project.status === "Completed"
+    ) {
+      navigate("/preview");
+    }
+  };
+
   return (
     <MainLayout>
       <div
@@ -156,7 +176,6 @@ export default function Projects() {
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              onClick={() => navigate("/proposal-builder")}
               className="
                 group
                 bg-[#FDFCFD]/90
@@ -260,9 +279,9 @@ export default function Projects() {
               </div>
 
               {/* FOOTER */}
-              <div className="flex items-center justify-between">
+              <div className="flex  justify-end">
 
-                <span
+                {/* <span
                   className="
                     px-3
                     py-1.5
@@ -275,19 +294,28 @@ export default function Projects() {
                   "
                 >
                   {project.type}
-                </span>
+                </span> */}
 
                 <button
+                  onClick={() =>
+                    handleProjectNavigation(project)
+                  }
                   className="
-                    text-[#242525]
-                    text-sm
+                    px-4
+                    py-2
+                    bg-[#242525]
+                    text-[#FDFCFD]
+                    text-[12px]
+                    rounded-xl
                     font-semibold
-                    group-hover:translate-x-1
+                    tracking-wide
+                    hover:bg-[#3A3A3A]
+                    hover:scale-105
                     transition-all
                     duration-300
                   "
                 >
-                  View →
+                  View 
                 </button>
               </div>
             </div>

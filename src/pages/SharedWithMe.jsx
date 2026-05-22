@@ -1,10 +1,11 @@
 import MainLayout from "../components/layout/MainLayout";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 import {
   Users,
   Share2,
-  Eye,
+  //Eye,
   Pencil,
   Search,
   Filter,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 
 export default function SharedWithMe() {
+  const navigate = useNavigate();
   const sharedItems = [
     {
       id: 1,
@@ -345,7 +347,7 @@ export default function SharedWithMe() {
               text-[#242525]
             "
           >
-            <p>Project / Proposal</p>
+            <p>Project </p>
             <p>Shared By</p>
             <p>Shared Date</p>
             {/* <p>Access</p> */}
@@ -451,7 +453,7 @@ export default function SharedWithMe() {
                 {/* Actions */}
                 <div className="flex items-center gap-3">
                   
-                  <button
+                  {/* <button
                     className="
                       p-2.5
                       rounded-xl
@@ -463,9 +465,10 @@ export default function SharedWithMe() {
                     "
                   >
                     <Eye size={16} className="text-[#242525]" />
-                  </button>
+                  </button> */}
 
                   <button
+                    onClick={() => navigate("/proposal-builder")}
                     className="
                       p-2.5
                       rounded-xl
