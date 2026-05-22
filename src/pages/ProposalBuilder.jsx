@@ -1,12 +1,38 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function ProposalBuilder() {
   const navigate = useNavigate();
 
   const [selectedTab, setSelectedTab] = useState("builder");
+  const sectionRefs = useRef({});
+  const [activeSectionId, setActiveSectionId] =useState(1);
+  const [editingSubId, setEditingSubId] =useState(null);
 
-  const [sections, setSections] = useState([
+  const [editingContent, setEditingContent] =
+  useState("");
+  const [isEditingPrompt, setIsEditingPrompt] =
+    useState(false);
+
+  const [promptText, setPromptText] =
+    useState(`Hi Team,
+
+    Please provide your proposal for our Smart Building
+    Management System.
+
+    We are looking for details on architecture,
+    features, timeline and cost.
+
+    Thanks,
+    John Smith`); 
+  const [sections, setSections] = useState(() => {
+
+  const savedSections =
+    localStorage.getItem("proposalSections");
+
+  return savedSections
+    ? JSON.parse(savedSections)
+    : [
     {
       id: 1,
       name: "Executive Summary",
@@ -14,10 +40,76 @@ export default function ProposalBuilder() {
       subsections: [
         {
           id: 11,
-          name: "Subsection",
-          version: "v2",
+
+          name: "System Architecture",
+
           checked: true,
-        },
+
+          currentVersion: "v1",
+
+          versions: [
+            {
+              version: "v1",
+
+              content: `
+        The proposed platform uses scalable cloud-native architecture.
+
+        Main Components:
+
+        • React Frontend
+        • Node.js Backend
+        • PostgreSQL Database
+        • AWS Deployment
+              `,
+            },
+
+            {
+              version: "v2",
+
+              content: `
+        Enhanced enterprise-ready architecture with scalable AI infrastructure.
+
+        Included Technologies:
+
+        • React + Tailwind Frontend
+        • Express Backend
+        • PostgreSQL + Redis
+        • AWS Cloud Infrastructure
+        • Docker Deployment
+              `,
+            },
+          ],
+
+          /* DEMO URL */
+
+          url:
+            "https://example.com/system-architecture-demo",
+
+          /* USER UPLOADED FILE */
+
+          document: null,
+
+          /* AI GENERATED FILES */
+
+          generatedFiles: [
+
+            {
+              type: "pdf",
+              name: "summary.pdf",
+            },
+
+            {
+              type: "doc",
+              name: "architecture.docx",
+            },
+
+            {
+              type: "pdf",
+              name: "technical-overview.pdf",
+            },
+
+          ],
+        }
       ],
     },
     {
@@ -44,33 +136,33 @@ export default function ProposalBuilder() {
       checked: false,
       subsections: [],
     },
-  ]);
-
-  const [selectedMail, setSelectedMail] = useState(0);
-
-  const mails = [
-    {
-      title: "RFP: Smart Building Management System",
-      sender: "John Smith",
-      preview:
-        "Hi Team, Please provide your proposal for our Smart Building Management System...",
-      date: "May 20",
-    },
-    {
-      title: "Clarification on Requirements",
-      sender: "John Smith",
-      preview:
-        "Could you please clarify the integration requirements...",
-      date: "May 18",
-    },
-    {
-      title: "Request for Pricing Details",
-      sender: "John Smith",
-      preview:
-        "Please share the pricing details for the project...",
-      date: "May 15",
-    },
   ];
+});
+
+
+  // const mails = [
+  //   {
+  //     title: "RFP: Smart Building Management System",
+  //     sender: "John Smith",
+  //     preview:
+  //       "Hi Team, Please provide your proposal for our Smart Building Management System...",
+  //     date: "May 20",
+  //   },
+  //   {
+  //     title: "Clarification on Requirements",
+  //     sender: "John Smith",
+  //     preview:
+  //       "Could you please clarify the integration requirements...",
+  //     date: "May 18",
+  //   },
+  //   {
+  //     title: "Request for Pricing Details",
+  //     sender: "John Smith",
+  //     preview:
+  //       "Please share the pricing details for the project...",
+  //     date: "May 15",
+  //   },
+  // ];
 
   const addSection = () => {
     const newSection = {
@@ -83,28 +175,89 @@ export default function ProposalBuilder() {
     setSections([...sections, newSection]);
   };
 
-  const addSubsection = (sectionId) => {
-    setSections(
-      sections.map((section) => {
-        if (section.id === sectionId) {
-          return {
-            ...section,
-            subsections: [
-              ...section.subsections,
-              {
-                id: Date.now(),
-                name: "Subsection",
-                version: "v1",
-                checked: true,
-              },
-            ],
-          };
-        }
+ const addSubsection = (sectionId) => {
 
-        return section;
-      })
-    );
-  };
+  setSections(
+
+    sections.map((section) => {
+
+      if (section.id === sectionId) {
+
+        return {
+
+          ...section,
+
+          subsections: [
+
+            ...section.subsections,
+
+            {
+
+              id: Date.now(),
+
+              name: `System Design ${section.subsections.length + 1}`,
+
+              checked: true,
+
+              currentVersion: "v1",
+
+              versions: [
+
+                {
+
+                  version: "v1",
+
+                  content: `
+This subsection was AI generated based on the proposal prompt.
+
+Key Details:
+
+• Business Requirements
+• Technical Architecture
+• System Features
+• Deployment Strategy
+• Estimated Timeline
+
+This content can be edited, regenerated and version controlled.
+                  `,
+
+                },
+
+              ],
+
+              url: "",
+
+              document: null,
+
+              generatedFiles: [
+
+                {
+                  type: "pdf",
+                  name: "generated-summary.pdf",
+                },
+
+                {
+                  type: "doc",
+                  name: "proposal-content.docx",
+                },
+
+              ],
+
+            },
+
+          ],
+
+        };
+
+      }
+
+      return section;
+
+    })
+
+  );
+
+};
 
   const toggleSection = (sectionId) => {
     setSections(
@@ -145,17 +298,17 @@ export default function ProposalBuilder() {
         <div className="w-[18%] border-r border-[#E9D5FF] flex flex-col bg-white">
 
           {/* HEADER */}
-          <div className="p-4 flex items-center justify-between border-b border-[#E9D5FF]">
+          <div className="p-4 flex items-center justify-center border-b border-[#E9D5FF]">
             <h2 className="text-xl font-bold text-[#4C1D95]">
               Sections
             </h2>
 
-            <button
+            {/* <button
               onClick={addSection}
               className="bg-[#7C3AED] text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-[#4C1D95] transition"
             >
               + Add
-            </button>
+            </button> */}
           </div>
 
           {/* SECTION LIST */}
@@ -164,7 +317,36 @@ export default function ProposalBuilder() {
             {sections.map((section) => (
               <div
                 key={section.id}
-                className="border border-[#E9D5FF] rounded-2xl p-3 bg-[#FFFFFF] hover:bg-[#F5F3FF] transition"
+
+                onClick={() => {
+
+                  setActiveSectionId(section.id);
+
+                  sectionRefs.current[
+                    section.id
+                  ]?.scrollIntoView({
+
+                    behavior: "smooth",
+
+                    block: "start",
+
+                  });
+
+                }}
+
+                className={`
+                  border
+                  rounded-2xl
+                  p-3
+                  transition
+                  cursor-pointer
+
+                  ${
+                    activeSectionId === section.id
+                      ? "bg-[#F3E8FF] border-[#7C3AED]"
+                      : "bg-white border-[#E9D5FF] hover:bg-[#F5F3FF]"
+                  }
+                `}
               >
                 <div className="flex items-center justify-between">
 
@@ -201,123 +383,10 @@ export default function ProposalBuilder() {
         </div>
 
         {/* EMAIL PANEL */}
-        <div className="w-[26%] border-r border-[#E9D5FF] flex flex-col bg-white">
-
-          {/* HEADER */}
-          <div className="p-5 border-b border-[#E9D5FF]">
-            <h1 className="text-2xl font-bold text-[#4C1D95]">
-              RFP: Project Name
-            </h1>
-          </div>
-
-          {/* CONTENT */}
-          <div className="p-5 overflow-y-auto">
-
-            {/* SOURCE SELECTOR */}
-            <div className="flex gap-3 mb-6">
-
-              <button
-                onClick={() => setSelectedTab("email")}
-                className={`flex-1 py-3 rounded-2xl border text-sm font-medium transition ${
-                  selectedTab === "email"
-                    ? "bg-[#7C3AED] text-white border-[#7C3AED]"
-                    : "bg-white text-[#6B7280] border-[#E9D5FF]"
-                }`}
-              >
-                ✉️ Email
-              </button>
-
-              <button
-                onClick={() => setSelectedTab("channel")}
-                className={`flex-1 py-3 rounded-2xl border text-sm font-medium transition ${
-                  selectedTab === "channel"
-                    ? "bg-[#7C3AED] text-white border-[#7C3AED]"
-                    : "bg-white text-[#6B7280] border-[#E9D5FF]"
-                }`}
-              >
-                💬 Channel
-              </button>
-
-              <button
-                onClick={() => setSelectedTab("upload")}
-                className={`flex-1 py-3 rounded-2xl border text-sm font-medium transition ${
-                  selectedTab === "upload"
-                    ? "bg-[#7C3AED] text-white border-[#7C3AED]"
-                    : "bg-white text-[#6B7280] border-[#E9D5FF]"
-                }`}
-              >
-                ⬆️ Upload
-              </button>
-            </div>
-
-            {/* EMAIL SELECT */}
-            <div className="mb-5">
-              <label className="block text-sm font-semibold mb-2 text-[#4C1D95]">
-                Select Email ID
-              </label>
-
-              <select className="w-full border border-[#E9D5FF] rounded-xl px-4 py-3 outline-none focus:border-[#7C3AED]">
-                <option>john.smith@abc.com</option>
-              </select>
-            </div>
-
-            {/* SEARCH */}
-            <div className="mb-5">
-              <label className="block text-sm font-semibold mb-2 text-[#4C1D95]">
-                Mails (20)
-              </label>
-
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A855F7]">
-                  🔍
-                </span>
-
-                <input
-                  type="text"
-                  placeholder="Search mails..."
-                  className="w-full border border-[#E9D5FF] rounded-xl pl-10 pr-4 py-3 outline-none focus:border-[#7C3AED]"
-                />
-              </div>
-            </div>
-
-            {/* MAIL LIST */}
-            <div className="space-y-3">
-
-              {mails.map((mail, index) => (
-                <div
-                  key={index}
-                  onClick={() => setSelectedMail(index)}
-                  className={`border rounded-2xl p-4 cursor-pointer transition ${
-                    selectedMail === index
-                      ? "border-[#7C3AED] bg-[#F5F3FF]"
-                      : "border-[#E9D5FF] bg-white"
-                  }`}
-                >
-                  <div className="flex justify-between mb-2">
-                    <h3 className="font-semibold text-sm text-[#4C1D95]">
-                      {mail.title}
-                    </h3>
-
-                    <span className="text-xs text-[#6B7280]">
-                      {mail.date}
-                    </span>
-                  </div>
-
-                  <p className="text-sm font-medium text-[#6B7280] mb-2">
-                    {mail.sender}
-                  </p>
-
-                  <p className="text-sm text-[#6B7280] line-clamp-2">
-                    {mail.preview}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+       
 
         {/* BUILDER PANEL */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-white">
+        <div className="flex-1 flex flex-col overflow-y-auto bg-white">
 
           {/* TOP */}
           <div className="p-5 border-b border-[#E9D5FF] overflow-y-auto">
@@ -347,32 +416,65 @@ export default function ProposalBuilder() {
                     May 20, 2024
                   </p>
                 </div>
-
-                <button className="border border-[#A855F7] text-[#7C3AED] px-4 py-2 rounded-xl text-sm hover:bg-[#E9D5FF]">
-                  ✏ Edit
-                </button>
               </div>
             </div>
 
             {/* PROMPT */}
-            <div className="border border-[#E9D5FF] rounded-2xl p-5 bg-white">
+            <div className="relative border border-[#E9D5FF] rounded-2xl p-5 bg-white">
+
+              {/* EDIT BUTTON */}
+              <div className="absolute top-3 right-3">
+                <button
+                  onClick={() =>
+                    setIsEditingPrompt(
+                      !isEditingPrompt
+                    )
+                  }
+                  className="border border-[#A855F7] text-[#7C3AED] px-4 py-2 rounded-xl text-sm hover:bg-[#E9D5FF] bg-white"
+                >
+                  {isEditingPrompt
+                    ? "💾 Save"
+                    : "✏ Edit"}
+                </button>
+              </div>
+
+              {/* TITLE */}
               <h3 className="font-semibold mb-3 text-[#4C1D95]">
                 Prompt
               </h3>
 
-              <p className="text-[#6B7280] leading-relaxed">
-                Hi Team,
-                <br /><br />
-                Please provide your proposal for our Smart Building
-                Management System.
-                <br /><br />
-                We are looking for details on architecture,
-                features, timeline and cost.
-                <br /><br />
-                Thanks,
-                <br />
-                John Smith
+              {/* CONTENT */}
+               {/* TEXTAREA */}
+            {isEditingPrompt ? (
+
+              <textarea
+                value={promptText}
+                onChange={(e) =>
+                  setPromptText(
+                    e.target.value
+                  )
+                }
+                className="
+                  w-full
+                  min-h-[220px]
+                  border
+                  border-[#D8B4FE]
+                  rounded-xl
+                  p-4
+                  outline-none
+                  resize-none
+                  text-[#6B7280]
+                "
+              />
+
+            ) : (
+
+              <p className="text-[#6B7280] leading-relaxed whitespace-pre-line">
+                {promptText}
               </p>
+
+            )}
+
             </div>
 
             {/* TABS */}
@@ -397,14 +499,26 @@ export default function ProposalBuilder() {
               <div className="space-y-4 mt-5">
 
                 {sections.map((section) => (
-                  <div
+                 <div
                     key={section.id}
-                    className="border border-[#E9D5FF] rounded-2xl overflow-hidden"
+
+                    ref={(el) =>
+                      (sectionRefs.current[
+                        section.id
+                      ] = el)
+                    }
+
+                    className="
+                      border
+                      border-[#E9D5FF]
+                      rounded-2xl
+                      overflow-hidden
+                    "
                   >
                     {/* HEADER */}
                     <div className="bg-[#F5F3FF] p-4 flex items-center justify-between">
 
-                      <h3 className="font-semibold text-[#4C1D95]">
+                      <h3 className="font-semibold text-[#4C1D95] text-xl">
                         {section.name}
                       </h3>
 
@@ -455,89 +569,583 @@ export default function ProposalBuilder() {
                     {/* SUBSECTIONS */}
                     {section.subsections.map((sub) => (
                       <div
-                        key={sub.id}
-                        className="p-5 border-t border-[#E9D5FF]"
-                      >
-                        <div className="flex items-center justify-between">
+                      key={sub.id}
+                      className="border-t border-[#E9D5FF]"
+                    >
 
-                          <div className="flex items-center gap-4">
-                            <input
-                              type="checkbox"
-                              checked={sub.checked}
-                              onChange={() =>
-                                toggleSubsection(section.id, sub.id)
-                              }
-                              className="accent-[#7C3AED]"
-                            />
+                      {/* HEADER */}
+                      <div className="bg-[#F8F5FF] p-4 flex items-center justify-between">
 
-                            <span className="font-medium text-[#4C1D95]">
-                              {sub.name}
-                            </span>
+                        <div className="flex items-center gap-3">
 
-                            <select className="border border-[#E9D5FF] rounded-lg px-3 py-1 text-sm outline-none">
-                              <option>{sub.version}</option>
-                              <option>v1</option>
-                              <option>v2</option>
-                            </select>
-                          </div>
+                          <input
+                            type="checkbox"
+                            checked={sub.checked}
+                            onChange={() =>
+                              toggleSubsection(
+                                section.id,
+                                sub.id
+                              )
+                            }
+                            className="accent-[#7C3AED]"
+                          />
 
-                          <div className="flex gap-3">
-                            <button className="border border-[#E9D5FF] px-4 py-2 rounded-xl text-sm text-[#4C1D95] hover:bg-[#F5F3FF]">
-                              🔄 Regenerate
-                            </button>
+                          <h3 className="font-semibold text-[#4C1D95] text-lg">
+                            {sub.name}
+                          </h3>
 
-                            <button className="border border-[#E9D5FF] px-4 py-2 rounded-xl text-sm text-[#4C1D95] hover:bg-[#F5F3FF]">
-                              Edit
-                            </button>
-                          </div>
+                         <select
+                            value={sub.currentVersion}
+                            onChange={(e) => {
+
+                              setSections(
+                                sections.map((sec) => {
+
+                                  if (sec.id === section.id) {
+
+                                    return {
+                                      ...sec,
+
+                                      subsections:
+                                        sec.subsections.map((s) =>
+                                          s.id === sub.id
+                                            ? {
+                                                ...s,
+                                                currentVersion:
+                                                  e.target.value,
+                                              }
+                                            : s
+                                        ),
+                                    };
+                                  }
+
+                                  return sec;
+                                })
+                              );
+
+                            }}
+                            className="
+                              border
+                              border-[#D8B4FE]
+                              rounded-lg
+                              px-3
+                              py-1
+                              text-sm
+                              outline-none
+                            "
+                          >
+
+                            {sub.versions.map((v) => (
+                              <option
+                                key={v.version}
+                                value={v.version}
+                              >
+                                {v.version}
+                              </option>
+                            ))}
+
+                          </select>
+
                         </div>
 
-                        {/* ATTACHMENT */}
-                        <div className="mt-5">
+                        {/* ACTION BUTTONS */}
+                        <div className="flex gap-3">
 
-                          <p className="text-sm font-medium mb-3 text-[#4C1D95]">
-                            Attachment:
-                          </p>
+                          {/* REGENERATE */}
+                          <button
+                            onClick={() => {
 
-                          <div className="flex items-center gap-3 flex-wrap">
+                            setSections(
+                              sections.map((sec) => {
 
-                            <button className="bg-[#7C3AED] text-white px-4 py-2 rounded-xl text-sm hover:bg-[#4C1D95]">
-                              📄 PDF
-                            </button>
+                                if (sec.id === section.id) {
 
-                            <button className="bg-[#A855F7] text-white px-4 py-2 rounded-xl text-sm hover:bg-[#7C3AED]">
-                              🔗 URL
-                            </button>
+                                  return {
 
-                            <label className="bg-[#4C1D95] text-white px-4 py-2 rounded-xl text-sm cursor-pointer hover:opacity-90">
-                              + Add
-                              <input
-                                type="file"
-                                accept=".pdf"
-                                className="hidden"
-                              />
-                            </label>
-                          </div>
+                                    ...sec,
+
+                                    subsections:
+                                      sec.subsections.map((s) => {
+
+                                        if (s.id === sub.id) {
+
+                                          const nextVersion =
+                                            `v${
+                                              s.versions.length + 1
+                                            }`;
+
+                                          return {
+
+                                            ...s,
+
+                                            currentVersion:
+                                              nextVersion,
+
+                                            versions: [
+
+                                              ...s.versions,
+
+                                              {
+                                                version:
+                                                  nextVersion,
+
+                                                content:
+                                                  `AI regenerated content for ${s.name} (${nextVersion})`,
+                                              },
+                                            ],
+                                          };
+                                        }
+
+                                        return s;
+                                      }),
+                                  };
+                                }
+
+                                return sec;
+                              })
+                            );
+
+                          }}
+                            className="bg-[#7C3AED] text-white px-4 py-2 rounded-xl text-sm"
+                          >
+                            🔄 Regenerate
+                          </button>
+
+                          {/* EDIT */}
+                          <button
+                            onClick={() => {
+                              setEditingSubId(sub.id);
+                              setEditingContent(
+
+                                sub.versions.find(
+                                  (v) =>
+                                    v.version ===
+                                    sub.currentVersion
+                                )?.content || ""
+
+                              );
+                            }}
+                            className="border border-[#D8B4FE] px-4 py-2 rounded-xl text-sm"
+                          >
+                            ✏ Edit
+                          </button>
+
                         </div>
                       </div>
+
+                      {/* CONTENT */}
+                      <div className="p-5">
+
+                        {/* SUBSECTION NAME */}
+                        {/* <h4 className="text-xl font-semibold text-[#4C1D95] mb-4">
+                          {sub.name}
+                        </h4> */}
+
+                        {/* EDIT MODE */}
+                        {editingSubId === sub.id ? (
+
+                          <div className="space-y-4">
+
+                            <textarea
+                              value={editingContent}
+                              onChange={(e) =>
+                                setEditingContent(
+                                  e.target.value
+                                )
+                              }
+                              className="
+                                w-full
+                                min-h-[220px]
+                                border
+                                border-[#D8B4FE]
+                                rounded-xl
+                                p-4
+                                outline-none
+                              "
+                            />
+
+                            <button
+                              onClick={() => {
+
+                                setSections(
+                                  sections.map((sec) => {
+                                    if (sec.id === section.id) {
+
+                                      return {
+                                        ...sec,
+
+                                        subsections:
+                                          sec.subsections.map(
+                                            (s) =>
+                                              s.id === sub.id
+                                                ? {
+                                                    ...s,
+                                                    versions: s.versions.map(
+                                                    (v) =>
+                                                      v.version ===
+                                                      s.currentVersion
+                                                        ? {
+                                                            ...v,
+                                                            content:
+                                                              editingContent,
+                                                          }
+                                                        : v
+                                                  ),
+                                                  }
+                                                : s
+                                          ),
+                                      };
+                                    }
+
+                                    return sec;
+                                  })
+                                );
+
+                                setEditingSubId(null);
+
+                              }}
+                              className="
+                                bg-[#7C3AED]
+                                text-white
+                                px-5
+                                py-2
+                                rounded-xl
+                              "
+                            >
+                              Save Content
+                            </button>
+
+                          </div>
+
+                        ) : (
+
+                          /* NORMAL CONTENT */
+                          <div
+                            className="
+                              text-[#374151]
+                              leading-relaxed
+                              whitespace-pre-line
+                            "
+                          >
+                            {
+                              sub.versions.find(
+                                (v) =>
+                                  v.version ===
+                                  sub.currentVersion
+                              )?.content
+                            }
+                          </div>
+
+                        )}
+
+                      </div>
+
+                      {/* ATTACHMENTS */}
+
+                      <div className="border-t border-[#E9D5FF] p-5 bg-[#FAFAFF]">
+
+                        <h4 className="font-semibold text-[#4C1D95] mb-4">
+                          Attachments
+                        </h4>
+
+                        {/* URL INPUT */}
+                        {/* <div className="mb-4">
+
+                          <input
+                            type="text"
+                            placeholder="Add URL..."
+                            value={sub.url}
+                            onChange={(e) => {
+
+                              setSections(
+                                sections.map((sec) => {
+
+                                  if (sec.id === section.id) {
+
+                                    return {
+                                      ...sec,
+
+                                      subsections:
+                                        sec.subsections.map((s) =>
+                                          s.id === sub.id
+                                            ? {
+                                                ...s,
+                                                url: e.target.value,
+                                              }
+                                            : s
+                                        ),
+                                    };
+                                  }
+
+                                  return sec;
+                                })
+                              );
+
+                            }}
+                            className="
+                              w-[260px]
+                              border
+                              border-[#D8B4FE]
+                              rounded-lg
+                              px-3
+                              py-2
+                              outline-none
+                              text-sm
+                            "
+                          />
+
+                        </div> */}
+
+
+                        {/* ATTACHMENT LIST */}
+                        <div className="mt-5 flex flex-wrap gap-3">
+
+                          {/* SHOW URL */}
+                          {sub.url && (
+
+                            <div
+                              className="
+                                border
+                                border-[#E9D5FF]
+                                bg-[#F5F3FF]
+                                rounded-xl
+                                px-4
+                                py-3
+                              "
+                            >
+                              <a
+                                href={sub.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-sm text-[#7C3AED] font-medium"
+                              >
+                                🔗 Demo URL
+                              </a>
+                            </div>
+
+                          )}
+
+                          {/* SHOW GENERATED FILES */}
+                          {sub.generatedFiles?.map((file, index) => (
+
+                            <div
+                              key={index}
+                              className="
+                                border
+                                border-[#E9D5FF]
+                                bg-[#F5F3FF]
+                                rounded-xl
+                                px-4
+                                py-3
+                              "
+                            >
+
+                              <span className="text-sm text-[#4C1D95]">
+
+                                {file.type === "pdf"
+                                  ? "📄"
+                                  : "📘"}
+
+                                {" "}
+
+                                {file.name}
+
+                              </span>
+
+                            </div>
+
+                          ))}
+
+                          
+                        {/* UPLOAD BUTTON */}
+                        <label
+                          className="
+                            bg-[#4C1D95]
+                            text-white
+                            px-4
+                            py-2
+                            rounded-xl
+                            text-sm
+                            cursor-pointer
+                            inline-block
+                          "
+                        >
+
+                          + Upload File
+
+                          <input
+                            type="file"
+                            className="hidden"
+                            onChange={(e) => {
+
+                              const file = e.target.files[0];
+
+                              setSections(
+                                sections.map((sec) => {
+
+                                  if (sec.id === section.id) {
+
+                                    return {
+                                      ...sec,
+
+                                      subsections:
+                                        sec.subsections.map((s) =>
+                                          s.id === sub.id
+                                            ? {
+                                                ...s,
+                                                document: file,
+                                              }
+                                            : s
+                                        ),
+                                    };
+                                  }
+
+                                  return sec;
+                                })
+                              );
+
+                            }}
+                          />
+
+                        </label>
+
+                          {/* SHOW UPLOADED FILE */}
+                          {sub.document && (
+
+                            <div
+                              className="
+                                border
+                                border-[#E9D5FF]
+                                bg-[#F5F3FF]
+                                rounded-xl
+                                px-4
+                                py-3
+                              "
+                            >
+
+                              <span className="text-sm text-[#4C1D95]">
+                                📎 {sub.document.name}
+                              </span>
+
+                            </div>
+
+                          )}
+
+                        </div>
+
+                      </div>
+
+                    </div>
                     ))}
                   </div>
                 ))}
               </div>
             )}
 
-            {/* ATTACHMENTS */}
-            {selectedTab === "attachments" && (
-              <div className="mt-5 border-2 border-dashed border-[#A855F7] rounded-2xl p-10 text-center bg-[#F5F3FF]">
-                <p className="text-[#6B7280] mb-4">
-                  Drag & drop files here
-                </p>
+           {/* ATTACHMENT */}
+           {selectedTab === "attachments" && (
 
-                <button className="bg-[#7C3AED] text-white px-5 py-3 rounded-xl hover:bg-[#4C1D95]">
-                  Upload Files
-                </button>
+              <div className="mt-5">
+
+                <div className="flex flex-col gap-3">
+
+                  {sections.flatMap((section) =>
+
+                    section.subsections.flatMap((sub) => [
+
+                      /* URL */
+
+                      ...(sub.url
+                        ? [
+                            <a
+                              key={`${sub.id}-url`}
+                              href={sub.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="
+                                border
+                                border-[#D8B4FE]
+                                bg-white
+                                rounded-xl
+                                px-4
+                                py-3
+                                text-sm
+                                text-[#7C3AED]
+                              "
+                            >
+                              🔗 Demo URL
+                            </a>,
+                          ]
+                        : []),
+
+                      /* GENERATED FILES */
+
+                      ...(sub.generatedFiles || []).map(
+                        (file, index) => (
+
+                          <div
+                            key={`${sub.id}-generated-${index}`}
+                            className="
+                              border
+                              border-[#D8B4FE]
+                              bg-white
+                              rounded-xl
+                              px-4
+                              py-3
+                            "
+                          >
+
+                            <span className="text-sm text-[#4C1D95]">
+
+                              {file.type === "pdf"
+                                ? "📄"
+                                : "📘"}
+
+                              {" "}
+
+                              {file.name}
+
+                            </span>
+
+                          </div>
+
+                        )
+                      ),
+
+                      /* UPLOADED FILE */
+
+                      ...(sub.document
+                        ? [
+                            <div
+                              key={`${sub.id}-upload`}
+                              className="
+                                border
+                                border-[#D8B4FE]
+                                bg-white
+                                rounded-xl
+                                px-4
+                                py-3
+                              "
+                            >
+
+                              <span className="text-sm text-[#4C1D95]">
+                                📎 {sub.document.name}
+                              </span>
+
+                            </div>,
+                          ]
+                        : []),
+
+                    ])
+
+                  )}
+
+                </div>
+
               </div>
+
             )}
+            
 
             {/* HISTORY */}
             {selectedTab === "history" && (
@@ -567,10 +1175,10 @@ export default function ProposalBuilder() {
           </div>
 
           {/* FOOTER */}
-          <div className="p-4 border-t border-[#E9D5FF] flex items-center justify-between bg-white">
+          <div className="p-4 border-t border-[#E9D5FF] flex justify-end bg-white">
 
             {/* FORMAT */}
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
 
               <select
                 className="bg-[#7C3AED] text-white px-5 py-3 rounded-xl font-medium outline-none cursor-pointer hover:bg-[#4C1D95]"
@@ -585,20 +1193,20 @@ export default function ProposalBuilder() {
                 <option value="ppt">PowerPoint</option>
                 <option value="txt">Text File</option>
               </select>
-            </div>
+            </div> */}
 
             {/* BUTTONS */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 justify-end">
 
-              <button className="bg-[#A855F7] text-white px-5 py-3 rounded-xl font-medium hover:bg-[#7C3AED]">
+              {/* <button className="bg-[#A855F7] text-white px-5 py-3 rounded-xl font-medium hover:bg-[#7C3AED]">
                 Save Draft
-              </button>
+              </button> */}
 
               <button
                 onClick={() => navigate("/preview")}
                 className="bg-[#4C1D95] text-white px-6 py-3 rounded-xl font-medium hover:bg-[#7C3AED]"
               >
-                👁 Preview
+               Generate
               </button>
 
             </div>
