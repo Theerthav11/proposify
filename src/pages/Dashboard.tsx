@@ -4,6 +4,7 @@ import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
+import { useState } from "react";
 
 import {
   FolderKanban,
@@ -39,6 +40,8 @@ interface RecentRequest {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] =
+  useState<string>("");
 
   const stats: Stat[] = [
     {
@@ -122,6 +125,41 @@ export default function Dashboard() {
   },
 ];
 
+const recentProjects: string[] = [
+  "Smart Building Management System",
+  "AI Analytics Platform",
+  "Cloud Infrastructure Solution",
+  "Cybersecurity Suite",
+];
+
+const filteredProposals =
+  proposals.filter(
+    (proposal) =>
+      proposal.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      proposal.project
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+  );
+
+const filteredProjects = recentProjects.filter(
+  (project: string) =>
+    project
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+);
+
+const filteredRequests = recentRequests.filter(
+  (request) =>
+    request.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase()) ||
+    request.email
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+);
+
   return (
     <MainLayout>
       <div className="min-h-screen bg-gradient-to-br from-[#E6E6E6] via-[#FDFCFD] to-[#D8D8D8] p-8">
@@ -165,6 +203,10 @@ export default function Dashboard() {
               <input
                 type="text"
                 placeholder="Search projects, proposals..."
+                value={searchTerm}
+                onChange={(e) =>
+                  setSearchTerm(e.target.value)
+                }
                 className="
                   bg-transparent
                   outline-none
@@ -298,12 +340,8 @@ export default function Dashboard() {
                 </div>
 
                 <div className="space-y-4">
-                  {[
-                    "Smart Building Management System",
-                    "AI Analytics Platform",
-                    "Cloud Infrastructure Solution",
-                    "Cybersecurity Suite",
-                  ].map((item, index) => (
+                 {filteredProjects.length > 0 ? (
+                  filteredProjects.map((item, index) => (
                     <motion.div
                       whileHover={{ x: 5 }}
                       key={index}
@@ -363,7 +401,12 @@ export default function Dashboard() {
                         Active
                       </span>
                     </motion.div>
-                  ))}
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-[#797979]">
+                    No projects found
+                  </div>
+                )}
                 </div>
               </div>
 
@@ -397,7 +440,8 @@ export default function Dashboard() {
 
                 <div className="space-y-4">
 
-                  {recentRequests.map((item, index) => (
+                  {filteredRequests.length > 0 ? (
+                  filteredRequests.map((item, index) => (
                     <motion.div
                       whileHover={{ x: 5 }}
                       key={index}
@@ -447,7 +491,12 @@ export default function Dashboard() {
                         {item.time}
                       </span>
                     </motion.div>
-                  ))}
+                  ))
+                  ) : (
+                    <div className="text-center py-8 text-[#797979]">
+                      No requests found
+                    </div>
+                  )}
 
                 </div>
               </div>
@@ -512,7 +561,8 @@ export default function Dashboard() {
                   </thead>
 
                   <tbody>
-                    {proposals.map((item, index) => (
+                    {filteredProposals.length > 0 ? (
+                      filteredProposals.map((item, index) => (
                       <tr
                         key={index}
                         className="border-t
@@ -582,7 +632,21 @@ export default function Dashboard() {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    ))
+                  ) :  (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="
+                          text-center
+                          py-8
+                          text-[#797979]
+                        "
+                      >
+                        No proposals found
+                      </td>
+                    </tr>
+                  )}
                   </tbody>
                 </table>
 

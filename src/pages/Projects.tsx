@@ -1,7 +1,7 @@
 import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { FileText } from "lucide-react";
+import { FileText, Search } from "lucide-react";
 
 type FilterType =
   | "all"
@@ -20,13 +20,14 @@ interface Project {
   name: string;
   status: ProjectStatus;
   updated: string;
-  type: string;
 }
 
 export default function Projects() {
   const navigate = useNavigate();
   const [filter, setFilter] =
-  useState<FilterType>("all");
+    useState<FilterType>("all");
+  const [searchTerm, setSearchTerm] =
+    useState<string>("");
 
   const projects: Project[] = [
     {
@@ -34,7 +35,6 @@ export default function Projects() {
       name: "Smart Building Management System",
       status: "Active",
       updated: "3 hours ago",
-      type: "RFP",
     },
 
     {
@@ -42,7 +42,6 @@ export default function Projects() {
       name: "AI Analytics Platform",
       status: "Active",
       updated: "1 day ago",
-      type: "RFP",
     },
 
     {
@@ -50,7 +49,6 @@ export default function Projects() {
       name: "Cloud Infrastructure Solution",
       status: "Draft",
       updated: "2 days ago",
-      type: "RFI",
     },
 
     {
@@ -58,7 +56,6 @@ export default function Projects() {
       name: "Cybersecurity Suite",
       status: "Active",
       updated: "3 days ago",
-      type: "RFP",
     },
 
     {
@@ -66,7 +63,6 @@ export default function Projects() {
       name: "IoT Device Monitoring System",
       status: "Draft",
       updated: "5 days ago",
-      type: "RFP",
     },
 
     {
@@ -74,17 +70,23 @@ export default function Projects() {
       name: "Data Analytics Dashboard",
       status: "Completed",
       updated: "1 week ago",
-      type: "RFP",
     },
   ];
 
-  const filteredProjects =
-    filter === "all"
-      ? projects
-      : projects.filter(
-          (p) => p.status.toLowerCase() === filter
-        );
+  const filteredProjects = projects.filter(
+    (project) => {
+      const matchesFilter =
+        filter === "all" ||
+        project.status.toLowerCase() === filter;
 
+      const matchesSearch =
+        project.name
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+
+      return matchesFilter && matchesSearch;
+    }
+  );
   const handleProjectNavigation = (
     project: Project
   ) => {
@@ -128,16 +130,56 @@ export default function Projects() {
       >
         {/* HEADER */}
         <div className="flex justify-between items-center mb-10">
-          <div>
-            <h1 className="text-3xl font-bold text-[#242525] mb-2">
-              My Projects
-            </h1>
 
-            <p className="text-[#797979]">
-              Manage all your project proposals
-            </p>
+        {/* Left */}
+        <div>
+          <h1 className="text-3xl font-bold text-[#242525]">
+            Projects
+          </h1>
+
+          <p className="text-[#797979] mt-1">
+            Manage all your projects
+          </p>
+        </div>
+
+        {/* Right Side */}
+        <div className="flex items-center gap-4">
+
+          {/* Search */}
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              bg-white
+              px-4
+              py-3
+              rounded-2xl
+              border
+              border-[#C6C6C6]
+              shadow-sm
+              w-[350px]
+            "
+          >
+            <Search size={18} className="text-[#797979]" />
+
+            <input
+              type="text"
+              placeholder="Search projects..."
+              value={searchTerm}
+              onChange={(e) =>
+                setSearchTerm(e.target.value)
+              }
+              className="
+                w-full
+                bg-transparent
+                outline-none
+                text-sm
+              "
+            />
           </div>
 
+          {/* Button */}
           <button
             onClick={() => navigate("/new-project")}
             className="
@@ -150,17 +192,14 @@ export default function Projects() {
               bg-[#242525]
               text-[#FDFCFD]
               font-medium
-              shadow-[0_6px_20px_rgba(0,0,0,0.12)]
-              hover:scale-105
-              hover:bg-[#3A3A3A]
-              transition-all
-              duration-300
             "
           >
             <span className="text-xl">+</span>
             New Project
           </button>
+
         </div>
+      </div>
 
         {/* FILTERS */}
         <div className="flex gap-3 mb-8 flex-wrap">

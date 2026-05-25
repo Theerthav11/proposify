@@ -1,5 +1,7 @@
 import MainLayout from "../components/layout/MainLayout.js";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import type { ChangeEvent } from "react";
 
 import { motion } from "framer-motion";
 
@@ -19,7 +21,10 @@ interface UploadedFile {
 export default function UploadsPage() {
   const [manualRequest, setManualRequest] =
     useState<string>("");
+  const navigate = useNavigate();
 
+  const fileInputRef =
+    useRef<HTMLInputElement>(null);
   const [uploadedFiles, setUploadedFiles] =
     useState<UploadedFile[]>([
       {
@@ -34,6 +39,34 @@ export default function UploadsPage() {
         size: "1.1 MB",
       },
     ]);
+
+  const handleFileUpload = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files;
+
+    if (!files) return;
+
+    const newFiles: UploadedFile[] =
+      Array.from(files).map((file) => ({
+        id: Date.now() + Math.random(),
+        name: file.name,
+        size: `${(
+          file.size /
+          (1024 * 1024)
+        ).toFixed(2)} MB`,
+      }));
+
+    setUploadedFiles((prev) => [
+      ...prev,
+      ...newFiles,
+    ]);
+  };
+  const deleteFile = (id: number) => {
+    setUploadedFiles((prev) =>
+      prev.filter((file) => file.id !== id)
+    );
+  };
 
   return (
     <MainLayout>
@@ -145,6 +178,9 @@ We need a proposal for Smart Building Management System including IoT integratio
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
+                onClick={() =>
+                  navigate("/proposal-builder")
+                }
                 className="
                   h-12
                   px-6
@@ -209,15 +245,25 @@ We need a proposal for Smart Building Management System including IoT integratio
             </h2>
 
             <p className="text-[#797979] mt-3 max-w-md leading-7">
-              Upload RFPs, requirement documents,
+              Upload RFIs, requirement documents,
               PDFs, Word files or proposal
               requests.
             </p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              hidden
+              onChange={handleFileUpload}
+            />
 
             {/* BUTTON */}
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
+              onClick={() =>
+                fileInputRef.current?.click()
+              }
               className="
                 mt-8
                 h-12
@@ -322,6 +368,9 @@ We need a proposal for Smart Building Management System including IoT integratio
                     whileTap={{
                       scale: 0.95,
                     }}
+                    onClick={() =>
+                      deleteFile(file.id)
+                    }
                     className="
                       w-11
                       h-11

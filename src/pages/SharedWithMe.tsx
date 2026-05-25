@@ -1,7 +1,7 @@
 import MainLayout from "../components/layout/MainLayout.js";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import type { LucideIcon } from "lucide-react";
+import { useState } from "react";
 
 import {
   Users,
@@ -28,6 +28,8 @@ interface SharedItem {
 
 export default function SharedWithMe() {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] =
+  useState<string>("");
   const sharedItems: SharedItem[] = [
     {
       id: 1,
@@ -60,6 +62,21 @@ export default function SharedWithMe() {
       type: "Proposal",
     },
   ];
+  const filteredItems = sharedItems.filter(
+  (item) =>
+    item.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase()) ||
+    item.owner
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase()) ||
+    item.email
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase()) ||
+    item.type
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+);
 
   return (
     <MainLayout>
@@ -115,6 +132,10 @@ export default function SharedWithMe() {
                 <input
                   type="text"
                   placeholder="Search shared items..."
+                  value={searchTerm}
+                  onChange={(e) =>
+                    setSearchTerm(e.target.value)
+                  }
                   className="
                     bg-transparent
                     outline-none
@@ -368,8 +389,8 @@ export default function SharedWithMe() {
           </div>
 
           {/* Rows */}
-          {sharedItems.length > 0 ? (
-            sharedItems.map((item) => (
+          {filteredItems.length > 0 ? (
+            filteredItems.map((item) => (
               <div
                 key={item.id}
                 className="
