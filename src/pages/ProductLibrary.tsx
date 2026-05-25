@@ -150,6 +150,58 @@ const [searchTerm, setSearchTerm] =
             </p>
           </div>
 
+         {/* RIGHT SIDE */}
+          <div className="flex items-center gap-4">
+          {/* PROJECT SELECT */}
+          <div className="relative w-full lg:w-[320px]">
+            <select
+              value={selectedProject}
+              onChange={(e) =>
+                setSelectedProject(
+                  e.target.value
+                )
+              }
+              className="
+                appearance-none
+                w-full
+                h-12
+                px-4
+                rounded-2xl
+                border
+                border-[#C6C6C6]
+                bg-[#FDFCFD]
+                text-[#242525]
+                outline-none
+                focus:border-[#242525]
+              "
+            >
+              <option>
+                Smart Building System
+              </option>
+
+              <option>
+                AI Analytics Suite
+              </option>
+
+              <option>
+                Cloud ERP Platform
+              </option>
+            </select>
+
+            <ChevronDown
+              size={18}
+              className="
+                absolute
+                right-4
+                top-1/2
+                -translate-y-1/2
+                text-[#797979]
+                pointer-events-none
+              "
+            />
+          </div>
+
+          </div>
           {/* SEARCH */}
           <div className="relative w-full xl:w-[380px]">
             <Search
@@ -204,56 +256,8 @@ const [searchTerm, setSearchTerm] =
             mb-8
           "
         >
-          {/* PROJECT SELECT */}
-          <div className="relative w-full lg:w-[320px]">
-            <select
-              value={selectedProject}
-              onChange={(e) =>
-                setSelectedProject(
-                  e.target.value
-                )
-              }
-              className="
-                appearance-none
-                w-full
-                h-12
-                px-4
-                rounded-2xl
-                border
-                border-[#C6C6C6]
-                bg-[#FDFCFD]
-                text-[#242525]
-                outline-none
-                focus:border-[#242525]
-              "
-            >
-              <option>
-                Smart Building System
-              </option>
-
-              <option>
-                AI Analytics Suite
-              </option>
-
-              <option>
-                Cloud ERP Platform
-              </option>
-            </select>
-
-            <ChevronDown
-              size={18}
-              className="
-                absolute
-                right-4
-                top-1/2
-                -translate-y-1/2
-                text-[#797979]
-                pointer-events-none
-              "
-            />
-          </div>
-
-          {/* ADD BUTTON */}
+          
+          {/* ADD BUTTON
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.96 }}
@@ -276,7 +280,7 @@ const [searchTerm, setSearchTerm] =
           >
             <Plus size={18} />
             Add Asset
-          </motion.button>
+          </motion.button> */}
         </div>
 
         {/* FILTERS */}
