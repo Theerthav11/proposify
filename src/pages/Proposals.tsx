@@ -1,4 +1,4 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -7,10 +7,25 @@ import {
   Eye,
 } from "lucide-react";
 
+type ProposalStatus =
+  | "In Progress"
+  | "Draft"
+  | "In Review"
+  | "Completed";
+
+interface Proposal {
+  id: number;
+  name: string;
+  project: string;
+  status: ProposalStatus;
+  lastUpdated: string;
+}
+
+
 export default function Proposals() {
   const navigate = useNavigate();
 
-  const proposals = [
+  const proposals: Proposal[] = [
     {
       id: 1,
       name: "RFP - Smart Building Management System",

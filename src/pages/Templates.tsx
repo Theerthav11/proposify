@@ -1,5 +1,6 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useState } from "react";
+import type { LucideIcon } from "lucide-react";
 
 import {
   Search,
@@ -10,13 +11,33 @@ import {
   Download,
 } from "lucide-react";
 
+type Category =
+  | "All"
+  | "Business"
+  | "Sales"
+  | "Marketing"
+  | "Freelance"
+  | "Startup";
+
+interface Template {
+  id: number;
+  title: string;
+  category: Exclude<Category, "All">;
+}
+
+interface ActionButton {
+  icon: LucideIcon;
+  label: string;
+}
+
+
 import { motion } from "framer-motion";
 
 export default function TemplatesPage() {
   const [activeCategory, setActiveCategory] =
-    useState("All");
+    useState<Category>("All");
 
-  const categories = [
+  const categories: Category[] = [
     "All",
     "Business",
     "Sales",
@@ -25,7 +46,7 @@ export default function TemplatesPage() {
     "Startup",
   ];
 
-  const templates = [
+  const templates: Template[] = [
     {
       id: 1,
       title: "Business Proposal",
@@ -64,6 +85,25 @@ export default function TemplatesPage() {
       : templates.filter(
           (t) => t.category === activeCategory
         );
+
+  const actions: ActionButton[] = [
+  {
+    icon: Eye,
+    label: "Preview",
+  },
+  {
+    icon: Copy,
+    label: "Duplicate",
+  },
+  {
+    icon: Download,
+    label: "Download",
+  },
+  {
+    icon: Trash2,
+    label: "Delete",
+  },
+];
 
   return (
     <MainLayout>
@@ -257,29 +297,12 @@ export default function TemplatesPage() {
 
                 {/* ACTION BUTTONS */}
                 <div className="grid grid-cols-4 gap-3 mt-6">
-                  {[
-                    {
-                      icon: Eye,
-                      label: "Preview",
-                    },
-                    {
-                      icon: Copy,
-                      label: "Duplicate",
-                    },
-                    {
-                      icon: Download,
-                      label: "Download",
-                    },
-                    {
-                      icon: Trash2,
-                      label: "Delete",
-                    },
-                  ].map((action, index) => {
+                  {actions.map((action) => {
                     const Icon = action.icon;
 
                     return (
                       <motion.button
-                        key={index}
+                        key={action.label}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.96 }}
                         className="

@@ -1,4 +1,4 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -12,13 +12,20 @@ import {
   Plus,
 } from "lucide-react";
 
+interface Draft {
+  id: number;
+  title: string;
+  project: string;
+  updated: string;
+}
+
 export default function DraftProposals() {
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] =
-    useState("");
+    useState<string>("");
 
-  const drafts = [
+  const drafts: Draft[] = [
     {
       id: 1,
       title:
@@ -314,7 +321,7 @@ export default function DraftProposals() {
                 justify-center
               "
             >
-              <FileText
+              <FilePenLine
                 size={42}
                 className="text-[#797979]"
               />

@@ -1,22 +1,22 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Projects from "./pages/Projects";
-import Requests from "./pages/Requests";
-import Proposals from "./pages/Proposals";
-import NewProject from "./pages/NewProject";
-import ProposalBuilder from "./pages/ProposalBuilder";
-import Preview from "./pages/Preview";
-import SharedWithMe from "./pages/SharedWithMe";
-import Templates from "./pages/Templates";
-import ProductLibrary from "./pages/ProductLibrary";
-import Channels from "./pages/Channels";
-import Uploads from "./pages/Uploads";
-import Drafts from "./pages/Drafts";
-import SentProposals from "./pages/SentProposals";
-import Settings from "./pages/Settings";
+import Home from "./pages/Home.js";
+import Login from "./pages/Login.js";
+import Register from "./pages/Register.js";
+import Dashboard from "./pages/Dashboard.js";
+import Projects from "./pages/Projects.js";
+import Requests from "./pages/Requests.js";
+import Proposals from "./pages/Proposals.js";
+import NewProject from "./pages/NewProject.js";
+import ProposalBuilder from "./pages/ProposalBuilder.js";
+import Preview from "./pages/Preview.js";
+import SharedWithMe from "./pages/SharedWithMe.js";
+import Templates from "./pages/Templates.js";
+import ProductLibrary from "./pages/ProductLibrary.js";
+import Channels from "./pages/Channels.js";
+import Uploads from "./pages/Uploads.js";
+import Drafts from "./pages/Drafts.js";
+import SentProposals from "./pages/SentProposals.js";
+import Settings from "./pages/Settings.js";
 
 function App() {
   return (

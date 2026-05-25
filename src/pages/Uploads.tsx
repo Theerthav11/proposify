@@ -1,4 +1,4 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useState } from "react";
 
 import { motion } from "framer-motion";
@@ -10,12 +10,18 @@ import {
   Plus,
 } from "lucide-react";
 
+interface UploadedFile {
+  id: number;
+  name: string;
+  size: string;
+}
+
 export default function UploadsPage() {
   const [manualRequest, setManualRequest] =
-    useState("");
+    useState<string>("");
 
   const [uploadedFiles, setUploadedFiles] =
-    useState([
+    useState<UploadedFile[]>([
       {
         id: 1,
         name: "Smart_Building_RFP.pdf",

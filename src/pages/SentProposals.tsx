@@ -1,4 +1,4 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -16,18 +16,35 @@ import {
   FileText,
 } from "lucide-react";
 
+type ActiveTab = "Email" | "Channels";
+
+type ProposalStatus = "Viewed" | "Delivered";
+
+interface SentProposal {
+  id: number;
+  title: string;
+  company: string;
+  method: ActiveTab;
+  sentTo: string;
+  date: string;
+  status: ProposalStatus;
+}
+
 export default function SentProposals() {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] =
-    useState("Email");
+    useState<ActiveTab>("Email");
 
   const [searchTerm, setSearchTerm] =
-    useState("");
+    useState<string>("");
 
-  const tabs = ["Email", "Channels"];
+  const tabs: ActiveTab[] = [
+    "Email",
+    "Channels",
+  ];
 
-  const sentProposals = [
+  const sentProposals: SentProposal[] = [
     {
       id: 1,
       title:

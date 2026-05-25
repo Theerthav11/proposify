@@ -1,6 +1,7 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import type { LucideIcon } from "lucide-react";
 
 import {
   Users,
@@ -14,9 +15,20 @@ import {
   Trash2,
 } from "lucide-react";
 
+interface SharedItem {
+  id: number;
+  name: string;
+  owner: string;
+  email: string;
+  sharedDate: string;
+  activity: string;
+  type: "Proposal" | "Project";
+}
+
+
 export default function SharedWithMe() {
   const navigate = useNavigate();
-  const sharedItems = [
+  const sharedItems: SharedItem[] = [
     {
       id: 1,
       name: "Smart Building Proposal",

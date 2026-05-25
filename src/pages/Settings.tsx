@@ -1,7 +1,8 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useState } from "react";
 
 import { motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 
 import {
   User,
@@ -13,12 +14,40 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+interface MenuItem {
+  icon: LucideIcon;
+  title: string;
+}
+
 export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] =
-    useState(true);
+    useState<boolean>(true);
 
   const [channelNotifications, setChannelNotifications] =
-    useState(false);
+    useState<boolean>(false);
+  
+  const menuItems: MenuItem[] = [
+  {
+    icon: User,
+    title: "Profile",
+  },
+  {
+    icon: Bell,
+    title: "Notifications",
+  },
+  {
+    icon: Shield,
+    title: "Security",
+  },
+  {
+    icon: Globe,
+    title: "Integrations",
+  },
+  {
+    icon: Moon,
+    title: "Appearance",
+  },
+];
 
   return (
     <MainLayout>
@@ -63,37 +92,12 @@ export default function SettingsPage() {
           >
             <div className="space-y-3">
               
-              {[
-                {
-                  icon: User,
-                  title: "Profile",
-                },
-
-                {
-                  icon: Bell,
-                  title: "Notifications",
-                },
-
-                {
-                  icon: Shield,
-                  title: "Security",
-                },
-
-                {
-                  icon: Globe,
-                  title: "Integrations",
-                },
-
-                {
-                  icon: Moon,
-                  title: "Appearance",
-                },
-              ].map((item, index) => {
+              {menuItems.map((item) => {
                 const Icon = item.icon;
 
                 return (
                   <motion.button
-                    key={index}
+                    key={item.title}
                     whileHover={{
                       x: 4,
                     }}

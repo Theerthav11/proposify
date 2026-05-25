@@ -1,4 +1,4 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -10,13 +10,21 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+interface ChannelRequest {
+  id: number;
+  title: string;
+  type: string;
+  company: string;
+  date: string;
+}
+
 export default function Channels() {
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] =
-    useState("");
+    useState<string>("");
 
-  const channelRequests = [
+  const channelRequests: ChannelRequest[] = [
     {
       id: 1,
       title: "Enterprise Cloud Migration",

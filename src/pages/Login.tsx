@@ -1,9 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import type { FormEvent } from "react";
 
-export default function Register() {
+export default function Login() {
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (
+    e: FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
     navigate("/dashboard");
   };
@@ -16,23 +19,11 @@ export default function Register() {
             <span className="text-4xl">🤖</span>
             <h1 className="text-3xl font-bold text-primary-navy">PropoAI</h1>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Create your account</h2>
-          <p className="text-gray-600">Start creating winning proposals today</p>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome back</h2>
+          <p className="text-gray-600">Sign in to your account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name
-            </label>
-            <input
-              type="text"
-              placeholder="John Doe"
-              className="input"
-              required
-            />
-          </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Email Address
@@ -51,51 +42,35 @@ export default function Register() {
             </label>
             <input
               type="password"
-              placeholder="Create a strong password"
+              placeholder="Enter your password"
               className="input"
               required
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Confirm Password
+          <div className="flex items-center justify-between">
+            <label className="flex items-center">
+              <input type="checkbox" className="w-4 h-4 mr-2" />
+              <span className="text-sm text-gray-600">Remember me</span>
             </label>
-            <input
-              type="password"
-              placeholder="Confirm your password"
-              className="input"
-              required
-            />
-          </div>
-
-          <div className="flex items-start">
-            <input type="checkbox" className="w-4 h-4 mt-1 mr-2" required />
-            <span className="text-sm text-gray-600">
-              I agree to the{" "}
-              <a href="#" className="text-primary-navy hover:underline">
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a href="#" className="text-primary-navy hover:underline">
-                Privacy Policy
-              </a>
-            </span>
+            <a href="#" className="text-sm text-primary-navy hover:underline">
+              Forgot password?
+            </a>
           </div>
 
           <button type="submit" className="btn w-full">
-            Create Account
+            Sign In
           </button>
         </form>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
-            Already have an account?{" "}
+            Don't have an account?{" "}
             <button
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/register")}
               className="text-primary-navy font-medium hover:underline"
             >
-              Sign in
+              Sign up
             </button>
           </p>
         </div>

@@ -1,4 +1,4 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -27,7 +27,7 @@ export default function ProposalBuilder() {
     setSections([...sections, newSection]);
   };
 
-  const addSubsection = (sectionId) => {
+  const addSubsection = (sectionId: number) => {
     setSections(sections.map(section => {
       if (section.id === sectionId) {
         return {
@@ -48,13 +48,13 @@ export default function ProposalBuilder() {
     }));
   };
 
-  const toggleSection = (sectionId) => {
+  const toggleSection = (sectionId: number) => {
     setSections(sections.map(section =>
       section.id === sectionId ? { ...section, checked: !section.checked } : section
     ));
   };
 
-  const toggleSubsection = (sectionId, subsectionId) => {
+  const toggleSubsection = (sectionId: number, subsectionId: number) => {
     setSections(sections.map(section => {
       if (section.id === sectionId) {
         return {

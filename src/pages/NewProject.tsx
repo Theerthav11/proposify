@@ -1,4 +1,4 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -11,22 +11,34 @@ import {
   Video,
   Link2,
   Upload,
-  Pencil,
   Trash2,
   Plus,
   Save,
-  ArrowRight,
 } from "lucide-react";
+
+type TabType =
+    | "email"
+    | "channel"
+    | "upload";
+
+
+interface MailItem {
+  title: string;
+  sender: string;
+  date: string;
+  preview: string;
+}
 
 export default function NewProject() {
   const navigate = useNavigate();
+  
   const [selectedTab, setSelectedTab] =
-    useState("email");
+    useState<TabType>("email");
 
   const [selectedMail, setSelectedMail] =
-    useState(0);
+    useState<number>(0);
 
-  const mails = [
+  const mails: MailItem[] = [
     {
       title:
         "Smart Building Management RFI",
@@ -1151,7 +1163,7 @@ export default function NewProject() {
         <div className="flex justify-between mt-10">
           
           <motion.button
-            onClick={() => navigate("/dashboard ")}
+            onClick={() => navigate("/dashboard")}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className="

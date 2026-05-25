@@ -1,13 +1,34 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FileText } from "lucide-react";
 
+type FilterType =
+  | "all"
+  | "active"
+  | "draft"
+  | "completed";
+
+type ProjectStatus =
+  | "Active"
+  | "Draft"
+  | "Completed";
+
+
+interface Project {
+  id: number;
+  name: string;
+  status: ProjectStatus;
+  updated: string;
+  type: string;
+}
+
 export default function Projects() {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] =
+  useState<FilterType>("all");
 
-  const projects = [
+  const projects: Project[] = [
     {
       id: 1,
       name: "Smart Building Management System",
@@ -65,7 +86,7 @@ export default function Projects() {
         );
 
   const handleProjectNavigation = (
-    project
+    project: Project
   ) => {
     if (project.status === "Draft") {
       navigate("/new-project");
@@ -83,6 +104,13 @@ export default function Projects() {
       navigate("/preview");
     }
   };
+
+  const filters: FilterType[] = [
+    "all",
+    "active",
+    "draft",
+    "completed",
+  ];
 
   return (
     <MainLayout>
@@ -136,7 +164,7 @@ export default function Projects() {
 
         {/* FILTERS */}
         <div className="flex gap-3 mb-8 flex-wrap">
-          {["all", "active", "draft", "completed"].map((f) => (
+          {filters.map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}

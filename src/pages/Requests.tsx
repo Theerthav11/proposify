@@ -1,13 +1,29 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Mail, MessageCircleMore, Upload } from "lucide-react";
 
+type TabType =
+  | "emails"
+  | "channels"
+  | "uploads";
+
+interface RequestItem {
+  id: number;
+  title: string;
+  from: string;
+  email: string;
+  subject: string;
+  date: string;
+  preview: string;
+  type: string;
+}
+
 export default function Requests() {
   const navigate = useNavigate();
-  const [selectedTab, setSelectedTab] = useState("emails");
-
-  const requests = [
+  const [selectedTab, setSelectedTab] = useState<TabType>("emails");
+  
+  const requests: RequestItem[] = [
     {
       id: 1,
       title: "RFP: Smart Building Management System",

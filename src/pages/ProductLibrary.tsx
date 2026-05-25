@@ -1,5 +1,6 @@
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useState } from "react";
+import type { LucideIcon } from "lucide-react";
 
 import {
   Search,
@@ -19,17 +20,36 @@ import {
 
 import { motion } from "framer-motion";
 
+type TabType =
+  | "All"
+  | "Documents"
+  | "Images"
+  | "Videos"
+  | "URLs";
+
+interface Tab {
+  name: TabType;
+  icon: LucideIcon;
+}
+
+interface Asset {
+  id: number;
+  type: Exclude<TabType, "All">;
+  title: string;
+  size: string;
+}
+
 export default function ProductLibrary() {
-  const [activeTab, setActiveTab] =
-    useState("All");
+ const [activeTab, setActiveTab] =
+  useState<TabType>("All");
 
-  const [selectedProject, setSelectedProject] =
-    useState("Smart Building System");
+const [selectedProject, setSelectedProject] =
+  useState<string>("Smart Building System");
 
-  const [searchTerm, setSearchTerm] =
-    useState("");
+const [searchTerm, setSearchTerm] =
+  useState<string>("");
 
-  const tabs = [
+  const tabs: Tab[] = [
     {
       name: "All",
       icon: FolderKanban,
@@ -52,7 +72,7 @@ export default function ProductLibrary() {
     },
   ];
 
-  const assets = [
+  const assets: Asset[] = [
     {
       id: 1,
       type: "Documents",
@@ -388,36 +408,28 @@ export default function ProductLibrary() {
                   justify-center
                 "
               >
-                {asset.type === "Documents" && (
+                {activeTab === "All" ? (
+                  <FolderKanban
+                    size={55}
+                    className="text-[#797979]"
+                  />
+                ) : asset.type === "Documents" ? (
                   <FileText
                     size={55}
                     className="text-[#797979]"
                   />
-                )}
-
-                {asset.type === "Images" && (
+                ) : asset.type === "Images" ? (
                   <Image
                     size={55}
                     className="text-[#797979]"
                   />
-                )}
-
-                {asset.type === "Videos" && (
+                ) : asset.type === "Videos" ? (
                   <Video
                     size={55}
                     className="text-[#797979]"
                   />
-                )}
-
-                {asset.type === "URLs" && (
+                ) : (
                   <Link2
-                    size={55}
-                    className="text-[#797979]"
-                  />
-                )}
-
-                {asset.type === "All" && (
-                  <FolderKanban
                     size={55}
                     className="text-[#797979]"
                   />

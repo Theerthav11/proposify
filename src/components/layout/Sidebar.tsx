@@ -2,6 +2,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 
 import {
   LayoutDashboard,
@@ -20,10 +21,21 @@ import {
   FileCheck2,
 } from "lucide-react";
 
+interface MenuItem {
+  name: string;
+  path: string;
+  icon: LucideIcon;
+}
+
+interface MenuSection {
+  title: string;
+  items: MenuItem[];
+}
+
 export default function Sidebar() {
   const location = useLocation();
 
-  const menuItems = [
+  const menuItems: MenuSection[] = [
     {
       title: "MAIN",
       items: [
@@ -187,7 +199,7 @@ export default function Sidebar() {
         {/* Menu */}
         <div className="px-3 py-4 space-y-7">
           {menuItems.map((section, index) => (
-            <div key={index}>
+            <div key={section.title}>
               <p
                 className="
                   text-[9px]

@@ -1,8 +1,9 @@
 // Dashboard.jsx
 
-import MainLayout from "../components/layout/MainLayout";
+import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 
 import {
   FolderKanban,
@@ -15,10 +16,31 @@ import {
   MoreVertical,
 } from "lucide-react";
 
+interface Stat {
+  title: string;
+  value: string;
+  change: string;
+  icon: LucideIcon;
+  bg: string;
+}
+
+interface Proposal {
+  name: string;
+  project: string;
+  status: string;
+  date: string;
+}
+
+interface RecentRequest {
+  title: string;
+  email: string;
+  time: string;
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  const stats = [
+  const stats: Stat[] = [
     {
       title: "Total Projects",
       value: "24",
@@ -52,7 +74,7 @@ export default function Dashboard() {
     },
   ];
 
-  const proposals = [
+  const proposals: Proposal[] = [
     {
       name: "RFP - Smart Building Management",
       project: "Smart Building",
@@ -81,6 +103,24 @@ export default function Dashboard() {
       date: "May 17, 2024",
     },
   ];
+
+  const recentRequests: RecentRequest[] = [
+  {
+    title: "RFP: Smart Building Management",
+    email: "john.smith@abc.com",
+    time: "2h ago",
+  },
+  {
+    title: "Integration Requirements",
+    email: "team@xyz.com",
+    time: "5h ago",
+  },
+  {
+    title: "Pricing Details Request",
+    email: "manager@pqr.com",
+    time: "1 day ago",
+  },
+];
 
   return (
     <MainLayout>
@@ -357,26 +397,7 @@ export default function Dashboard() {
 
                 <div className="space-y-4">
 
-                  {[
-                    {
-                      title: "RFP: Smart Building Management",
-                      email: "john.smith@abc.com",
-                      time: "2h ago",
-                    },
-
-                    {
-                      title: "Integration Requirements",
-                      email: "team@xyz.com",
-                      time: "5h ago",
-                    },
-
-                    {
-                      title: "Pricing Details Request",
-                      email: "manager@pqr.com",
-                      time: "1 day ago",
-                    },
-
-                  ].map((item, index) => (
+                  {recentRequests.map((item, index) => (
                     <motion.div
                       whileHover={{ x: 5 }}
                       key={index}
