@@ -11,13 +11,13 @@ interface SubsectionType {
   id: number | string;
   name: string;
   currentVersion: string;
-  versions?: VersionType[];
+  versions: VersionType[];
 }
 
 interface SectionType {
   id: number | string;
   name: string;
-  subsections?: SubsectionType[];
+  subsections: SubsectionType[];
 }
 
 interface GeneratedSlideType {
@@ -44,9 +44,21 @@ export default function Generate() {
   const [activeSlide, setActiveSlide] =
     useState(0);
 
+  const [uploadedFile, setUploadedFile] =
+    useState<File | null>(null);
+
+  const [message, setMessage] =
+    useState("");
+
   const [zoom, setZoom] = useState(1);
   const [showAgent, setShowAgent] =
   useState(true);
+
+  const [showThemePanel, setShowThemePanel] =
+  useState(false);
+
+  const [selectedTheme, setSelectedTheme] =
+    useState("Professional"); 
 
   /* =========================
      SECTION COLORS
@@ -64,7 +76,7 @@ export default function Generate() {
      GENERATE SLIDES
   ========================= */
 
-  const generatedSlides = useMemo(() => {
+  const generatedSlides = useMemo<GeneratedSlideType[]>(() => {
 
     const slidesData: GeneratedSlideType[] = [];
 
@@ -77,10 +89,10 @@ export default function Generate() {
         const sectionColor =
           sectionColors[
             sectionIndex %
-              sectionColors.length
+            sectionColors.length
           ];
 
-        section.subsections?.forEach(
+        (section.subsections || []).forEach(
           (
             subsection: SubsectionType
           ) => {
@@ -92,14 +104,10 @@ export default function Generate() {
                   subsection.currentVersion
               )?.content || "";
 
-            /* SPLIT CONTENT */
-
             const splitContent =
               content.match(
                 /(.|[\r\n]){1,450}/g
               ) || [];
-
-            /* CREATE MULTIPLE SLIDES */
 
             splitContent.forEach(
               (
@@ -113,19 +121,19 @@ export default function Generate() {
 
                   title:
                     splitContent.length > 1
-                      ? `${subsection.name} (Part ${
-                          splitIndex + 1
-                        })`
-                      : subsection.name,
+                      ? `${subsection.name} (Part ${splitIndex + 1})`
+                      : subsection.name || "Untitled",
 
-                  content: part,
+                  content: part || "",
 
-                  sectionName: section.name,
+                  sectionName:
+                    section.name || "Section",
 
                   subsectionName:
-                    subsection.name,
+                    subsection.name || "Subsection",
 
-                  sectionColor,
+                  sectionColor:
+                    sectionColor || "from-blue-500 to-cyan-400",
 
                 });
 
@@ -142,7 +150,7 @@ export default function Generate() {
 
   }, [slides]);
 
-const currentSlide: GeneratedSlideType =
+ const currentSlide: GeneratedSlideType =
   generatedSlides[activeSlide] || {
     id: "default-slide",
     title: "",
@@ -164,9 +172,7 @@ const currentSlide: GeneratedSlideType =
       <div
         className="
           w-[320px]
-          bg-white
-          border-r
-          border-[#E2E8F0]
+        bg-white/80 backdrop-blur-xl border-b border-white/40 shadow-sm
           flex
           flex-col
           overflow-hidden
@@ -212,19 +218,23 @@ const currentSlide: GeneratedSlideType =
 
           <button
             className="
-              mt-5
-              w-full
-              bg-[#2563EB]
-              hover:bg-[#1D4ED8]
-              text-white
-              py-3
-              rounded-2xl
-              flex
-              items-center
-              justify-center
-              gap-2
-              font-medium
-              transition
+            px-4
+            py-2
+            rounded-2xl
+            bg-white/80
+            backdrop-blur-lg
+            border
+            border-white/40
+            shadow-sm
+            hover:shadow-lg
+            hover:scale-[1.02]
+            transition-all
+            duration-300
+            flex
+            items-center
+            gap-2
+            text-[#0F172A]
+            font-medium
             "
           >
             <Plus size={18} />
@@ -332,9 +342,7 @@ const currentSlide: GeneratedSlideType =
                             <div
                               key={subsection.id}
                               className="
-                                bg-white
-                                border
-                                border-[#E2E8F0]
+                                bg-white/80 backdrop-blur-xl border-b border-white/40 shadow-sm
                                 rounded-2xl
                                 p-2
                               "
@@ -447,7 +455,9 @@ const currentSlide: GeneratedSlideType =
                                         <div
                                           className="
                                             h-[72px]
-                                            bg-white
+                                            bg-white/85 backdrop-blur-xl
+                                            hover:scale-[1.02]
+                                            hover:shadow-xl
                                             relative
                                             overflow-hidden
                                           "
@@ -516,7 +526,7 @@ const currentSlide: GeneratedSlideType =
                                                   top-0
                                                   w-[40px]
                                                   h-full
-                                                  bg-white
+                                                  bg-white/85 backdrop-blur-xl
                                                   rounded-r-full
                                                 "
                                               />
@@ -535,7 +545,7 @@ const currentSlide: GeneratedSlideType =
                                               w-5
                                               h-5
                                               rounded-full
-                                              bg-white
+                                              bg-white/85 backdrop-blur-xl
                                               shadow
                                               flex
                                               items-center
@@ -552,7 +562,7 @@ const currentSlide: GeneratedSlideType =
 
                                         {/* INFO */}
 
-                                        <div className="p-2 bg-white">
+                                        <div className="p-2 bg-white/85 backdrop-blur-xl">
 
                                           <h4
                                             className="
@@ -611,9 +621,7 @@ const currentSlide: GeneratedSlideType =
         <div
           className="
             h-[74px]
-            bg-white
-            border-b
-            border-[#E2E8F0]
+            bg-white/80 backdrop-blur-xl border-b border-white/40 shadow-sm
             flex
             items-center
             justify-between
@@ -633,14 +641,14 @@ const currentSlide: GeneratedSlideType =
               LangGraph Presentation
             </h1>
 
-            <p
+            {/* <p
               className="
                 text-sm
                 text-[#64748B]
               "
             >
               Stateful Multi-Agent AI Applications
-            </p>
+            </p> */}
 
           </div>
 
@@ -649,6 +657,9 @@ const currentSlide: GeneratedSlideType =
           {/* THEME */}
 
           <button
+            onClick={() =>
+              setShowThemePanel(!showThemePanel)
+            }
             className="
               text-sm
               text-[#0F172A]
@@ -666,12 +677,23 @@ const currentSlide: GeneratedSlideType =
 
           <button
             className="
-              text-sm
-              text-[#0F172A]
-              flex
-              items-center
-              gap-2
-              font-medium
+            px-4
+            py-2
+            rounded-2xl
+            bg-white/80
+            backdrop-blur-lg
+            border
+            border-white/40
+            shadow-sm
+            hover:shadow-lg
+            hover:scale-[1.02]
+            transition-all
+            duration-300
+            flex
+            items-center
+            gap-2
+            text-[#0F172A]
+            font-medium
             "
           >
             <Share2 size={16} />
@@ -685,18 +707,23 @@ const currentSlide: GeneratedSlideType =
               setShowAgent(!showAgent)
             }
             className="
-              px-5
-              py-2.5
-              rounded-2xl
-              border
-              border-[#D6E4FF]
-              bg-white
-              flex
-              items-center
-              gap-2
-              shadow-sm
-              hover:shadow-md
-              transition-all
+            px-4
+            py-2
+            rounded-2xl
+            bg-white/80
+            backdrop-blur-lg
+            border
+            border-white/40
+            shadow-sm
+            hover:shadow-lg
+            hover:scale-[1.02]
+            transition-all
+            duration-300
+            flex
+            items-center
+            gap-2
+            text-[#0F172A]
+            font-medium
             "
           >
 
@@ -736,16 +763,23 @@ const currentSlide: GeneratedSlideType =
               navigate("/preview")
             }
             className="
-              bg-[#2563EB]
-              hover:bg-[#1D4ED8]
-              text-white
-              px-6
-              py-2.5
-              rounded-2xl
-              font-medium
-              flex
-              items-center
-              gap-2
+            px-4
+            py-2
+            rounded-2xl
+            bg-white/80
+            backdrop-blur-lg
+            border
+            border-white/40
+            shadow-sm
+            hover:shadow-lg
+            hover:scale-[1.02]
+            transition-all
+            duration-300
+            flex
+            items-center
+            gap-2
+            text-[#0F172A]
+            font-medium
             "
           >
             <Play size={16} />
@@ -754,26 +788,28 @@ const currentSlide: GeneratedSlideType =
 
           <button
             className="
-              px-4
-              py-2
-              rounded-xl
-              border
-              border-[#D6E4FF]
-              bg-white
-              text-black
-              flex
-              items-center
-              gap-2
-              text-sm
-              font-semibold
-              shadow-md
-              hover:scale-[1.02]
-              transition-all
+            px-4
+            py-2
+            rounded-2xl
+            bg-white/80
+            backdrop-blur-lg
+            border
+            border-white/40
+            shadow-sm
+            hover:shadow-lg
+            hover:scale-[1.02]
+            transition-all
+            duration-300
+            flex
+            items-center
+            gap-2
+            text-[#0F172A]
+            font-medium
             "
           >
             <Crown size={16} />
             Upgrade
-</button>
+          </button>
 
         </div>
 
@@ -788,11 +824,374 @@ const currentSlide: GeneratedSlideType =
             flex-1
             relative
             overflow-hidden
-            bg-gradient-to-br
-            from-[#E0F2FE]
-            to-[#BFDBFE]
+            bg-[radial-gradient(circle_at_top_left,_#dbeafe,_#eff6ff,_#e0f2fe)]
           "
         >
+         
+         {/* THEME PANEL */}
+           {showThemePanel && (
+              <div
+                className="
+                  absolute
+                  top-0
+                  right-0
+                  h-full
+                  w-[420px]
+                  bg-white
+                  z-50
+                  border-l
+                  border-[#E2E8F0]
+                  shadow-2xl
+                  overflow-y-auto
+                "
+              >
+
+                {/* HEADER */}
+
+                <div
+                  className="
+                    flex
+                    items-center
+                    justify-between
+                    px-6
+                    py-5
+                    border-b
+                    border-[#E2E8F0]
+                  "
+                >
+
+                  <div>
+
+                    <h2
+                      className="
+                        text-[34px]
+                        font-bold
+                        text-[#0F172A]
+                      "
+                    >
+                      Theme
+                    </h2>
+
+                    <p
+                      className="
+                        text-sm
+                        text-[#64748B]
+                        mt-1
+                      "
+                    >
+                      Customize your presentation design
+                    </p>
+
+                  </div>
+
+                  <button
+                    onClick={() =>
+                      setShowThemePanel(false)
+                    }
+                    className="
+                      text-2xl
+                      text-[#64748B]
+                      hover:text-black
+                    "
+                  >
+                    ✕
+                  </button>
+
+                </div>
+
+                {/* NEW THEME */}
+
+                <div className="px-6 pt-5">
+
+                  <button
+                    className="
+                      px-5
+                      py-3
+                      rounded-2xl
+                      border
+                      border-[#D6E4FF]
+                      bg-[#F8FBFF]
+                      text-[#2563EB]
+                      font-semibold
+                      flex
+                      items-center
+                      gap-2
+                      hover:bg-[#EFF6FF]
+                    "
+                  >
+                    <Plus size={18} />
+                    New theme
+                  </button>
+
+                </div>
+
+                {/* CATEGORY */}
+
+                <div className="px-6 pt-6">
+
+                  <div className="flex flex-wrap gap-2">
+
+                    {[
+                      "Dark",
+                      "Light",
+                      "Professional",
+                      "Colorful",
+                      "Minimal",
+                    ].map((item) => (
+
+                      <button
+                        key={item}
+                        onClick={() =>
+                          setSelectedTheme(item)
+                        }
+                        className={`
+                          px-4
+                          py-2
+                          rounded-xl
+                          text-sm
+                          font-medium
+                          transition-all
+
+                          ${
+                            selectedTheme === item
+                              ? "bg-[#2563EB] text-white"
+                              : "bg-[#F1F5F9] text-[#0F172A]"
+                          }
+                        `}
+                      >
+                        {item}
+                      </button>
+
+                    ))}
+
+                  </div>
+
+                </div>
+
+                {/* THEMES */}
+
+                <div
+                  className="
+                    p-6
+                    grid
+                    grid-cols-2
+                    gap-5
+                  "
+                >
+
+                  {[
+                    {
+                      name: "Flamingo",
+                      bg: "from-orange-200 to-rose-400",
+                    },
+
+                    {
+                      name: "Canaveral",
+                      bg: "from-black to-[#1E293B]",
+                    },
+
+                    {
+                      name: "Oasis",
+                      bg: "from-[#DDE7DF] to-[#B7C9BE]",
+                    },
+
+                    {
+                      name: "Fluo",
+                      bg: "from-[#111827] to-black",
+                    },
+
+                    {
+                      name: "Elegant",
+                      bg: "from-[#F5F3FF] to-[#DDD6FE]",
+                    },
+
+                    {
+                      name: "Cyber",
+                      bg: "from-cyan-500 to-blue-700",
+                    },
+                  ].map((theme) => (
+
+                    <div
+                      key={theme.name}
+                      className="
+                        cursor-pointer
+                        group
+                      "
+                    >
+
+                      {/* CARD */}
+
+                      <div
+                        className={`
+                          h-[180px]
+                          rounded-3xl
+                          bg-gradient-to-br
+                          ${theme.bg}
+                          p-5
+                          flex
+                          items-center
+                          justify-center
+                          relative
+                          overflow-hidden
+                          shadow-md
+                          hover:scale-[1.03]
+                          transition-all
+                        `}
+                      >
+
+                        <div
+                          className="
+                            w-full
+                            h-full
+                            rounded-2xl
+                            bg-white/80
+                            backdrop-blur-xl
+                            flex
+                            flex-col
+                            items-center
+                            justify-center
+                          "
+                        >
+
+                          <h2
+                            className="
+                              text-4xl
+                              font-bold
+                              text-[#0F172A]
+                            "
+                          >
+                            Title
+                          </h2>
+
+                          <p
+                            className="
+                              mt-3
+                              text-lg
+                              text-[#475569]
+                            "
+                          >
+                            Body & link
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                      {/* FOOTER */}
+
+                      <div
+                        className="
+                          mt-3
+                          flex
+                          items-center
+                          justify-between
+                        "
+                      >
+
+                        <p
+                          className="
+                            text-[17px]
+                            font-semibold
+                            text-[#0F172A]
+                          "
+                        >
+                          {theme.name}
+                        </p>
+
+                        <button
+                          className="
+                            text-[#64748B]
+                          "
+                        >
+                          ⋯
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                  ))}
+
+                </div>
+
+                {/* CUSTOMIZE */}
+
+                <div className="px-6 pb-10">
+
+                  <div
+                    className="
+                      rounded-3xl
+                      border
+                      border-[#E2E8F0]
+                      p-5
+                      bg-[#F8FAFC]
+                    "
+                  >
+
+                    <h3
+                      className="
+                        text-lg
+                        font-bold
+                        text-[#0F172A]
+                      "
+                    >
+                      Customize Theme
+                    </h3>
+
+                    <div className="mt-4 space-y-4">
+
+                      <div>
+
+                        <p className="text-sm mb-2">
+                          Primary Color
+                        </p>
+
+                        <input
+                          type="color"
+                          className="
+                            w-full
+                            h-12
+                            rounded-xl
+                          "
+                        />
+
+                      </div>
+
+                      <div>
+
+                        <p className="text-sm mb-2">
+                          Font Family
+                        </p>
+
+                        <select
+                          className="
+                            w-full
+                            h-12
+                            rounded-xl
+                            border
+                            border-[#CBD5E1]
+                            px-4
+                          "
+                        >
+
+                          <option>Inter</option>
+                          <option>Poppins</option>
+                          <option>Roboto</option>
+                          <option>Montserrat</option>
+
+                        </select>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            )}
 
           {/* =========================================================
             AGENT PANEL
@@ -802,12 +1201,12 @@ const currentSlide: GeneratedSlideType =
             <div
               className="
                 absolute
-                top-[78px]
-                right-[135px]
-                z-50
-                w-[400px]
-                bg-white
-                rounded-[30px]
+                right-[170px]
+                z-10
+                w-[500px]
+                bg-white/90
+                backdrop-blur-2xl
+                rounded-[40px]
                 shadow-[0_18px_60px_rgba(15,23,42,0.18)]
                 border
                 border-[#E2E8F0]
@@ -820,7 +1219,7 @@ const currentSlide: GeneratedSlideType =
               <div
                 className="
                   px-5
-                  pt-4
+                  pt-6
                   pb-2
                   flex
                   items-center
@@ -845,14 +1244,26 @@ const currentSlide: GeneratedSlideType =
                 <button
                   onClick={() => setShowAgent(false)}
                   className="
-                    w-7
-                    h-7
-                    rounded-full
-                    hover:bg-[#F1F5F9]
-                    flex
-                    items-center
-                    justify-center
-                    text-[#94A3B8]
+                  px-4
+                  py-2
+                  rounded-2xl
+                  bg-white/80
+                  backdrop-blur-lg
+                  border border-blue-100
+                  bg-[#F8FBFF]
+                  focus-within:ring-2
+                  focus-within:ring-blue-200
+                  transition-all
+                  border-white/40
+                  shadow-sm
+                  hover:shadow-lg
+                  hover:scale-[1.02]
+                  duration-300
+                  flex
+                  items-center
+                  gap-2
+                  text-[#0F172A]
+                  font-medium
                   "
                 >
                   ✕
@@ -862,92 +1273,221 @@ const currentSlide: GeneratedSlideType =
 
               {/* INPUT AREA */}
 
-              <div className="px-4 pt-1">
-
-                <div
-                  className="
-                    border
-                    border-[#BFD3FF]
-                    rounded-[22px]
-                    bg-white
-                    px-4
-                    pt-3
-                    pb-2
-                    shadow-sm
-                  "
-                >
-
-                  {/* TEXTAREA */}
-
-                  <textarea
-                    placeholder="Ask me to edit, create, or style anything"
-                    rows={2}
-                    className="
-                      w-full
-                      resize-none
-                      bg-transparent
-                      outline-none
-                      text-[13px]
-                      leading-relaxed
-                      text-[#0F172A]
-                      placeholder:text-[#94A3B8]
-                    "
-                  />
-
-                  {/* ACTION ROW */}
+                <div className="px-4 pt-1">
 
                   <div
                     className="
-                      mt-2
-                      flex
-                      items-center
-                      justify-between
+                      border
+                      border-[#BFD3FF]
+                      rounded-[22px]
+                      bg-white/85
+                      backdrop-blur-xl
+                      px-4
+                      pt-3
+                      pb-3
+                      shadow-sm
                     "
                   >
 
-                    {/* PLUS BUTTON */}
+                    {/* FILE PREVIEW */}
 
-                    <button
+                    {uploadedFile && (
+
+                      <div
+                        className="
+                          mb-3
+                          flex
+                          items-center
+                          justify-between
+                          bg-[#F8FAFC]
+                          border
+                          border-[#E2E8F0]
+                          rounded-xl
+                          px-3
+                          py-2
+                        "
+                      >
+
+                        <div className="flex items-center gap-2">
+
+                          <div
+                            className="
+                              w-8
+                              h-8
+                              rounded-lg
+                              bg-[#DBEAFE]
+                              flex
+                              items-center
+                              justify-center
+                              text-[#2563EB]
+                              text-xs
+                              font-bold
+                            "
+                          >
+                            FILE
+                          </div>
+
+                          <div>
+
+                            <p
+                              className="
+                                text-[12px]
+                                font-medium
+                                text-[#0F172A]
+                                max-w-[180px]
+                                truncate
+                              "
+                            >
+                              {uploadedFile.name}
+                            </p>
+
+                            <p
+                              className="
+                                text-[10px]
+                                text-[#64748B]
+                              "
+                            >
+                              Uploaded
+                            </p>
+
+                          </div>
+
+                        </div>
+
+                        {/* REMOVE FILE */}
+
+                        <button
+                          onClick={() =>
+                            setUploadedFile(null)
+                          }
+                          className="
+                            w-6
+                            h-6
+                            rounded-full
+                            hover:bg-red-100
+                            flex
+                            items-center
+                            justify-center
+                            text-red-500
+                            text-xs
+                          "
+                        >
+                          ✕
+                        </button>
+
+                      </div>
+
+                    )}
+
+                    {/* TEXTAREA */}
+
+                    <textarea
+                      value={message}
+                      onChange={(e) =>
+                        setMessage(e.target.value)
+                      }
+                      placeholder="Ask me to edit, create, or style anything"
+                      rows={2}
                       className="
-                        w-8
-                        h-8
-                        rounded-full
-                        border
-                        border-[#CBD5E1]
+                        w-full
+                        resize-none
+                        bg-transparent
+                        outline-none
+                        text-[13px]
+                        leading-relaxed
+                        text-[#0F172A]
+                        placeholder:text-[#94A3B8]
+                      "
+                    />
+
+                    {/* ACTION ROW */}
+
+                    <div
+                      className="
+                        mt-2
                         flex
                         items-center
-                        justify-center
-                        text-[#475569]
-                        hover:bg-[#F8FAFC]
+                        justify-between
                       "
                     >
-                      <Plus size={15} />
-                    </button>
 
-                    {/* SEND BUTTON */}
+                      {/* FILE UPLOAD */}
 
-                    <button
-                      className="
-                        w-9
-                        h-9
-                        rounded-full
-                        bg-[#2563EB]
-                        hover:bg-[#1D4ED8]
-                        flex
-                        items-center
-                        justify-center
-                        text-white
-                        shadow-md
-                      "
-                    >
-                      <Send size={15} />
-                    </button>
+                      <label
+                        className="
+                          px-4
+                          py-2
+                          rounded-2xl
+                          bg-white/80
+                          backdrop-blur-lg
+                          border
+                          border-white/40
+                          shadow-sm
+                          hover:shadow-lg
+                          hover:scale-[1.02]
+                          transition-all
+                          duration-300
+                          flex
+                          items-center
+                          gap-2
+                          text-[#0F172A]
+                          font-medium
+                          cursor-pointer
+                        "
+                      >
+
+                        <Plus size={15} />
+
+                        <input
+                          type="file"
+                          hidden
+                          onChange={(e) => {
+
+                            if (
+                              e.target.files &&
+                              e.target.files[0]
+                            ) {
+                              setUploadedFile(
+                                e.target.files[0]
+                              );
+                            }
+
+                          }}
+                        />
+
+                      </label>
+
+                      {/* SEND BUTTON */}
+
+                      <button
+                        className="
+                          px-4
+                          py-2
+                          rounded-2xl
+                          bg-white/80
+                          backdrop-blur-lg
+                          border
+                          border-white/40
+                          shadow-sm
+                          hover:shadow-lg
+                          hover:scale-[1.02]
+                          transition-all
+                          duration-300
+                          flex
+                          items-center
+                          gap-2
+                          text-[#0F172A]
+                          font-medium
+                        "
+                      >
+                        <Send size={15} />
+                      </button>
+
+                    </div>
 
                   </div>
 
                 </div>
-
-              </div>
 
               {/* QUICK ACTIONS */}
 
@@ -978,17 +1518,24 @@ const currentSlide: GeneratedSlideType =
                     <button
                       key={item}
                       className="
-                        px-3
-                        py-1.5
-                        rounded-full
-                        bg-[#F8FAFC]
-                        hover:bg-[#EFF6FF]
-                        border
-                        border-[#E2E8F0]
-                        text-[11px]
-                        font-medium
-                        text-[#334155]
-                        transition-all
+                      px-4
+                      py-2
+                      rounded-2xl
+                      bg-white/80
+                      backdrop-blur-lg
+                      border
+                      border-white/40
+                      shadow-sm
+                      hover:shadow-lg
+                      hover:scale-[1.02]
+                      transition-all
+                      duration-300
+                      flex
+                      items-center
+                      gap-2
+                      text-[#0F172A]
+                      font-medium
+                      text-[11px]
                       "
                     >
                       {item}
@@ -1026,10 +1573,12 @@ const currentSlide: GeneratedSlideType =
               className="
                 w-[1180px]
                 h-[660px]
-                bg-white
+                bg-white/85 backdrop-blur-xl
                 rounded-[42px]
                 overflow-hidden
-                shadow-2xl
+                shadow-[0_30px_80px_rgba(15,23,42,0.18)]
+                border
+                border-white/40
                 transition-all
                 duration-300
               "
@@ -1127,7 +1676,7 @@ const currentSlide: GeneratedSlideType =
                       top-0
                       w-[320px]
                       h-full
-                      bg-white
+                      bg-white/85 backdrop-blur-xl
                       rounded-r-[180px]
                       opacity-95
                     "

@@ -333,10 +333,10 @@ const toggleSection = (sectionId) => {
     <div className="h-screen bg-[#F5F3FF] p-3 overflow-hidden">
 
       {/* MAIN CONTAINER */}
-      <div className="h-full bg-white rounded-3xl border border-[#E9D5FF] overflow-hidden flex shadow-xl">
+      <div className="h-full w-full bg-white rounded-3xl border border-[#E9D5FF] flex shadow-xl overflow-hidden">
 
         {/* LEFT PANEL */}
-        <div className="w-[18%] border-r border-[#E9D5FF] flex flex-col bg-white">
+        <div className="w-[18%] min-w-[280px] border-r border-[#E9D5FF] flex flex-col bg-white overflow-hidden">
 
           {/* HEADER */}
           <div className="p-4 flex items-center justify-center border-b border-[#E9D5FF]">
@@ -360,7 +360,7 @@ const toggleSection = (sectionId) => {
             {(provided) => (
 
               <div
-                className="flex-1 overflow-y-auto p-4 space-y-4"
+                className="flex-1 overflow-y-auto p-5 space-y-4"
                 {...provided.droppableProps}
                 ref={provided.innerRef}
               >
@@ -481,10 +481,10 @@ const toggleSection = (sectionId) => {
        
 
         {/* BUILDER PANEL */}
-        <div className="flex-1 flex flex-col overflow-y-auto bg-white">
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
 
           {/* TOP */}
-          <div className="p-5 border-b border-[#E9D5FF] overflow-y-auto">
+          <div className="flex-1 p-5 border-b border-[#E9D5FF] overflow-y-auto min-h-0">
 
             {/* SELECTED EMAIL */}
             <div className="border border-[#E9D5FF] rounded-2xl p-5 mb-5 bg-[#F5F3FF]">
