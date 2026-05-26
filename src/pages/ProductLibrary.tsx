@@ -1,5 +1,5 @@
 import MainLayout from "../components/layout/MainLayout.js";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type { LucideIcon } from "lucide-react";
 
 import {
@@ -43,11 +43,13 @@ export default function ProductLibrary() {
  const [activeTab, setActiveTab] =
   useState<TabType>("All");
 
-const [selectedProject, setSelectedProject] =
-  useState<string>("Smart Building System");
+  const [selectedProject, setSelectedProject] =
+    useState<string>("Smart Building System");
 
-const [searchTerm, setSearchTerm] =
-  useState<string>("");
+  const [searchTerm, setSearchTerm] =
+    useState<string>("");
+  const fileInputRef =
+  useRef<HTMLInputElement>(null);
 
   const tabs: Tab[] = [
     {
@@ -72,7 +74,7 @@ const [searchTerm, setSearchTerm] =
     },
   ];
 
-  const assets: Asset[] = [
+  const [assets, setAssets] = useState<Asset[]>([
     {
       id: 1,
       type: "Documents",
@@ -103,7 +105,7 @@ const [searchTerm, setSearchTerm] =
       title: "https://companysite.com",
       size: "Website URL",
     },
-  ];
+  ]);
 
   const filteredAssets = assets.filter(
     (asset) =>
@@ -113,6 +115,48 @@ const [searchTerm, setSearchTerm] =
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
   );
+  const getAcceptType = () => {
+  switch (activeTab) {
+    case "Documents":
+      return ".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx";
+
+    case "Images":
+      return "image/*";
+
+    case "Videos":
+      return "video/*";
+
+    default:
+      return "*";
+  }
+};
+const handleFileUpload = (
+  e: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = e.target.files?.[0];
+
+  if (!file) return;
+
+  const newAsset: Asset = {
+    id: Date.now(),
+    type:
+      activeTab as Exclude<
+        TabType,
+        "All"
+      >,
+    title: file.name,
+    size: `${(
+      file.size /
+      1024 /
+      1024
+    ).toFixed(2)} MB`,
+  };
+
+  setAssets((prev) => [
+    ...prev,
+    newAsset,
+  ]);
+};
 
   return (
     <MainLayout>
@@ -350,33 +394,60 @@ const [searchTerm, setSearchTerm] =
               {selectedProject}
             </p>
           </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            hidden
+            accept={getAcceptType()}
+            onChange={handleFileUpload}
+          />
+          {activeTab !== "All" && (
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.96 }}
+              onClick={() => {
+                if (activeTab === "URLs") {
+                  const url = prompt(
+                    "Enter Website URL"
+                  );
 
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.96 }}
-            className="
-              h-12
-              px-5
-              rounded-2xl
-              bg-[#242525]
-              hover:bg-[#3A3A3A]
-              text-white
-              font-medium
-              shadow-lg
-              transition-all
-              duration-300
-              flex
-              items-center
-              gap-2
-              w-fit
-            "
-          >
-            <Upload size={17} />
+                  if (!url) return;
 
-            {activeTab === "All"
-              ? "Upload Asset"
-              : `Upload ${activeTab}`}
-          </motion.button>
+                  setAssets((prev) => [
+                    ...prev,
+                    {
+                      id: Date.now(),
+                      type: "URLs",
+                      title: url,
+                      size: "Website URL",
+                    },
+                  ]);
+                } else {
+                  fileInputRef.current?.click();
+                }
+              }}
+              className="
+                h-12
+                px-5
+                rounded-2xl
+                bg-[#242525]
+                hover:bg-[#3A3A3A]
+                text-white
+                font-medium
+                shadow-lg
+                transition-all
+                duration-300
+                flex
+                items-center
+                gap-2
+                w-fit
+              "
+            >
+              <Upload size={17} />
+
+              {`Upload ${activeTab}`}
+            </motion.button>
+          )}
         </div>
 
         {/* GRID */}
