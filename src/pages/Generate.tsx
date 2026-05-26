@@ -171,8 +171,11 @@ export default function Generate() {
 
       <div
         className="
-          w-[320px]
-        bg-white/80 backdrop-blur-xl border-b border-white/40 shadow-sm
+          w-[240px]
+          min-w-[240px]
+          bg-[#F8FAFC]
+          border-r
+          border-[#CBD5E1]
           flex
           flex-col
           overflow-hidden
@@ -181,7 +184,7 @@ export default function Generate() {
 
         {/* HEADER */}
 
-        <div className="p-5 border-b border-[#E2E8F0]">
+        <div className="p-5 border-b border-[#CBD5E1]">
 
           <div className="flex items-center gap-3">
 
@@ -342,7 +345,7 @@ export default function Generate() {
                             <div
                               key={subsection.id}
                               className="
-                                bg-white/80 backdrop-blur-xl border-b border-white/40 shadow-sm
+                                bg-[#F8FAFC] border-b border-white/40 shadow-sm
                                 rounded-2xl
                                 p-2
                               "
@@ -423,8 +426,8 @@ export default function Generate() {
                                           ${
                                             activeSlide ===
                                             slideIndex
-                                              ? "border-[#2563EB] shadow-lg scale-[1.01]"
-                                              : "border-[#E2E8F0]"
+                                              ? "border-[#3B82F6] bg-[#EFF6FF] shadow-md"
+                                              : "border-[#CBD5E1] hover:bg-[#F1F5F9]"
                                           }
                                         `}
                                       >
@@ -840,7 +843,7 @@ export default function Generate() {
                   bg-white
                   z-50
                   border-l
-                  border-[#E2E8F0]
+                  border-[#CBD5E1]
                   shadow-2xl
                   overflow-y-auto
                 "
@@ -856,7 +859,7 @@ export default function Generate() {
                     px-6
                     py-5
                     border-b
-                    border-[#E2E8F0]
+                    border-[#CBD5E1]
                   "
                 >
 
@@ -1122,7 +1125,7 @@ export default function Generate() {
                     className="
                       rounded-3xl
                       border
-                      border-[#E2E8F0]
+                      border-[#CBD5E1]
                       p-5
                       bg-[#F8FAFC]
                     "
@@ -1209,7 +1212,7 @@ export default function Generate() {
                 rounded-[40px]
                 shadow-[0_18px_60px_rgba(15,23,42,0.18)]
                 border
-                border-[#E2E8F0]
+                border-[#CBD5E1]
                 overflow-hidden
               "
             >
@@ -1301,7 +1304,7 @@ export default function Generate() {
                           justify-between
                           bg-[#F8FAFC]
                           border
-                          border-[#E2E8F0]
+                          border-[#CBD5E1]
                           rounded-xl
                           px-3
                           py-2
@@ -1387,7 +1390,7 @@ export default function Generate() {
                         setMessage(e.target.value)
                       }
                       placeholder="Ask me to edit, create, or style anything"
-                      rows={2}
+                      rows={1}
                       className="
                         w-full
                         resize-none
@@ -1397,6 +1400,8 @@ export default function Generate() {
                         leading-relaxed
                         text-[#0F172A]
                         placeholder:text-[#94A3B8]
+                        min-h-[24px]
+                        max-h-[120px]
                       "
                     />
 
@@ -1568,17 +1573,17 @@ export default function Generate() {
 
             <div
               style={{
-                transform: `scale(${zoom})`,
+                width: "100%",
+                maxWidth: "1120px",
+                aspectRatio: "16 / 9",
               }}
               className="
-                w-[1180px]
-                h-[660px]
-                bg-white/85 backdrop-blur-xl
-                rounded-[42px]
+                bg-white
+                rounded-[18px]
                 overflow-hidden
-                shadow-[0_30px_80px_rgba(15,23,42,0.18)]
+                shadow-[0_24px_60px_rgba(15,23,42,0.14)]
                 border
-                border-white/40
+                border-[#E2E8F0]
                 transition-all
                 duration-300
               "
