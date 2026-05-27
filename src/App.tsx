@@ -17,6 +17,7 @@ import Uploads from "./pages/Uploads.js";
 import Drafts from "./pages/Drafts.js";
 import SentProposals from "./pages/SentProposals.js";
 import Settings from "./pages/Settings.js";
+import Generate from "./pages/Generate.js";
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           <Route path="/drafts" element={<Drafts />} />
           <Route path="/sent-proposals" element={<SentProposals />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/generate" element={<Generate />} />
         </Routes>
       </div>
     </BrowserRouter>
