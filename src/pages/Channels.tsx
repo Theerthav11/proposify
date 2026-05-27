@@ -1,7 +1,7 @@
 import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-
+import { Button } from "@/components/ui/button.js";
 import { motion } from "framer-motion";
 
 import {
@@ -144,9 +144,9 @@ export default function Channels() {
             <motion.div
               key={request.id}
               whileHover={{ y: -4 }}
-              onClick={() =>
-                navigate("/proposal-builder")
-              }
+              // onClick={() =>
+              //   navigate("/proposal-builder")
+              // }
               className="
                 bg-white/80
                 backdrop-blur-xl
@@ -235,35 +235,31 @@ export default function Channels() {
                 </div>
 
                 {/* BUTTON */}
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(
-                      "/proposal-builder"
-                    );
-                  }}
-                  className="
-                    h-11
-                    px-5
-                    rounded-2xl
-                    bg-[#242525]
-                    hover:bg-[#3A3A3A]
-                    text-white
-                    font-medium
-                    transition-all
-                    duration-300
-                    flex
-                    items-center
-                    gap-2
-                    w-fit
-                  "
+                <Button 
+                  onClick={() =>
+                    navigate("/proposal-builder")
+                  }
+                  // className="
+                  //   h-11
+                  //   px-5
+                  //   rounded-2xl
+                  //   bg-[#242525]
+                  //   hover:bg-[#3A3A3A]
+                  //   text-white
+                  //   font-medium
+                  //   transition-all
+                  //   duration-300
+                  //   flex
+                  //   items-center
+                  //   gap-2
+                  //   shadow-md
+                  //   hover:shadow-lg
+                  // "
                 >
                   Create Proposal
 
                   <ArrowRight size={16} />
-                </motion.button>
+                </Button>
               </div>
             </motion.div>
           ))}

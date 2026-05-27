@@ -1,7 +1,7 @@
 import MainLayout from "../components/layout/MainLayout.js";
 import { useState, useRef } from "react";
 import type { LucideIcon } from "lucide-react";
-
+import { Button } from "@/components/ui/button.js";
 import {
   Search,
   Plus,
@@ -333,7 +333,7 @@ const handleFileUpload = (
             const Icon = tab.icon;
 
             return (
-              <button
+              <Button
                 key={tab.name}
                 onClick={() =>
                   setActiveTab(tab.name)
@@ -367,7 +367,7 @@ const handleFileUpload = (
               >
                 <Icon size={17} />
                 {tab.name}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -402,9 +402,9 @@ const handleFileUpload = (
             onChange={handleFileUpload}
           />
           {activeTab !== "All" && (
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.96 }}
+            <Button
+              variant="default"
+              size="default"
               onClick={() => {
                 if (activeTab === "URLs") {
                   const url = prompt(
@@ -426,27 +426,10 @@ const handleFileUpload = (
                   fileInputRef.current?.click();
                 }
               }}
-              className="
-                h-12
-                px-5
-                rounded-2xl
-                bg-[#242525]
-                hover:bg-[#3A3A3A]
-                text-white
-                font-medium
-                shadow-lg
-                transition-all
-                duration-300
-                flex
-                items-center
-                gap-2
-                w-fit
-              "
             >
               <Upload size={17} />
-
               {`Upload ${activeTab}`}
-            </motion.button>
+            </Button>
           )}
         </div>
 
@@ -585,27 +568,27 @@ const handleFileUpload = (
                     Download,
                     Trash2,
                   ].map((Icon, index) => (
-                    <motion.button
-                      key={index}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.96 }}
-                      className="
-                        h-12
-                        rounded-2xl
-                        border
-                        border-[#D8D8D8]
-                        hover:bg-[#242525]
-                        hover:text-white
-                        text-[#4D4D4D]
-                        flex
-                        items-center
-                        justify-center
-                        transition-all
-                        duration-300
-                      "
+                    <Button variant = "outline"
+                      // key={index}
+                      // whileHover={{ scale: 1.05 }}
+                      // whileTap={{ scale: 0.96 }}
+                      // className="
+                      //   h-12
+                      //   rounded-2xl
+                      //   border
+                      //   border-[#D8D8D8]
+                      //   hover:bg-[#242525]
+                      //   hover:text-white
+                      //   text-[#4D4D4D]
+                      //   flex
+                      //   items-center
+                      //   justify-center
+                      //   transition-all
+                      //   duration-300
+                      // "
                     >
                       <Icon size={18} />
-                    </motion.button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -651,32 +634,13 @@ const handleFileUpload = (
               assets for your selected project.
             </p>
 
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.96 }}
-              className="
-                mt-6
-                h-12
-                px-6
-                rounded-2xl
-                bg-[#242525]
-                hover:bg-[#3A3A3A]
-                text-white
-                font-semibold
-                shadow-lg
-                transition-all
-                duration-300
-                flex
-                items-center
-                gap-2
-              "
-            >
+            <Button>
               <Plus size={18} />
 
               {activeTab === "All"
                 ? "Add Asset"
                 : `Add ${activeTab.slice(0, -1)}`}
-            </motion.button>
+            </Button>
           </div>
         )}
       </div>

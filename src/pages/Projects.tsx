@@ -2,6 +2,8 @@ import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FileText, Search } from "lucide-react";
+import { Button } from "@/components/ui/button.js";
+import { Plus } from "lucide-react";
 
 type FilterType =
   | "all"
@@ -180,23 +182,28 @@ export default function Projects() {
           </div>
 
           {/* Button */}
-          <button
-            onClick={() => navigate("/new-project")}
-            className="
-              flex
-              items-center
-              gap-2
-              px-5
-              py-3
-              rounded-2xl
-              bg-[#242525]
-              text-[#FDFCFD]
-              font-medium
-            "
-          >
-            <span className="text-xl">+</span>
-            New Project
-          </button>
+          <Button
+              onClick={() => navigate("/new-project")}
+              // className="
+              //   flex
+              //   items-center
+              //   gap-2
+              //   px-5
+              //   py-3
+              //   rounded-2xl
+              //   bg-gradient-to-r
+              //   from-[#242525] 
+              //   to-[#4D4D4D]
+              //   text-white
+              //   font-medium
+              //   shadow-lg
+              //   hover:scale-105
+              //   transition
+              // "
+            >
+              <Plus size={18} />
+              New Project
+            </Button>
 
         </div>
       </div>
@@ -204,36 +211,17 @@ export default function Projects() {
         {/* FILTERS */}
         <div className="flex gap-3 mb-8 flex-wrap">
           {filters.map((f) => (
-            <button
+            <Button
               key={f}
               onClick={() => setFilter(f)}
-              className={`
-                px-5
-                py-2.5
-                rounded-2xl
-                font-medium
-                transition-all
-                duration-300
-                shadow-sm
-                ${
-                  filter === f
-                    ? `
-                      bg-[#242525]
-                      text-[#FDFCFD]
-                      shadow-md
-                    `
-                    : `
-                      bg-[#FDFCFD]
-                      text-[#5F5F5F]
-                      border
-                      border-[#D8D8D8]
-                      hover:bg-[#EDEDED]
-                    `
-                }
-              `}
+              variant={
+                filter === f
+                  ? "default"
+                  : "outline"
+              }
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -363,27 +351,27 @@ export default function Projects() {
                   {project.type}
                 </span> */}
 
-                <button
+                <Button size="sm"
                   onClick={() =>
                     handleProjectNavigation(project)
                   }
-                  className="
-                    px-4
-                    py-2
-                    bg-[#242525]
-                    text-[#FDFCFD]
-                    text-[12px]
-                    rounded-xl
-                    font-semibold
-                    tracking-wide
-                    hover:bg-[#3A3A3A]
-                    hover:scale-105
-                    transition-all
-                    duration-300
-                  "
+                  // className="
+                  //   px-4
+                  //   py-2
+                  //   bg-[#242525]
+                  //   text-[#FDFCFD]
+                  //   text-[12px]
+                  //   rounded-xl
+                  //   font-semibold
+                  //   tracking-wide
+                  //   hover:bg-[#3A3A3A]
+                  //   hover:scale-105
+                  //   transition-all
+                  //   duration-300
+                  // "
                 >
                   View 
-                </button>
+                </Button>
               </div>
             </div>
           ))}

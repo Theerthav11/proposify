@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button.js";
 
 import {
   FolderKanban,
@@ -217,28 +218,28 @@ const filteredRequests = recentRequests.filter(
             </div>
 
             {/* New Project */}
-            <button
+            <Button
               onClick={() => navigate("/new-project")}
-              className="
-                flex
-                items-center
-                gap-2
-                px-5
-                py-3
-                rounded-2xl
-                bg-gradient-to-r
-                from-[#242525] 
-                to-[#4D4D4D]
-                text-white
-                font-medium
-                shadow-lg
-                hover:scale-105
-                transition
-              "
+              // className="
+              //   flex
+              //   items-center
+              //   gap-2
+              //   px-5
+              //   py-3
+              //   rounded-2xl
+              //   bg-gradient-to-r
+              //   from-[#242525] 
+              //   to-[#4D4D4D]
+              //   text-white
+              //   font-medium
+              //   shadow-lg
+              //   hover:scale-105
+              //   transition
+              // "
             >
               <Plus size={18} />
               New Project
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -327,16 +328,9 @@ const filteredRequests = recentRequests.filter(
                     Recent Projects
                   </h2>
 
-                  <button className="text-[#242525]
-                    font-medium
-                    px-4
-                    py-2
-                    rounded-xl
-                    hover:bg-[#EDEDED]
-                    transition-all
-                    duration-300">
+                  <Button size="sm">
                     View all
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="space-y-4">
@@ -425,17 +419,9 @@ const filteredRequests = recentRequests.filter(
                     Recent Requests
                   </h2>
 
-                  <button className="text-[#242525]
-                    font-medium
-                    px-4
-                    py-2
-                    rounded-xl
-                    hover:bg-[#EDEDED]
-                    transition-all
-                    duration-300
-                  ">
+                  <Button size="sm">
                     View all
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="space-y-4">
@@ -519,18 +505,9 @@ const filteredRequests = recentRequests.filter(
                   Recent Proposals
                 </h2>
 
-                <button className="
-                  text-[#242525]
-                  font-medium
-                  px-4
-                  py-2
-                  rounded-xl
-                  hover:bg-[#EDEDED]
-                  transition-all
-                  duration-300
-                ">
-                  View all
-                </button>
+                <Button size="sm">
+                    View all
+                  </Button>
               </div>
 
               <div className="overflow-hidden rounded-3xl border border-[#C6C6C6]">

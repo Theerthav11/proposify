@@ -1,7 +1,7 @@
 import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-
+import { Button } from "@/components/ui/button.js";
 import { motion } from "framer-motion";
 
 import {
@@ -228,71 +228,69 @@ export default function DraftProposals() {
               <div className="flex items-center gap-4 mt-7">
                 
                 {/* EDIT */}
-                <motion.button
-                  whileHover={{
-                    scale: 1.03,
-                  }}
-                  whileTap={{
-                    scale: 0.97,
-                  }}
+                <Button
+                  // whileHover={{
+                  //   scale: 1.03,
+                  // }}
+                  // whileTap={{
+                  //   scale: 0.97,
+                  // }}
                   onClick={(e) => {
                     e.stopPropagation();
-
                     navigate(
                       "/proposal-builder"
                     );
                   }}
-                  className="
-                    flex-1
-                    h-11
-                    rounded-2xl
-                    bg-[#242525]
-                    hover:bg-[#3A3A3A]
-                    text-white
-                    font-medium
-                    transition-all
-                    duration-300
-                    flex
-                    items-center
-                    justify-center
-                    gap-2
-                  "
+                   className="
+                     flex-1
+                  //   h-11
+                  //   rounded-2xl
+                  //   bg-[#242525]
+                  //   hover:bg-[#3A3A3A]
+                  //   text-white
+                  //   font-medium
+                  //   transition-all
+                  //   duration-300
+                  //   flex
+                  //   items-center
+                  //   justify-center
+                  //   gap-2
+                   "
                 >
                   <Pencil size={16} />
                   Edit
-                </motion.button>
+                </Button>
 
                 {/* PREVIEW */}
-                <motion.button
-                  whileHover={{
-                    scale: 1.03,
-                  }}
-                  whileTap={{
-                    scale: 0.97,
-                  }}
+                <Button variant="outline" size="sm"
+                  // whileHover={{
+                  //   scale: 1.03,
+                  // }}
+                  // whileTap={{
+                  //   scale: 0.97,
+                  // }}
                   onClick={(e) => {
                     e.stopPropagation();
-
                     navigate("/preview");
                   }}
-                  className="
-                    w-11
-                    h-11
-                    rounded-2xl
-                    border
-                    border-[#D8D8D8]
-                    bg-[#FDFCFD]
-                    hover:bg-[#EDEDED]
-                    text-[#242525]
-                    flex
-                    items-center
-                    justify-center
-                    transition-all
-                    duration-300
-                  "
+                  // className="
+                  //   w-11
+                  //   h-11
+                  //   rounded-2xl
+                  //   border
+                  //   border-[#D8D8D8]
+                  //   bg-[#FDFCFD]
+                  //   hover:bg-[#EDEDED]
+                  //   text-[#242525]
+                  //   flex
+                  //   items-center
+                  //   justify-center
+                  //   transition-all
+                  //   duration-300
+                  // "
                 >
                   <Eye size={18} />
-                </motion.button>
+                </Button>
               </div>
             </motion.div>
           ))}
@@ -336,32 +334,32 @@ export default function DraftProposals() {
             </p>
 
             {/* BUTTON */}
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+            <Button
+              // whileHover={{ scale: 1.03 }}
+              // whileTap={{ scale: 0.97 }}
               onClick={() =>
                 navigate("/proposal-builder")
               }
-              className="
-                mt-6
-                h-12
-                px-6
-                rounded-2xl
-                bg-[#242525]
-                hover:bg-[#3A3A3A]
-                text-white
-                font-medium
-                shadow-lg
-                transition-all
-                duration-300
-                flex
-                items-center
-                gap-2
-              "
+              // className="
+              //   mt-6
+              //   h-12
+              //   px-6
+              //   rounded-2xl
+              //   bg-[#242525]
+              //   hover:bg-[#3A3A3A]
+              //   text-white
+              //   font-medium
+              //   shadow-lg
+              //   transition-all
+              //   duration-300
+              //   flex
+              //   items-center
+              //   gap-2
+              // "
             >
               <Plus size={18} />
               Create Proposal
-            </motion.button>
+            </Button>
           </div>
         )}
       </div>
