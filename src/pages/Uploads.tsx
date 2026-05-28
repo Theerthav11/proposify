@@ -2,7 +2,7 @@ import MainLayout from "../components/layout/MainLayout.js";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ChangeEvent } from "react";
-
+import { Button } from "@/components/ui/button.js";
 import { motion } from "framer-motion";
 
 import {
@@ -175,27 +175,27 @@ We need a proposal for Smart Building Management System including IoT integratio
             {/* BUTTON */}
             <div className="flex justify-end mt-5">
               
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
+              <Button
+                // whileHover={{ scale: 1.03 }}
+                // whileTap={{ scale: 0.97 }}
                 onClick={() =>
                   navigate("/proposal-builder")
                 }
-                className="
-                  h-12
-                  px-6
-                  rounded-2xl
-                  bg-[#242525]
-                  hover:bg-[#3A3A3A]
-                  text-white
-                  font-medium
-                  shadow-lg
-                  transition-all
-                  duration-300
-                "
+                // className="
+                //   h-12
+                //   px-6
+                //   rounded-2xl
+                //   bg-[#242525]
+                //   hover:bg-[#3A3A3A]
+                //   text-white
+                //   font-medium
+                //   shadow-lg
+                //   transition-all
+                //   duration-300
+                // "
               >
                 Generate Proposal
-              </motion.button>
+              </Button>
             </div>
           </motion.div>
 
@@ -258,32 +258,32 @@ We need a proposal for Smart Building Management System including IoT integratio
             />
 
             {/* BUTTON */}
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+            <Button variant = "choose"
+              // whileHover={{ scale: 1.03 }}
+              // whileTap={{ scale: 0.97 }}
               onClick={() =>
                 fileInputRef.current?.click()
               }
-              className="
-                mt-8
-                h-12
-                px-6
-                rounded-2xl
-                bg-[#242525]
-                hover:bg-[#3A3A3A]
-                text-white
-                font-medium
-                shadow-lg
-                transition-all
-                duration-300
-                inline-flex
-                items-center
-                gap-2
-              "
+              // className="
+              //   mt-8
+              //   h-12
+              //   px-6
+              //   rounded-2xl
+              //   bg-[#242525]
+              //   hover:bg-[#3A3A3A]
+              //   text-white
+              //   font-medium
+              //   shadow-lg
+              //   transition-all
+              //   duration-300
+              //   inline-flex
+              //   items-center
+              //   gap-2
+              // "
             >
               <Plus size={18} />
               Choose Files
-            </motion.button>
+            </Button>
           </motion.div>
         </div>
 
@@ -361,34 +361,34 @@ We need a proposal for Smart Building Management System including IoT integratio
                   </div>
 
                   {/* REMOVE BUTTON */}
-                  <motion.button
-                    whileHover={{
-                      scale: 1.05,
-                    }}
-                    whileTap={{
-                      scale: 0.95,
-                    }}
+                  <Button variant = "outline" size = "sm"
+                    // whileHover={{
+                    //   scale: 1.05,
+                    // }}
+                    // whileTap={{
+                    //   scale: 0.95,
+                    // }}
                     onClick={() =>
                       deleteFile(file.id)
                     }
-                    className="
-                      w-11
-                      h-11
-                      rounded-2xl
-                      border
-                      border-[#D8D8D8]
-                      hover:bg-[#242525]
-                      hover:text-white
-                      text-[#4D4D4D]
-                      flex
-                      items-center
-                      justify-center
-                      transition-all
-                      duration-300
-                    "
+                    // className="
+                    //   w-11
+                    //   h-11
+                    //   rounded-2xl
+                    //   border
+                    //   border-[#D8D8D8]
+                    //   hover:bg-[#242525]
+                    //   hover:text-white
+                    //   text-[#4D4D4D]
+                    //   flex
+                    //   items-center
+                    //   justify-center
+                    //   transition-all
+                    //   duration-300
+                    // "
                   >
                     <X size={18} />
-                  </motion.button>
+                  </Button>
                 </div>
               </motion.div>
             ))}

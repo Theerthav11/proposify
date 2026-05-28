@@ -10,12 +10,14 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-[#242525] text-white hover:bg-[#3A3A3A] rounded-2xl inline-flex items-center justify-center gap-2",
-        secondary: "bg-[#F4976C] text-white hover:bg-opacity-90 rounded-2xl",
+        //secondary: "bg-[#F4976C] text-white hover:bg-opacity-90 rounded-2xl",
         outline: "bg-white text-[#242525] border border-[#D8D8D8] hover:bg-[#EDEDED] rounded-2xl",
         ghost: "text-[#242525] hover:bg-[#EDEDED] rounded-xl",
         gradient: "bg-gradient-to-r from-[#242525] to-[#4D4D4D] text-white hover:scale-105 rounded-2xl shadow-lg",
         link: "text-[#242525] hover:underline",
-        destructive: "bg-red-500 text-white hover:bg-red-600 rounded-2xl",
+        //destructive: "bg-red-500 text-white hover:bg-red-600 rounded-2xl",
+        action: " mt-6 w-full bg-[#242525] text-white hover:bg-[#3A3A3A] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 gap-2",
+        choose: "mt-8 bg-[#242525] text-white hover:bg-[#3A3A3A] rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 gap-2",
       },
       size: {
         default: "h-12 px-5 py-3 text-sm font-medium",

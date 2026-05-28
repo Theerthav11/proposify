@@ -1,7 +1,7 @@
 import MainLayout from "../components/layout/MainLayout.js";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { Button } from "@/components/ui/button.js";
 import { motion } from "framer-motion";
 
 import {
@@ -263,30 +263,30 @@ export default function SentProposals() {
               </select>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="
-                mt-6
-                w-full
-                h-12
-                rounded-2xl
-                bg-[#242525]
-                hover:bg-[#3A3A3A]
-                text-white
-                font-medium
-                shadow-lg
-                transition-all
-                duration-300
-                flex
-                items-center
-                justify-center
-                gap-2
-              "
+            <Button variant = "action"
+              // whileHover={{ scale: 1.03 }}
+              // whileTap={{ scale: 0.97 }}
+              // className="
+              //   mt-6
+              //   w-full
+              //   h-12
+              //   rounded-2xl
+              //   bg-[#242525]
+              //   hover:bg-[#3A3A3A]
+              //   text-white
+              //   font-medium
+              //   shadow-lg
+              //   //transition-all
+              //   duration-300
+              //   flex
+              //   items-center
+              //   justify-center
+              //   gap-2
+              // "
             >
               <Send size={18} />
               Send Proposal
-            </motion.button>
+            </Button>
           </motion.div>
 
           {/* SEND VIA CHANNELS */}
@@ -403,67 +403,49 @@ export default function SentProposals() {
               </select>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="
-                mt-6
-                w-full
-                h-12
-                rounded-2xl
-                bg-[#242525]
-                hover:bg-[#3A3A3A]
-                text-white
-                font-medium
-                shadow-lg
-                transition-all
-                duration-300
-                flex
-                items-center
-                justify-center
-                gap-2
-              "
+            <Button variant = "action"
+            //   whileHover={{ scale: 1.03 }}
+            //   whileTap={{ scale: 0.97 }}
+            //   className="
+            //     mt-6
+            //     w-full
+            //     h-12
+            //     rounded-2xl
+            //     bg-[#242525]
+            //     hover:bg-[#3A3A3A]
+            //     text-white
+            //     font-medium
+            //     shadow-lg
+            //     transition-all
+            //     duration-300
+            //     flex
+            //     items-center
+            //     justify-center
+            //     gap-2
+            //   "
             >
               <Send size={18} />
               Share Proposal
-            </motion.button>
+            </Button>
           </motion.div>
         </div>
 
         {/* FILTERS */}
         <div className="flex gap-4 mb-8">
           {tabs.map((tab) => (
-            <button
+            <Button
               key={tab}
+              variant={
+                activeTab === tab
+                  ? "default"
+                  : "outline"
+              }
               onClick={() =>
                 setActiveTab(tab)
               }
-              className={`
-                h-11
-                px-5
-                rounded-2xl
-                text-sm
-                font-medium
-                transition-all
-                duration-300
-                ${
-                  activeTab === tab
-                    ? `
-                      bg-[#242525]
-                      text-white
-                      shadow-lg
-                    `
-                    : `
-                      bg-[#EDEDED]
-                      text-[#4D4D4D]
-                      hover:bg-[#242525]
-                      hover:text-white
-                    `
-                }
-              `}
             >
               {tab}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -602,31 +584,10 @@ export default function SentProposals() {
                   </div>
 
                   {/* BUTTON */}
-                  <motion.button
-                    whileHover={{
-                      scale: 1.03,
-                    }}
-                    whileTap={{
-                      scale: 0.97,
-                    }}
+                  <Button
                     onClick={() =>
                       navigate("/preview")
                     }
-                    className="
-                      h-11
-                      px-5
-                      rounded-2xl
-                      bg-[#242525]
-                      hover:bg-[#3A3A3A]
-                      text-white
-                      font-medium
-                      transition-all
-                      duration-300
-                      flex
-                      items-center
-                      gap-2
-                      w-fit
-                    "
                   >
                     <Eye size={17} />
                     View Proposal
@@ -634,7 +595,7 @@ export default function SentProposals() {
                     <ArrowRight
                       size={16}
                     />
-                  </motion.button>
+                  </Button>
                 </div>
               </motion.div>
             )

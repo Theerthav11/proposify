@@ -328,7 +328,9 @@ const filteredRequests = recentRequests.filter(
                     Recent Projects
                   </h2>
 
-                  <Button size="sm">
+                  <Button size="sm"
+                   onClick={() => navigate("/projects")}
+                  >
                     View all
                   </Button>
                 </div>
@@ -419,7 +421,8 @@ const filteredRequests = recentRequests.filter(
                     Recent Requests
                   </h2>
 
-                  <Button size="sm">
+                  <Button size="sm"
+                    onClick={() => navigate("/requests")}>
                     View all
                   </Button>
                 </div>
@@ -505,7 +508,8 @@ const filteredRequests = recentRequests.filter(
                   Recent Proposals
                 </h2>
 
-                <Button size="sm">
+                <Button size="sm"
+                  onClick={() => navigate("/proposals")}>
                     View all
                   </Button>
               </div>

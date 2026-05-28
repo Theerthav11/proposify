@@ -1,5 +1,6 @@
 import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button.js";
 
 import {
   FileSearch,
@@ -257,52 +258,52 @@ export default function Proposals() {
                     <div className="flex items-center gap-3">
                       
                       {/* Edit */}
-                      <button
+                      <Button variant="outline" size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate("/proposal-builder");
                         }}
-                        className="
-                          p-2.5
-                          rounded-xl
-                          border
-                          border-[#C6C6C6]
-                          bg-[#FDFCFD]
-                          hover:bg-[#EDEDED]
-                          transition-all
-                          duration-300
-                        "
+                        // className="
+                        //   p-2.5
+                        //   rounded-xl
+                        //   border
+                        //   border-[#C6C6C6]
+                        //   bg-[#FDFCFD]
+                        //   hover:bg-[#EDEDED]
+                        //   transition-all
+                        //   duration-300
+                        // "
                         title="Edit"
                       >
                         <Pencil
                           size={16}
                           className="text-[#242525]"
                         />
-                      </button>
+                      </Button>
 
                       {/* Preview */}
-                      <button
+                      <Button variant = "outline" size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate("/preview");
                         }}
-                        className="
-                          p-2.5
-                          rounded-xl
-                          border
-                          border-[#C6C6C6]
-                          bg-[#FDFCFD]
-                          hover:bg-[#EDEDED]
-                          transition-all
-                          duration-300
-                        "
+                        // className="
+                        //   p-2.5
+                        //   rounded-xl
+                        //   border
+                        //   border-[#C6C6C6]
+                        //   bg-[#FDFCFD]
+                        //   hover:bg-[#EDEDED]
+                        //   transition-all
+                        //   duration-300
+                        // "
                         title="Preview"
                       >
                         <Eye
                           size={16}
                           className="text-[#242525]"
                         />
-                      </button>
+                      </Button>
 
                     </div>
                   </td>

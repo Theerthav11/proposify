@@ -2,14 +2,13 @@ import MainLayout from "../components/layout/MainLayout.js";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Button } from "@/components/ui/button.js";
 
 import {
   Users,
   Share2,
-  //Eye,
   Pencil,
   Search,
-  Filter,
   CalendarDays,
   FolderOpen,
   Trash2,
@@ -145,25 +144,6 @@ export default function SharedWithMe() {
                   "
                 />
               </div>
-
-              {/* <button
-                className="
-                  flex
-                  items-center
-                  gap-2
-                  px-5
-                  py-3
-                  rounded-2xl
-                  bg-[#242525]
-                  text-white
-                  shadow-md
-                  hover:opacity-90
-                  transition
-                "
-              >
-                <Filter size={17} />
-                Filters
-              </button> */}
             </div>
           </div>
         </motion.div>
@@ -309,46 +289,6 @@ export default function SharedWithMe() {
           </motion.div>
         </motion.div>
 
-        {/* Filters */}
-        {/* <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.15 }}
-          className="
-            flex
-            flex-wrap
-            items-center
-            gap-3
-            mb-6
-          "
-        >
-          {[
-            "All Owners",
-            "Last 30 Days",
-            "Access Level",
-            "Projects",
-            "Proposals",
-          ].map((filter) => (
-            <button
-              key={filter}
-              className="
-                px-4
-                py-2
-                rounded-xl
-                border
-                border-[#C6C6C6]
-                bg-white
-                text-sm
-                text-[#242525]
-                hover:bg-[#EFEFEF]
-                transition
-              "
-            >
-              {filter}
-            </button>
-          ))}
-        </motion.div> */}
-
         {/* Shared Items Table */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -485,49 +425,35 @@ export default function SharedWithMe() {
 
                 {/* Actions */}
                 <div className="flex items-center gap-3">
-                  
-                  {/* <button
-                    className="
-                      p-2.5
-                      rounded-xl
-                      border
-                      border-[#C6C6C6]
-                      bg-white
-                      hover:bg-[#EFEFEF]
-                      transition
-                    "
-                  >
-                    <Eye size={16} className="text-[#242525]" />
-                  </button> */}
 
-                  <button
+                  <Button variant = "outline" size = "sm"
                     onClick={() => navigate("/proposal-builder")}
-                    className="
-                      p-2.5
-                      rounded-xl
-                      border
-                      border-[#C6C6C6]
-                      bg-white
-                      hover:bg-[#EFEFEF]
-                      transition
-                    "
+                    // className="
+                    //   p-2.5
+                    //   rounded-xl
+                    //   border
+                    //   border-[#C6C6C6]
+                    //   bg-white
+                    //   hover:bg-[#EFEFEF]
+                    //   transition
+                    // "
                   >
-                    <Pencil size={16} className="text-[#242525]" />
-                  </button>
+                    <Pencil size={16} />
+                  </Button>
 
-                  <button
-                    className="
-                      p-2.5
-                      rounded-xl
-                      border
-                      border-[#C6C6C6]
-                      bg-white
-                      hover:bg-red-50
-                      transition
-                    "
+                  <Button variant = "outline" size = "sm"
+                    // className="
+                    //   p-2.5
+                    //   rounded-xl
+                    //   border
+                    //   border-[#C6C6C6]
+                    //   bg-white
+                    //   hover:bg-red-50
+                    //   transition
+                    // "
                   >
-                    <Trash2 size={16} className="text-red-500" />
-                  </button>
+                    <Trash2 size={16}  />
+                  </Button>
                 </div>
 
               </div>

@@ -1,7 +1,8 @@
 import MainLayout from "../components/layout/MainLayout.js";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Mail, Search } from "lucide-react";
+import { Mail, Search, ArrowRight, } from "lucide-react";
+import { Button } from "@/components/ui/button.js";
 
 interface RequestItem {
   id: number;
@@ -264,22 +265,16 @@ export default function Requests() {
                         {request.type}
                       </span>
 
-                      <button
+                      <Button
                         onClick={() =>
                           navigate(
                             "/proposal-builder"
                           )
                         }
-                        className="
-                          text-[#242525]
-                          text-sm
-                          font-semibold
-                          hover:translate-x-1
-                          transition-transform
-                        "
                       >
-                        Create Proposal →
-                      </button>
+                        Create Proposal
+                        <ArrowRight size={16} /> 
+                      </Button>
                     </div>
                   </div>
                 </div>

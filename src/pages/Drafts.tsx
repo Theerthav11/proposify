@@ -228,13 +228,7 @@ export default function DraftProposals() {
               <div className="flex items-center gap-4 mt-7">
                 
                 {/* EDIT */}
-                <Button
-                  // whileHover={{
-                  //   scale: 1.03,
-                  // }}
-                  // whileTap={{
-                  //   scale: 0.97,
-                  // }}
+                <Button 
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(
