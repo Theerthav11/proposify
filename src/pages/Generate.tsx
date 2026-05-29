@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, Palette, Crown,Plus,Play,Share2,ZoomIn,ZoomOut,Wand2,Check,Languages,AlignLeft,Minus,MessageSquare,Send,ChevronDown,} from "lucide-react";
 
@@ -35,8 +35,9 @@ export default function Generate() {
 
   const proposalData: SectionType[] =
     JSON.parse(
-      localStorage.getItem("proposalSections") || "[]"
+      localStorage.getItem("generatedProposal") || "[]"
     );
+
 
   const [slides] =
     useState<SectionType[]>(proposalData);
@@ -52,13 +53,54 @@ export default function Generate() {
 
   const [zoom, setZoom] = useState(1);
   const [showAgent, setShowAgent] =
-  useState(true);
+  useState(false);
 
   const [showThemePanel, setShowThemePanel] =
   useState(false);
 
   const [selectedTheme, setSelectedTheme] =
     useState("Professional"); 
+
+
+    // Theme definitions (like Gamma)
+    const themes = {
+      Professional: {
+        name: "Professional",
+        gradient: "from-slate-600 to-slate-800",
+        bg: "from-slate-100 to-slate-200",
+        description: "Clean and professional",
+      },
+      Ocean: {
+        name: "Ocean",
+        gradient: "from-blue-500 to-cyan-400",
+        bg: "from-blue-50 to-cyan-50",
+        description: "Fresh and modern",
+      },
+      Sunset: {
+        name: "Sunset",
+        gradient: "from-orange-500 to-pink-500",
+        bg: "from-orange-50 to-pink-50",
+        description: "Warm and energetic",
+      },
+      Forest: {
+        name: "Forest",
+        gradient: "from-emerald-500 to-green-600",
+        bg: "from-emerald-50 to-green-50",
+        description: "Natural and calming",
+      },
+      Purple: {
+        name: "Purple",
+        gradient: "from-violet-500 to-purple-600",
+        bg: "from-violet-50 to-purple-50",
+        description: "Creative and bold",
+      },
+      Dark: {
+        name: "Dark",
+        gradient: "from-gray-800 to-black",
+        bg: "from-gray-100 to-gray-200",
+        description: "Sleek and modern",
+      },
+    };
 
   /* =========================
      SECTION COLORS
@@ -70,15 +112,142 @@ export default function Generate() {
     "from-emerald-500 to-green-400",
     "from-orange-500 to-amber-400",
     "from-pink-500 to-rose-400",
+    "from-indigo-500 to-blue-400",
+    "from-red-500 to-pink-400",
+    "from-yellow-500 to-orange-400",
   ];
+  
+    function splitSlideContent(
+      content: string
+    ): string[] {
 
+      if (!content.trim()) {
+        return [""];
+      }
+
+      const MAX_SLIDE_LENGTH = 380;
+
+      const slides: string[] = [];
+
+      /*
+        STEP 1:
+        Split by paragraphs
+      */
+
+      const paragraphs = content
+        .split(/\n\s*\n/)
+        .map((p) => p.trim())
+        .filter(Boolean);
+
+      let currentSlide = "";
+
+      paragraphs.forEach((paragraph) => {
+
+        /*
+          STEP 2:
+          Detect headings
+        */
+
+        const isHeading =
+          paragraph.length < 80 &&
+          !paragraph.includes(".") &&
+          !paragraph.startsWith("•") &&
+          !paragraph.startsWith("-");
+
+        /*
+          STEP 3:
+          If paragraph too large,
+          split by sentences
+        */
+
+        if (paragraph.length > MAX_SLIDE_LENGTH) {
+
+          const sentences =
+            paragraph.match(/[^.!?]+[.!?]+/g) || [
+              paragraph,
+            ];
+
+          sentences.forEach((sentence) => {
+
+            if (
+              (
+                currentSlide +
+                " " +
+                sentence
+              ).length >
+              MAX_SLIDE_LENGTH
+            ) {
+
+              if (currentSlide.trim()) {
+                slides.push(
+                  currentSlide.trim()
+                );
+              }
+
+              currentSlide = sentence;
+
+            } else {
+
+              currentSlide +=
+                (currentSlide ? " " : "") +
+                sentence;
+            }
+
+          });
+
+        } else {
+
+          /*
+            STEP 4:
+            Normal paragraph handling
+          */
+
+          if (
+            (
+              currentSlide +
+              "\n\n" +
+              paragraph
+            ).length >
+              MAX_SLIDE_LENGTH ||
+            isHeading
+          ) {
+
+            if (currentSlide.trim()) {
+              slides.push(
+                currentSlide.trim()
+              );
+            }
+
+            currentSlide = paragraph;
+
+          } else {
+
+            currentSlide +=
+              (currentSlide ? "\n\n" : "") +
+              paragraph;
+          }
+        }
+
+      });
+
+      /*
+        STEP 5:
+        Push remaining
+      */
+
+      if (currentSlide.trim()) {
+        slides.push(currentSlide.trim());
+      }
+
+      return slides;
+    }
   /* =========================
      GENERATE SLIDES
   ========================= */
 
   const generatedSlides = useMemo<GeneratedSlideType[]>(() => {
 
-    const slidesData: GeneratedSlideType[] = [];
+  const slidesData: GeneratedSlideType[] = [];
 
     slides.forEach(
       (
@@ -91,6 +260,7 @@ export default function Generate() {
             sectionIndex %
             sectionColors.length
           ];
+
 
         (section.subsections || []).forEach(
           (
@@ -105,9 +275,7 @@ export default function Generate() {
               )?.content || "";
 
             const splitContent =
-              content.match(
-                /(.|[\r\n]){1,450}/g
-              ) || [];
+              splitSlideContent(content);
 
             splitContent.forEach(
               (
@@ -120,9 +288,9 @@ export default function Generate() {
                   id: `${subsection.id}-${splitIndex}`,
 
                   title:
-                    splitContent.length > 1
-                      ? `${subsection.name} (Part ${splitIndex + 1})`
-                      : subsection.name || "Untitled",
+                  splitContent.length > 1
+                    ? `${subsection.name} (${splitIndex + 1}/${splitContent.length})`
+                    : subsection.name,
 
                   content: part || "",
 
@@ -133,7 +301,8 @@ export default function Generate() {
                     subsection.name || "Subsection",
 
                   sectionColor:
-                    sectionColor || "from-blue-500 to-cyan-400",
+                    sectionColor ||
+                    "from-blue-500 to-cyan-400",
 
                 });
 
@@ -336,9 +505,7 @@ export default function Generate() {
                             )?.content || "";
 
                           const splitContent =
-                            content.match(
-                              /(.|[\r\n]){1,300}/g
-                            ) || [];
+                           splitSlideContent(content);
 
                           return (
 
@@ -353,34 +520,20 @@ export default function Generate() {
 
                               {/* SUBSECTION TITLE */}
 
-                              <div className="flex items-center justify-between mb-2">
+                              <div className="mb-2">
 
-                                <h3
-                                  className="
-                                    text-[11px]
-                                    font-semibold
-                                    text-[#0F172A]
-                                    truncate
-                                  "
-                                >
-                                  {subsection.name}
-                                </h3>
+                              <h3
+                                className="
+                                  text-[11px]
+                                  font-semibold
+                                  text-[#0F172A]
+                                  truncate
+                                "
+                              >
+                                {subsection.name}
+                              </h3>
 
-                                <div
-                                  className="
-                                    text-[9px]
-                                    bg-[#EFF6FF]
-                                    text-[#2563EB]
-                                    px-2
-                                    py-1
-                                    rounded-full
-                                    font-bold
-                                  "
-                                >
-                                  {splitContent.length}
-                                </div>
-
-                              </div>
+                            </div>
 
                               {/* =========================================================
                                 SLIDES
@@ -1204,8 +1357,9 @@ export default function Generate() {
             <div
               className="
                 absolute
-                right-[170px]
-                z-10
+                 top-6
+                right-6
+                z-50
                 w-[500px]
                 bg-white/90
                 backdrop-blur-2xl
@@ -1596,7 +1750,7 @@ export default function Generate() {
                 <div
                   className="
                     w-[60%]
-                    p-20
+                    p-14
                     flex
                     flex-col
                     justify-center
@@ -1627,7 +1781,7 @@ export default function Generate() {
                     contentEditable
                     suppressContentEditableWarning
                     className="
-                      text-6xl
+                      text-5xl
                       font-bold
                       text-[#1E293B]
                       leading-[1.1]
@@ -1641,8 +1795,8 @@ export default function Generate() {
                     contentEditable
                     suppressContentEditableWarning
                     className="
-                      mt-8
-                      text-xl
+                      mt-5
+                      text-[20px]
                       text-[#64748B]
                       leading-relaxed
                       whitespace-pre-line
@@ -1786,21 +1940,12 @@ export default function Generate() {
                       duration-500
                     "
                   />
-
                 </div>
-
               </div>
-
             </div>
-
           </div>
-
-        </div>
-          
-      </div>
-                  
+        </div>  
+      </div>           
     </div>
-
   );
-
 }
