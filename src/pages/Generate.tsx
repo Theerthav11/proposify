@@ -28,25 +28,58 @@ interface GeneratedSlideType {
   content: string;
   sectionName: string;
   subsectionName: string;
-  layout:string;
-  elements:any[];
+  layout: string;
+  elements: any[];
   sectionColor: string;
   showSectionTitle: boolean;
+  isCustom?: boolean;
 }
 
 export default function Generate() {
+
+   const navigate = useNavigate();
 
   const [generatedSlides, setGeneratedSlides] =
    useState<GeneratedSlideType[]>([]);
 
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]); // useref for store references to slide elements on the right panel so you can automatically scroll to them.
 
-  const navigate = useNavigate();
+    useEffect(() => {                      // If the user manually scrolls the right panel, the left sidebar should automatically select the visible slide
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number(
+              entry.target.getAttribute("data-index")
+            );
+
+            setActiveSlide(index);
+          }
+        });
+      },
+      {
+        threshold: 0.6,
+      }
+    );
+
+    slideRefs.current.forEach((slide) => {
+      if (slide) observer.observe(slide);
+    });
+
+    return () => observer.disconnect();
+  }, [generatedSlides]);
+
+  const [editableSlides, setEditableSlides] =   // initialize it from generatedSlides(add slide i between)
+   useState<GeneratedSlideType[]>([]);
+
+    useEffect(() => {
+      setEditableSlides(generatedSlides);
+    }, [generatedSlides]); 
 
   const proposalData: SectionType[] =
-  JSON.parse(
-    localStorage.getItem("generatedProposal") || "[]"
-  );
+    JSON.parse(
+      localStorage.getItem("generatedProposal") || "[]"
+    );
   const savedSections = localStorage.getItem("generatedProposal");
 
   const [sections, setSections] =
@@ -58,8 +91,8 @@ export default function Generate() {
       }
     }, [savedSections]);
 
-  const [slides] =
-    useState<SectionType[]>(proposalData);
+  // const [slides] =
+  //   useState<SectionType[]>(proposalData);
 
   const [activeSlide, setActiveSlide] =
     useState(0);
@@ -236,12 +269,19 @@ export default function Generate() {
   useEffect(() => {
     const slidesData: GeneratedSlideType[] = [];
 
-    slides.forEach((section) => {
+    sections.forEach((section) => {
       (section.subsections || []).forEach((subsection, subsectionIndex) => {
         const content =
           subsection.versions?.find(
             (v) => v.version === subsection.currentVersion
           )?.content || "";
+
+          if (content.includes("[NEW_SLIDE]")) {
+          return content
+            .split("[NEW_SLIDE]")
+            .map((part) => part.trim())
+            .filter(Boolean);
+        }
 
         const splitContent = splitSlideContent(content);
 
@@ -266,7 +306,7 @@ export default function Generate() {
     });
 
     setGeneratedSlides(slidesData);
-  }, [slides, currentTheme.gradient]);// Re-generate when theme changes(new change)
+  }, [sections, currentTheme.gradient]);// Re-generate when theme changes(new change)
 
 const currentSlide: GeneratedSlideType =
   generatedSlides[activeSlide] || {
@@ -281,23 +321,34 @@ const currentSlide: GeneratedSlideType =
     showSectionTitle: false,
   };
 
-    const handleAddSlide = () => {
-    const newSlide: GeneratedSlideType = {
+  const handleAddSlide = () => {
+      const newSlide: GeneratedSlideType = {
       id: Date.now(),
       title: "New Slide",
       content: "Click here to edit content",
-      sectionName: "Custom",
-      subsectionName: "New Slide",
+      sectionName: currentSlide.sectionName, // important
+      subsectionName: currentSlide.subsectionName,
       layout: "blank",
       elements: [],
       sectionColor: currentTheme.gradient,
       showSectionTitle: false,
+      isCustom: true,
     };
+  
+    
 
-    setGeneratedSlides((prev) => [...prev, newSlide]);
+    setGeneratedSlides((prev) => {
+    const updated = [...prev];
+    updated.splice(activeSlide + 1, 0, newSlide);
+    return updated;
+  });
+
+    const newIndex = activeSlide + 1;
 
     setTimeout(() => {
-      slideRefs.current[generatedSlides.length]?.scrollIntoView({
+      setActiveSlide(newIndex);
+
+      slideRefs.current[newIndex]?.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
@@ -432,11 +483,8 @@ const currentSlide: GeneratedSlideType =
 
           <div className="flex-1 overflow-y-auto px-3 py-4">
 
-            {slides.map(
-              (
-                section: SectionType,
-                sectionIndex: number
-              ) => {
+            {sections.map(
+              (section, sectionIndex) => {
 
                 const sectionColor =
                   currentTheme.gradient; // changed for theme change
@@ -515,6 +563,12 @@ const currentSlide: GeneratedSlideType =
                           const splitContent =
                            splitSlideContent(content);
 
+                           const sidebarSlides = generatedSlides.filter(
+                              (slide) =>
+                                slide.sectionName === section.name &&
+                                slide.subsectionName === subsection.name
+                            );
+
                           return (
 
                             <div
@@ -569,11 +623,13 @@ const currentSlide: GeneratedSlideType =
                                       <div
                                         key={`${subsection.id}-${splitIndex}`}
 
-                                        onClick={() =>
-                                          setActiveSlide(
-                                            slideIndex
-                                          )
-                                        }
+                                       onClick={() => {       // Update left sidebar click
+                                          setActiveSlide(slideIndex);
+                                          slideRefs.current[slideIndex]?.scrollIntoView({
+                                            behavior: "smooth",
+                                            block: "center",
+                                          });
+                                        }}
 
                                         className={`
                                           relative
@@ -771,8 +827,7 @@ const currentSlide: GeneratedSlideType =
             )}
 
           </div>
-
-      </div>
+        </div>
 
       {/* =========================================================
          MAIN AREA
@@ -1560,7 +1615,8 @@ const currentSlide: GeneratedSlideType =
               {generatedSlides.map((slide, index) => (   // add map function for scrolling
               
                 <div
-                  key={slide.id}   // Attach ref to each slide
+                  key={slide.id}          // Attach ref to each slide
+                   data-index={index}   //active slide update
                   ref={(el) => {
                     slideRefs.current[index] = el;
                   }}
