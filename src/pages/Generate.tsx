@@ -1,6 +1,8 @@
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Palette, Crown,Plus,Play,Share2,ZoomIn,ZoomOut,Wand2,Check,Languages,AlignLeft,Minus,MessageSquare,Send,ChevronDown,} from "lucide-react";
+import { Sparkles, Palette, X, Crown, Plus, Play, Share2, Send, ChevronDown,} from "lucide-react";
+import BottomInsertToolbar from "../components/ui/BottomInsertToolbar.js";
+import LayoutSidebar from "../components/ui/LayoutSidebar.js";
 
 interface VersionType {
   version: string;
@@ -26,18 +28,35 @@ interface GeneratedSlideType {
   content: string;
   sectionName: string;
   subsectionName: string;
+  layout:string;
+  elements:any[];
   sectionColor: string;
+  showSectionTitle: boolean;
 }
 
 export default function Generate() {
 
+  const [generatedSlides, setGeneratedSlides] =
+   useState<GeneratedSlideType[]>([]);
+
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([]); // useref for store references to slide elements on the right panel so you can automatically scroll to them.
+
   const navigate = useNavigate();
 
   const proposalData: SectionType[] =
-    JSON.parse(
-      localStorage.getItem("generatedProposal") || "[]"
-    );
+  JSON.parse(
+    localStorage.getItem("generatedProposal") || "[]"
+  );
+  const savedSections = localStorage.getItem("generatedProposal");
 
+  const [sections, setSections] =
+    useState<SectionType[]>([]);
+
+    useEffect(() => {
+      if (savedSections) {
+        setSections(JSON.parse(savedSections));
+      }
+    }, [savedSections]);
 
   const [slides] =
     useState<SectionType[]>(proposalData);
@@ -61,51 +80,52 @@ export default function Generate() {
   const [selectedTheme, setSelectedTheme] =
     useState("Professional"); 
 
+  const [showLayoutPanel, setShowLayoutPanel] = useState(false);
 
+    // chaged for theme
     // Theme definitions (like Gamma)
-    const themes = {
-      Professional: {
-        name: "Professional",
-        gradient: "from-slate-600 to-slate-800",
-        bg: "from-slate-100 to-slate-200",
-        description: "Clean and professional",
-      },
-      Ocean: {
-        name: "Ocean",
-        gradient: "from-blue-500 to-cyan-400",
-        bg: "from-blue-50 to-cyan-50",
-        description: "Fresh and modern",
-      },
-      Sunset: {
-        name: "Sunset",
-        gradient: "from-orange-500 to-pink-500",
-        bg: "from-orange-50 to-pink-50",
-        description: "Warm and energetic",
-      },
-      Forest: {
-        name: "Forest",
-        gradient: "from-emerald-500 to-green-600",
-        bg: "from-emerald-50 to-green-50",
-        description: "Natural and calming",
-      },
-      Purple: {
-        name: "Purple",
-        gradient: "from-violet-500 to-purple-600",
-        bg: "from-violet-50 to-purple-50",
-        description: "Creative and bold",
-      },
-      Dark: {
-        name: "Dark",
-        gradient: "from-gray-800 to-black",
-        bg: "from-gray-100 to-gray-200",
-        description: "Sleek and modern",
-      },
-    };
+  const themes = {
+    Professional: {
+      name: "Professional",
+      gradient: "from-slate-600 to-slate-800",
+      bg: "from-slate-100 to-slate-200",
+      description: "Clean and professional",
+    },
+    Ocean: {
+      name: "Ocean",
+      gradient: "from-blue-500 to-cyan-400",
+      bg: "from-blue-50 to-cyan-50",
+      description: "Fresh and modern",
+    },
+    Sunset: {
+      name: "Sunset",
+      gradient: "from-orange-500 to-pink-500",
+      bg: "from-orange-50 to-pink-50",
+      description: "Warm and energetic",
+    },
+    Forest: {
+      name: "Forest",
+      gradient: "from-emerald-500 to-green-600",
+      bg: "from-emerald-50 to-green-50",
+      description: "Natural and calming",
+    },
+    Purple: {
+      name: "Purple",
+      gradient: "from-violet-500 to-purple-600",
+      bg: "from-violet-50 to-purple-50",
+      description: "Creative and bold",
+    },
+    Dark: {
+      name: "Dark",
+      gradient: "from-gray-800 to-black",
+      bg: "from-gray-100 to-gray-200",
+      description: "Sleek and modern",
+    },
+  };
 
-  /* =========================
-     SECTION COLORS
-  ========================= */
+  const currentTheme = themes[selectedTheme as keyof typeof themes];
 
+  // Section colors for slides
   const sectionColors = [
     "from-blue-500 to-cyan-400",
     "from-violet-500 to-purple-400",
@@ -115,129 +135,97 @@ export default function Generate() {
     "from-indigo-500 to-blue-400",
     "from-red-500 to-pink-400",
     "from-yellow-500 to-orange-400",
-  ];
+  ];   // eneded the change
   
-    function splitSlideContent(
-      content: string
-    ): string[] {
-
+    function splitSlideContent(content: string): string[] {
       if (!content.trim()) {
         return [""];
       }
 
-      const MAX_SLIDE_LENGTH = 380;
+      const MAX_CHARS = 420;
 
       const slides: string[] = [];
 
-      /*
-        STEP 1:
-        Split by paragraphs
-      */
-
-      const paragraphs = content
+      // Split into blocks
+      const blocks = content
         .split(/\n\s*\n/)
-        .map((p) => p.trim())
+        .map((b) => b.trim())
         .filter(Boolean);
 
       let currentSlide = "";
 
-      paragraphs.forEach((paragraph) => {
+      const pushSlide = () => {
+        if (currentSlide.trim()) {
+          slides.push(currentSlide.trim());
+          currentSlide = "";
+        }
+      };
 
-        /*
-          STEP 2:
-          Detect headings
-        */
+      blocks.forEach((block) => {
 
-        const isHeading =
-          paragraph.length < 80 &&
-          !paragraph.includes(".") &&
-          !paragraph.startsWith("•") &&
-          !paragraph.startsWith("-");
+        // Detect bullet list
+        const isBulletBlock =
+          block.includes("•") ||
+          block.includes("- ") ||
+          block.includes("* ");
 
-        /*
-          STEP 3:
-          If paragraph too large,
-          split by sentences
-        */
+        // ----------------------------------------
+        // BULLET CONTENT
+        // ----------------------------------------
 
-        if (paragraph.length > MAX_SLIDE_LENGTH) {
+        if (isBulletBlock) {
 
+          const lines = block
+            .split("\n")
+            .map((l) => l.trim())
+            .filter(Boolean);
+
+          lines.forEach((line) => {
+
+            if (
+              (currentSlide + "\n" + line).length >
+              MAX_CHARS
+            ) {
+              pushSlide();
+            }
+
+            currentSlide +=
+              (currentSlide ? "\n" : "") + line;
+          });
+
+          currentSlide += "\n";
+
+        }
+
+        // ----------------------------------------
+        // NORMAL PARAGRAPH
+        // ----------------------------------------
+
+        else {
+
+          // Split into sentences
           const sentences =
-            paragraph.match(/[^.!?]+[.!?]+/g) || [
-              paragraph,
-            ];
+            block.match(/[^.!?]+[.!?]+/g) || [block];
 
           sentences.forEach((sentence) => {
 
             if (
-              (
-                currentSlide +
-                " " +
-                sentence
-              ).length >
-              MAX_SLIDE_LENGTH
+              (currentSlide + " " + sentence).length >
+              MAX_CHARS
             ) {
-
-              if (currentSlide.trim()) {
-                slides.push(
-                  currentSlide.trim()
-                );
-              }
-
-              currentSlide = sentence;
-
-            } else {
-
-              currentSlide +=
-                (currentSlide ? " " : "") +
-                sentence;
+              pushSlide();
             }
-
-          });
-
-        } else {
-
-          /*
-            STEP 4:
-            Normal paragraph handling
-          */
-
-          if (
-            (
-              currentSlide +
-              "\n\n" +
-              paragraph
-            ).length >
-              MAX_SLIDE_LENGTH ||
-            isHeading
-          ) {
-
-            if (currentSlide.trim()) {
-              slides.push(
-                currentSlide.trim()
-              );
-            }
-
-            currentSlide = paragraph;
-
-          } else {
 
             currentSlide +=
-              (currentSlide ? "\n\n" : "") +
-              paragraph;
-          }
-        }
+              (currentSlide ? " " : "") +
+              sentence.trim();
+          });
 
+          currentSlide += "\n\n";
+        }
       });
 
-      /*
-        STEP 5:
-        Push remaining
-      */
-
-      if (currentSlide.trim()) {
-        slides.push(currentSlide.trim());
-      }
+      pushSlide();
 
       return slides;
     }
@@ -245,90 +233,85 @@ export default function Generate() {
      GENERATE SLIDES
   ========================= */
 
-  const generatedSlides = useMemo<GeneratedSlideType[]>(() => {
+  useEffect(() => {
+    const slidesData: GeneratedSlideType[] = [];
 
-  const slidesData: GeneratedSlideType[] = [];
+    slides.forEach((section) => {
+      (section.subsections || []).forEach((subsection, subsectionIndex) => {
+        const content =
+          subsection.versions?.find(
+            (v) => v.version === subsection.currentVersion
+          )?.content || "";
 
-    slides.forEach(
-      (
-        section: SectionType,
-        sectionIndex: number
-      ) => {
+        const splitContent = splitSlideContent(content);
 
-        const sectionColor =
-          sectionColors[
-            sectionIndex %
-            sectionColors.length
-          ];
+        splitContent.forEach((part, splitIndex) => {
+          slidesData.push({
+            id: `${subsection.id}-${splitIndex}`,
+            title:
+              splitContent.length > 1
+                ? `${subsection.name} (${splitIndex + 1}/${splitContent.length})`
+                : subsection.name,
+            content: part,
+            sectionName: section.name,
+            subsectionName: subsection.name,
+            layout: "blank",
+            elements: [],
+            sectionColor: currentTheme.gradient,
+            showSectionTitle:
+              subsectionIndex === 0 && splitIndex === 0,
+          });
+        });
+      });
+    });
 
+    setGeneratedSlides(slidesData);
+  }, [slides, currentTheme.gradient]);// Re-generate when theme changes(new change)
 
-        (section.subsections || []).forEach(
-          (
-            subsection: SubsectionType
-          ) => {
-
-            const content =
-              subsection.versions?.find(
-                (v: VersionType) =>
-                  v.version ===
-                  subsection.currentVersion
-              )?.content || "";
-
-            const splitContent =
-              splitSlideContent(content);
-
-            splitContent.forEach(
-              (
-                part: string,
-                splitIndex: number
-              ) => {
-
-                slidesData.push({
-
-                  id: `${subsection.id}-${splitIndex}`,
-
-                  title:
-                  splitContent.length > 1
-                    ? `${subsection.name} (${splitIndex + 1}/${splitContent.length})`
-                    : subsection.name,
-
-                  content: part || "",
-
-                  sectionName:
-                    section.name || "Section",
-
-                  subsectionName:
-                    subsection.name || "Subsection",
-
-                  sectionColor:
-                    sectionColor ||
-                    "from-blue-500 to-cyan-400",
-
-                });
-
-              }
-            );
-
-          }
-        );
-
-      }
-    );
-
-    return slidesData;
-
-  }, [slides]);
-
- const currentSlide: GeneratedSlideType =
+const currentSlide: GeneratedSlideType =
   generatedSlides[activeSlide] || {
     id: "default-slide",
     title: "",
     content: "",
     sectionName: "",
     subsectionName: "",
-    sectionColor:
-      "from-blue-500 to-cyan-400",
+    layout: "blank",
+    elements: [],
+    sectionColor:currentTheme.gradient,  // changed for theme
+    showSectionTitle: false,
   };
+
+    const handleAddSlide = () => {
+    const newSlide: GeneratedSlideType = {
+      id: Date.now(),
+      title: "New Slide",
+      content: "Click here to edit content",
+      sectionName: "Custom",
+      subsectionName: "New Slide",
+      layout: "blank",
+      elements: [],
+      sectionColor: currentTheme.gradient,
+      showSectionTitle: false,
+    };
+
+    setGeneratedSlides((prev) => [...prev, newSlide]);
+
+    setTimeout(() => {
+      slideRefs.current[generatedSlides.length]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 100);
+  };
+
+  // function applyLayout(layoutId:string) {
+  //   const updated=[...slides];
+  //     updated[activeSlide]={
+  //     ...updated[activeSlide],
+  //     layout:layoutId
+  //     }
+  //   setSlides(updated);
+  // } // added for apply layout for all slides
 
   return (
 
@@ -389,6 +372,7 @@ export default function Generate() {
           {/* NEW BUTTON */}
 
           <button
+             onClick={handleAddSlide}
             className="
             px-4
             py-2
@@ -412,6 +396,33 @@ export default function Generate() {
             <Plus size={18} />
             New Slide
           </button>
+          <button
+            onClick={() => navigate("/proposal-builder")}
+            className="
+            mt-4
+            w-full
+            px-4
+            py-2
+            rounded-2xl
+            bg-white/80
+            backdrop-blur-lg
+            border
+            border-white/40
+            shadow-sm
+            hover:shadow-lg
+            hover:scale-[1.02]
+            transition-all
+            duration-300
+            flex
+            items-center
+            gap-2
+            text-[#0F172A]
+            font-medium
+            "
+          >
+            <Plus size={18} />
+            Edit Proposal
+          </button>
 
         </div>
 
@@ -428,10 +439,7 @@ export default function Generate() {
               ) => {
 
                 const sectionColor =
-                  sectionColors[
-                    sectionIndex %
-                      sectionColors.length
-                  ];
+                  currentTheme.gradient; // changed for theme change
 
                 return (
 
@@ -983,11 +991,10 @@ export default function Generate() {
             bg-[radial-gradient(circle_at_top_left,_#dbeafe,_#eff6ff,_#e0f2fe)]
           "
         >
-         
-         {/* THEME PANEL */}
-           {showThemePanel && (
-              <div
-                className="
+          {/* THEME PANEL */}
+          {showThemePanel && (
+            <div
+              className="
                   absolute
                   top-0
                   right-0
@@ -1000,12 +1007,11 @@ export default function Generate() {
                   shadow-2xl
                   overflow-y-auto
                 "
-              >
+            >
+              {/* HEADER */}
 
-                {/* HEADER */}
-
-                <div
-                  className="
+              <div
+                className="
                     flex
                     items-center
                     justify-between
@@ -1014,175 +1020,68 @@ export default function Generate() {
                     border-b
                     border-[#CBD5E1]
                   "
-                >
-
-                  <div>
-
-                    <h2
-                      className="
+              >
+                <div>
+                  <h2
+                    className="
                         text-[34px]
                         font-bold
                         text-[#0F172A]
                       "
-                    >
-                      Theme
-                    </h2>
+                  >
+                    Theme
+                  </h2>
 
-                    <p
-                      className="
+                  <p
+                    className="
                         text-sm
                         text-[#64748B]
                         mt-1
                       "
-                    >
-                      Customize your presentation design
-                    </p>
+                  >
+                    Customize your presentation design
+                  </p>
+                </div>
 
-                  </div>
-
-                  <button
-                    onClick={() =>
-                      setShowThemePanel(false)
-                    }
-                    className="
+                <button
+                  onClick={() => setShowThemePanel(false)}
+                  className="
                       text-2xl
                       text-[#64748B]
                       hover:text-black
                     "
-                  >
-                    ✕
-                  </button>
+                >
+                  <X/>
+                </button>
+              </div>
 
-                </div>
+              {/* THEMES */}
 
-                {/* NEW THEME */}
-
-                <div className="px-6 pt-5">
-
-                  <button
-                    className="
-                      px-5
-                      py-3
-                      rounded-2xl
-                      border
-                      border-[#D6E4FF]
-                      bg-[#F8FBFF]
-                      text-[#2563EB]
-                      font-semibold
-                      flex
-                      items-center
-                      gap-2
-                      hover:bg-[#EFF6FF]
-                    "
-                  >
-                    <Plus size={18} />
-                    New theme
-                  </button>
-
-                </div>
-
-                {/* CATEGORY */}
-
-                <div className="px-6 pt-6">
-
-                  <div className="flex flex-wrap gap-2">
-
-                    {[
-                      "Dark",
-                      "Light",
-                      "Professional",
-                      "Colorful",
-                      "Minimal",
-                    ].map((item) => (
-
-                      <button
-                        key={item}
-                        onClick={() =>
-                          setSelectedTheme(item)
-                        }
-                        className={`
-                          px-4
-                          py-2
-                          rounded-xl
-                          text-sm
-                          font-medium
-                          transition-all
-
-                          ${
-                            selectedTheme === item
-                              ? "bg-[#2563EB] text-white"
-                              : "bg-[#F1F5F9] text-[#0F172A]"
-                          }
-                        `}
-                      >
-                        {item}
-                      </button>
-
-                    ))}
-
-                  </div>
-
-                </div>
-
-                {/* THEMES */}
-
-                <div
-                  className="
+              <div
+                className="
                     p-6
                     grid
                     grid-cols-2
                     gap-5
                   "
-                >
-
-                  {[
-                    {
-                      name: "Flamingo",
-                      bg: "from-orange-200 to-rose-400",
-                    },
-
-                    {
-                      name: "Canaveral",
-                      bg: "from-black to-[#1E293B]",
-                    },
-
-                    {
-                      name: "Oasis",
-                      bg: "from-[#DDE7DF] to-[#B7C9BE]",
-                    },
-
-                    {
-                      name: "Fluo",
-                      bg: "from-[#111827] to-black",
-                    },
-
-                    {
-                      name: "Elegant",
-                      bg: "from-[#F5F3FF] to-[#DDD6FE]",
-                    },
-
-                    {
-                      name: "Cyber",
-                      bg: "from-cyan-500 to-blue-700",
-                    },
-                  ].map((theme) => (
-
-                    <div
-                      key={theme.name}
-                      className="
+              >
+                {Object.entries(themes).map(([themeKey, theme]) => (
+                  <div
+                    key={themeKey}
+                    onClick={() => setSelectedTheme(themeKey)}
+                    className="
                         cursor-pointer
                         group
                       "
-                    >
+                  >
+                    {/* CARD */}
 
-                      {/* CARD */}
-
-                      <div
-                        className={`
+                    <div
+                      className={`
                           h-[180px]
                           rounded-3xl
                           bg-gradient-to-br
-                          ${theme.bg}
+                          ${theme.gradient}
                           p-5
                           flex
                           items-center
@@ -1192,11 +1091,12 @@ export default function Generate() {
                           shadow-md
                           hover:scale-[1.03]
                           transition-all
+                          border-4
+                          ${selectedTheme === themeKey ? "border-blue-500" : "border-transparent"}
                         `}
-                      >
-
-                        <div
-                          className="
+                    >
+                      <div
+                        className="
                             w-full
                             h-full
                             rounded-2xl
@@ -1207,147 +1107,70 @@ export default function Generate() {
                             items-center
                             justify-center
                           "
-                        >
-
-                          <h2
-                            className="
+                      >
+                        <h2
+                          className="
                               text-4xl
                               font-bold
                               text-[#0F172A]
                             "
-                          >
-                            Title
-                          </h2>
+                        >
+                          Title
+                        </h2>
 
-                          <p
-                            className="
+                        <p
+                          className="
                               mt-3
                               text-lg
                               text-[#475569]
                             "
-                          >
-                            Body & link
-                          </p>
-
-                        </div>
-
+                        >
+                          Content preview
+                        </p>
                       </div>
 
-                      {/* FOOTER */}
+                      {selectedTheme === themeKey && (
+                        <div className="absolute top-2 right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">✓</span>
+                        </div>
+                      )}
+                    </div>
 
-                      <div
-                        className="
+                    {/* FOOTER */}
+
+                    <div
+                      className="
                           mt-3
                           flex
                           items-center
                           justify-between
                         "
-                      >
-
+                    >
+                      <div>
                         <p
                           className="
-                            text-[17px]
-                            font-semibold
-                            text-[#0F172A]
-                          "
+                              text-[17px]
+                              font-semibold
+                              text-[#0F172A]
+                            "
                         >
                           {theme.name}
                         </p>
-
-                        <button
+                        <p
                           className="
-                            text-[#64748B]
-                          "
+                              text-sm
+                              text-[#64748B]
+                            "
                         >
-                          ⋯
-                        </button>
-
-                      </div>
-
-                    </div>
-
-                  ))}
-
-                </div>
-
-                {/* CUSTOMIZE */}
-
-                <div className="px-6 pb-10">
-
-                  <div
-                    className="
-                      rounded-3xl
-                      border
-                      border-[#CBD5E1]
-                      p-5
-                      bg-[#F8FAFC]
-                    "
-                  >
-
-                    <h3
-                      className="
-                        text-lg
-                        font-bold
-                        text-[#0F172A]
-                      "
-                    >
-                      Customize Theme
-                    </h3>
-
-                    <div className="mt-4 space-y-4">
-
-                      <div>
-
-                        <p className="text-sm mb-2">
-                          Primary Color
+                          {theme.description}
                         </p>
-
-                        <input
-                          type="color"
-                          className="
-                            w-full
-                            h-12
-                            rounded-xl
-                          "
-                        />
-
                       </div>
-
-                      <div>
-
-                        <p className="text-sm mb-2">
-                          Font Family
-                        </p>
-
-                        <select
-                          className="
-                            w-full
-                            h-12
-                            rounded-xl
-                            border
-                            border-[#CBD5E1]
-                            px-4
-                          "
-                        >
-
-                          <option>Inter</option>
-                          <option>Poppins</option>
-                          <option>Roboto</option>
-                          <option>Montserrat</option>
-
-                        </select>
-
-                      </div>
-
                     </div>
-
                   </div>
-
-                </div>
-
+                ))}
               </div>
-
-            )}
+            </div>
+          )}
 
           {/* =========================================================
             AGENT PANEL
@@ -1709,241 +1532,281 @@ export default function Generate() {
             </div>
           )}
 
+          {/* LAYOUT PANEL */}
+          {showLayoutPanel &&(
+          <LayoutSidebar
+          onClose={()=>setShowLayoutPanel(false)}
+          // onSelect={(layoutId)=>{
+          // applyLayout(layoutId);
+          // setShowLayoutPanel(false);
+          // }}
+          />
+          )}
 
           {/* =========================================================
             SLIDE CANVAS
           ========================================================= */}
 
-          <div
-            className="
+          <div                     // This enables vertical scrolling.
+            className="     
               w-full
               h-full
-              flex
-              items-center
-              justify-center
+              overflow-y-auto
               p-10
             "
           >
+            <div className="flex flex-col gap-10 items-center">
 
-            <div
-              style={{
-                width: "100%",
-                maxWidth: "1120px",
-                aspectRatio: "16 / 9",
-              }}
-              className="
-                bg-white
-                rounded-[18px]
-                overflow-hidden
-                shadow-[0_24px_60px_rgba(15,23,42,0.14)]
-                border
-                border-[#E2E8F0]
-                transition-all
-                duration-300
-              "
-            >
-
-              <div className="flex h-full">
-
-                {/* LEFT */}
-
+              {generatedSlides.map((slide, index) => (   // add map function for scrolling
+              
                 <div
-                  className="
-                    w-[60%]
-                    p-14
-                    flex
-                    flex-col
-                    justify-center
-                  "
-                >
+                  key={slide.id}   // Attach ref to each slide
+                  ref={(el) => {
+                    slideRefs.current[index] = el;
+                  }}
+                 onClick={() => {              // Scroll when left panel slide clicked
+                    setActiveSlide(index);
 
-                  <div
-                    className={`
-                      inline-flex
-                      px-4
-                      py-2
-                      rounded-full
-                      text-white
-                      text-xs
-                      font-bold
-                      mb-6
-                      bg-gradient-to-r
-                      ${
-                        currentSlide?.sectionColor ||
-                        "from-blue-500 to-cyan-400"
-                      }
-                    `}
-                  >
-                    {currentSlide?.sectionName}
-                  </div>
+                    slideRefs.current[index]
+                      ?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                      });
 
-                  <h1
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="
-                      text-5xl
-                      font-bold
-                      text-[#1E293B]
-                      leading-[1.1]
-                      outline-none
-                    "
-                  >
-                    {currentSlide?.title}
-                  </h1>
-
-                  <p
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="
-                      mt-5
-                      text-[20px]
-                      text-[#64748B]
-                      leading-relaxed
-                      whitespace-pre-line
-                      outline-none
-                    "
-                  >
-                    {currentSlide?.content}
-                  </p>
-
-                </div>
-
-                {/* RIGHT */}
-
-                <div
+                  }}
+                  style={{
+                    width: "100%",
+                    maxWidth: "1120px",
+                    aspectRatio: "16 / 9",
+                  }}
                   className={`
-                    w-[40%]
-                    relative
+                    bg-white
+                    rounded-[18px]
                     overflow-hidden
-                    flex
-                    items-center
-                    justify-center
-                    bg-gradient-to-br
+                    shadow-[0_24px_60px_rgba(15,23,42,0.14)]
+                    border
+                    transition-all
+                    duration-300
+                    cursor-pointer
                     ${
-                      currentSlide?.sectionColor ||
-                      "from-[#4F46E5] via-[#6366F1] to-[#06B6D4]"
+                      activeSlide === index
+                        ? "border-blue-500"
+                        : "border-[#E2E8F0]"
                     }
                   `}
                 >
 
-                  {/* BIG CURVE */}
+                  <div className="flex h-full">
 
-                  <div
-                    className="
-                      absolute
-                      -left-28
-                      top-0
-                      w-[320px]
-                      h-full
-                      bg-white/85 backdrop-blur-xl
-                      rounded-r-[180px]
-                      opacity-95
-                    "
-                  />
+                    {/* LEFT CONTENT */}
 
-                  {/* GLASS CIRCLE */}
+                    <div
+                      className="
+                        w-[60%]
+                        p-14
+                        flex
+                        flex-col
+                        justify-center
+                      "
+                    >
 
-                  <div
-                    className="
-                      absolute
-                      w-[380px]
-                      h-[380px]
-                      rounded-full
-                      border
-                      border-white/30
-                      bg-white/10
-                      backdrop-blur-xl
-                    "
-                  />
+                      {slide.showSectionTitle && (
+                        <div
+                          className={`
+                            inline-flex
+                            px-4
+                            py-2
+                            rounded-full
+                            text-white
+                            text-xs
+                            font-bold
+                            mb-6
+                            bg-gradient-to-r
+                            ${slide.sectionColor}
+                          `}
+                        >
+                          {slide.sectionName}
+                        </div>
+                      )}
 
-                  {/* TOP LIGHT */}
+                      <h1
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="
+                          text-4xl
+                          font-bold
+                          text-[#1E293B]
+                          leading-[1.1]
+                          outline-none
+                        "
+                      >
+                        {slide.title}
+                      </h1>
 
-                  <div
-                    className="
-                      absolute
-                      top-10
-                      right-10
-                      w-28
-                      h-28
-                      rounded-full
-                      bg-white/20
-                      blur-2xl
-                    "
-                  />
+                      <p
+                        contentEditable
+                        suppressContentEditableWarning
+                        className="
+                          mt-5
+                          text-[17px]
+                          text-[#64748B]
+                          leading-relaxed
+                          whitespace-pre-line
+                          outline-none
+                        "
+                      >
+                        {slide.content}
+                      </p>
 
-                  {/* BOTTOM LIGHT */}
+                    </div>
 
-                  <div
-                    className="
-                      absolute
-                      bottom-10
-                      left-10
-                      w-36
-                      h-36
-                      rounded-full
-                      bg-cyan-300/30
-                      blur-3xl
-                    "
-                  />
+                    {/* RIGHT DESIGN PANEL */}
 
-                  {/* FLOATING SMALL CIRCLES */}
+                    <div
+                      className={`
+                        w-[40%]
+                        relative
+                        overflow-hidden
+                        flex
+                        items-center
+                        justify-center
+                        bg-gradient-to-br
+                        ${slide.sectionColor}
+                      `}
+                    >
 
-                  <div
-                    className="
-                      absolute
-                      top-20
-                      left-20
-                      w-4
-                      h-4
-                      rounded-full
-                      bg-white/70
-                    "
-                  />
+                      {/* BIG CURVE */}
 
-                  <div
-                    className="
-                      absolute
-                      bottom-24
-                      right-20
-                      w-6
-                      h-6
-                      rounded-full
-                      bg-cyan-200/60
-                    "
-                  />
+                      <div
+                        className="
+                          absolute
+                          -left-28
+                          top-0
+                          w-[320px]
+                          h-full
+                          bg-white/85
+                          backdrop-blur-xl
+                          rounded-r-[180px]
+                          opacity-95
+                        "
+                      />
 
-                  <div
-                    className="
-                      absolute
-                      top-1/2
-                      right-10
-                      w-3
-                      h-3
-                      rounded-full
-                      bg-white/70
-                    "
-                  />
+                      {/* GLASS CIRCLE */}
 
-                  {/* MAIN IMAGE */}
+                      <div
+                        className="
+                          absolute
+                          w-[380px]
+                          h-[380px]
+                          rounded-full
+                          border
+                          border-white/30
+                          bg-white/10
+                          backdrop-blur-xl
+                        "
+                      />
 
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png"
-                    alt="ppt"
-                    className="
-                      w-[300px]
-                      h-[300px]
-                      object-contain
-                      z-10
-                      drop-shadow-[0_20px_40px_rgba(0,0,0,0.25)]
-                      hover:scale-105
-                      transition-all
-                      duration-500
-                    "
-                  />
+                      {/* TOP LIGHT */}
+
+                      <div
+                        className="
+                          absolute
+                          top-10
+                          right-10
+                          w-28
+                          h-28
+                          rounded-full
+                          bg-white/20
+                          blur-2xl
+                        "
+                      />
+
+                      {/* BOTTOM LIGHT */}
+
+                      <div
+                        className="
+                          absolute
+                          bottom-10
+                          left-10
+                          w-36
+                          h-36
+                          rounded-full
+                          bg-cyan-300/30
+                          blur-3xl
+                        "
+                      />
+
+                      {/* FLOATING DOTS */}
+
+                      <div
+                        className="
+                          absolute
+                          top-20
+                          left-20
+                          w-4
+                          h-4
+                          rounded-full
+                          bg-white/70
+                        "
+                      />
+
+                      <div
+                        className="
+                          absolute
+                          bottom-24
+                          right-20
+                          w-6
+                          h-6
+                          rounded-full
+                          bg-cyan-200/60
+                        "
+                      />
+
+                      <div
+                        className="
+                          absolute
+                          top-1/2
+                          right-10
+                          w-3
+                          h-3
+                          rounded-full
+                          bg-white/70
+                        "
+                      />
+
+                      {/* IMAGE */}
+
+                      <img
+                        src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png"
+                        alt="ppt"
+                        className="
+                          w-[300px]
+                          h-[300px]
+                          object-contain
+                          z-10
+                          drop-shadow-[0_20px_40px_rgba(0,0,0,0.25)]
+                          hover:scale-105
+                          transition-all
+                          duration-500
+                        "
+                      />
+
+                    </div>
+
+                  </div>
+
                 </div>
-              </div>
+
+              ))}
+
             </div>
           </div>
+          <BottomInsertToolbar
+          onToolClick={(tool:string)=>{
+          if(tool==="Layout")
+          {setShowLayoutPanel(true);}
+          }}
+          /> 
         </div>  
       </div>           
     </div>

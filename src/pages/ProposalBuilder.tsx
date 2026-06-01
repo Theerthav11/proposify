@@ -820,7 +820,7 @@ export default function ProposalBuilder() {
   const [promptText, setPromptText] = useState<string>(DEFAULT_PROMPT);
 
   const [sections, setSections] = useState<SectionType[]>([]);
-
+     
     useEffect(() => {
 
       const savedSections =
