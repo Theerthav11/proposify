@@ -281,7 +281,7 @@ export default function Generate() {
                   subsectionName:
                     subsection.name || "Subsection",
 
-                  layout: "blank",
+                  layout: "default",
                   elements: [],
 
                   sectionColor: currentTheme.gradient,  // changed for new theme
@@ -305,27 +305,44 @@ export default function Generate() {
 
   }, [currentTheme.gradient, selectedTheme]); // Re-generate when theme changes(new change)
 
+//new added  for make layout functional
+  const [slidesData,setSlidesData] =
+    useState<GeneratedSlideType[]>([]); 
+
+    useEffect(() => {
+
+      setSlidesData(generatedSlides);
+
+    }, [generatedSlides]); 
+
+    function applyLayout(layoutId:string){
+
+      setSlidesData(prev =>
+        prev.map((slide,index)=>
+          index===activeSlide
+            ? {
+                ...slide,
+                layout:layoutId
+              }
+            : slide
+        )
+      );
+
+      }
+      //end
+
 const currentSlide: GeneratedSlideType =
-  generatedSlides[activeSlide] || {
+  slidesData[activeSlide] || generatedSlides[activeSlide] || {
     id: "default-slide",
     title: "",
     content: "",
     sectionName: "",
     subsectionName: "",
-    layout: "blank",
+    layout: "default",
     elements: [],
     sectionColor:currentTheme.gradient,  // changed for theme
     showSectionTitle: false,
   };
-
-  // function applyLayout(layoutId:string) {
-  //   const updated=[...slides];
-  //     updated[activeSlide]={
-  //     ...updated[activeSlide],
-  //     layout:layoutId
-  //     }
-  //   setSlides(updated);
-  // } // added for apply layout for all slides
 
   return (
 
@@ -1549,10 +1566,10 @@ const currentSlide: GeneratedSlideType =
           {showLayoutPanel &&(
           <LayoutSidebar
           onClose={()=>setShowLayoutPanel(false)}
-          // onSelect={(layoutId)=>{
-          // applyLayout(layoutId);
-          // setShowLayoutPanel(false);
-          // }}
+          onSelect={(layoutId:string)=>{
+            applyLayout(layoutId);
+            setShowLayoutPanel(false);
+          }}
           />
           )}
 
@@ -1571,38 +1588,69 @@ const currentSlide: GeneratedSlideType =
             "
           >
 
-            <div
-              style={{
-                width: "100%",
-                maxWidth: "1120px",
-                aspectRatio: "16 / 9",
-              }}
-              className="
-                bg-white
-                rounded-[18px]
-                overflow-hidden
-                shadow-[0_24px_60px_rgba(15,23,42,0.14)]
-                border
-                border-[#E2E8F0]
-                transition-all
-                duration-300
-              "
-            >
+            {/* SLIDE CANVAS - DYNAMIC LAYOUT */}
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "1120px",
+              aspectRatio: "16 / 9",
+            }}
+            className="
+              bg-white
+              rounded-[18px]
+              overflow-hidden
+              shadow-[0_24px_60px_rgba(15,23,42,0.14)]
+              border
+              border-[#E2E8F0]
+              transition-all
+              duration-300
+              relative
+            "
+          >
+            {/* Render based on layout */}
+            
+            {/* BLANK LAYOUT - Centered content only */}
+            {currentSlide.layout === "blank" && (
+              <div className="flex h-full items-center justify-center p-14">
+                <div className="text-center">
+                  <h1
+                    contentEditable
+                    suppressContentEditableWarning
+                    className="text-5xl font-bold text-[#1E293B] leading-[1.1] outline-none"
+                  >
+                    {currentSlide?.title}
+                  </h1>
+                  <p
+                    contentEditable
+                    suppressContentEditableWarning
+                    className="mt-5 text-[20px] text-[#64748B] leading-relaxed outline-none"
+                  >
+                    {currentSlide?.content}
+                  </p>
+                </div>
+              </div>
+            )}
 
+            {/* TITLE SLIDE - Large centered title only */}
+            {currentSlide.layout === "title-slide" && (
+              <div className="flex h-full items-center justify-center p-14">
+                <div className="text-center w-full">
+                  <h1
+                    contentEditable
+                    suppressContentEditableWarning
+                    className="text-6xl font-bold text-[#1E293B] leading-[1.1] outline-none"
+                  >
+                    {currentSlide?.title}
+                  </h1>
+                </div>
+              </div>
+            )}
+
+            {/* TWO CONTENT - Split 50/50 */}
+            {currentSlide.layout === "two-content" && (
               <div className="flex h-full">
-
-                {/* LEFT */}
-
-                <div
-                  className="
-                    w-[60%]
-                    p-14
-                    flex
-                    flex-col
-                    justify-center
-                  "
-                >
-
+                {/* LEFT SIDE */}
+                <div className="w-1/2 p-14 flex flex-col justify-center border-r border-gray-200">
                   {currentSlide?.showSectionTitle && (
                     <div
                       className={`
@@ -1615,10 +1663,55 @@ const currentSlide: GeneratedSlideType =
                         font-bold
                         mb-6
                         bg-gradient-to-r
-                        ${
-                          currentSlide?.sectionColor ||
-                          "from-blue-500 to-cyan-400"
-                        }
+                        ${currentSlide?.sectionColor || "from-blue-500 to-cyan-400"}
+                      `}
+                    >
+                      {currentSlide?.sectionName}
+                    </div>
+                  )}
+                  <h1
+                    contentEditable
+                    suppressContentEditableWarning
+                    className="text-4xl font-bold text-[#1E293B] leading-[1.1] outline-none"
+                  >
+                    {currentSlide?.title}
+                  </h1>
+                </div>
+
+                {/* RIGHT SIDE */}
+                <div className="w-1/2 p-14 flex flex-col justify-center">
+                  <p
+                    contentEditable
+                    suppressContentEditableWarning
+                    className="text-[17px] text-[#64748B] leading-relaxed whitespace-pre-line outline-none"
+                  >
+                    {currentSlide?.content}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* DEFAULT LAYOUT - 60/40 split with decorative right side */}
+            {/* This shows INITIALLY and when no specific layout is selected */}
+            {(currentSlide.layout === "default" || 
+              !currentSlide.layout || 
+              !["blank", "title-slide", "two-content"].includes(currentSlide.layout)) && (
+              <div className="flex h-full">
+                {/* LEFT 60% */}
+                <div className="w-[60%] p-14 flex flex-col justify-center">
+                  {currentSlide?.showSectionTitle && (
+                    <div
+                      className={`
+                        inline-flex
+                        px-4
+                        py-2
+                        rounded-full
+                        text-white
+                        text-xs
+                        font-bold
+                        mb-6
+                        bg-gradient-to-r
+                        ${currentSlide?.sectionColor || "from-blue-500 to-cyan-400"}
                       `}
                     >
                       {currentSlide?.sectionName}
@@ -1628,13 +1721,7 @@ const currentSlide: GeneratedSlideType =
                   <h1
                     contentEditable
                     suppressContentEditableWarning
-                    className="
-                      text-4xl
-                      font-bold
-                      text-[#1E293B]
-                      leading-[1.1]
-                      outline-none
-                    "
+                    className="text-4xl font-bold text-[#1E293B] leading-[1.1] outline-none"
                   >
                     {currentSlide?.title}
                   </h1>
@@ -1642,22 +1729,13 @@ const currentSlide: GeneratedSlideType =
                   <p
                     contentEditable
                     suppressContentEditableWarning
-                    className="
-                      mt-5
-                      text-[17px]
-                      text-[#64748B]
-                      leading-relaxed
-                      whitespace-pre-line
-                      outline-none
-                    "
+                    className="mt-5 text-[17px] text-[#64748B] leading-relaxed whitespace-pre-line outline-none"
                   >
                     {currentSlide?.content}
                   </p>
-
                 </div>
 
-                {/* RIGHT */}
-
+                {/* RIGHT 40% - DECORATIVE */}
                 <div
                   className={`
                     w-[40%]
@@ -1667,130 +1745,27 @@ const currentSlide: GeneratedSlideType =
                     items-center
                     justify-center
                     bg-gradient-to-br
-                    ${
-                      currentSlide?.sectionColor ||
-                      "from-[#4F46E5] via-[#6366F1] to-[#06B6D4]"
-                    }
+                    ${currentSlide?.sectionColor || "from-[#4F46E5] via-[#6366F1] to-[#06B6D4]"}
                   `}
                 >
-
-                  {/* BIG CURVE */}
-
-                  <div
-                    className="
-                      absolute
-                      -left-28
-                      top-0
-                      w-[320px]
-                      h-full
-                      bg-white/85 backdrop-blur-xl
-                      rounded-r-[180px]
-                      opacity-95
-                    "
-                  />
-
-                  {/* GLASS CIRCLE */}
-
-                  <div
-                    className="
-                      absolute
-                      w-[380px]
-                      h-[380px]
-                      rounded-full
-                      border
-                      border-white/30
-                      bg-white/10
-                      backdrop-blur-xl
-                    "
-                  />
-
-                  {/* TOP LIGHT */}
-
-                  <div
-                    className="
-                      absolute
-                      top-10
-                      right-10
-                      w-28
-                      h-28
-                      rounded-full
-                      bg-white/20
-                      blur-2xl
-                    "
-                  />
-
-                  {/* BOTTOM LIGHT */}
-
-                  <div
-                    className="
-                      absolute
-                      bottom-10
-                      left-10
-                      w-36
-                      h-36
-                      rounded-full
-                      bg-cyan-300/30
-                      blur-3xl
-                    "
-                  />
-
-                  {/* FLOATING SMALL CIRCLES */}
-
-                  <div
-                    className="
-                      absolute
-                      top-20
-                      left-20
-                      w-4
-                      h-4
-                      rounded-full
-                      bg-white/70
-                    "
-                  />
-
-                  <div
-                    className="
-                      absolute
-                      bottom-24
-                      right-20
-                      w-6
-                      h-6
-                      rounded-full
-                      bg-cyan-200/60
-                    "
-                  />
-
-                  <div
-                    className="
-                      absolute
-                      top-1/2
-                      right-10
-                      w-3
-                      h-3
-                      rounded-full
-                      bg-white/70
-                    "
-                  />
-
-                  {/* MAIN IMAGE */}
-
+                  {/* All the decorative elements */}
+                  <div className="absolute -left-28 top-0 w-[320px] h-full bg-white/85 backdrop-blur-xl rounded-r-[180px] opacity-95" />
+                  <div className="absolute w-[380px] h-[380px] rounded-full border border-white/30 bg-white/10 backdrop-blur-xl" />
+                  <div className="absolute top-10 right-10 w-28 h-28 rounded-full bg-white/20 blur-2xl" />
+                  <div className="absolute bottom-10 left-10 w-36 h-36 rounded-full bg-cyan-300/30 blur-3xl" />
+                  <div className="absolute top-20 left-20 w-4 h-4 rounded-full bg-white/70" />
+                  <div className="absolute bottom-24 right-20 w-6 h-6 rounded-full bg-cyan-200/60" />
+                  <div className="absolute top-1/2 right-10 w-3 h-3 rounded-full bg-white/70" />
                   <img
                     src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png"
                     alt="ppt"
-                    className="
-                      w-[300px]
-                      h-[300px]
-                      object-contain
-                      z-10
-                      drop-shadow-[0_20px_40px_rgba(0,0,0,0.25)]
-                      hover:scale-105
-                      transition-all
-                      duration-500
-                    "
+                    className="w-[300px] h-[300px] object-contain z-10 drop-shadow-[0_20px_40px_rgba(0,0,0,0.25)] hover:scale-105 transition-all duration-500"
                   />
                 </div>
               </div>
-            </div>
+            )}
+          </div>
+
           </div>
           <BottomInsertToolbar
           onToolClick={(tool:string)=>{
