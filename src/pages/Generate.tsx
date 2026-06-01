@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, Palette, Crown,Plus,Play,Share2,Send,ChevronDown,} from "lucide-react";
+import { Sparkles, Palette, X, Crown, Plus, Play, Share2, Send, ChevronDown,} from "lucide-react";
 import BottomInsertToolbar from "../components/ui/BottomInsertToolbar.js";
+import LayoutSidebar from "../components/ui/LayoutSidebar.js";
 
 interface VersionType {
   version: string;
@@ -27,7 +28,10 @@ interface GeneratedSlideType {
   content: string;
   sectionName: string;
   subsectionName: string;
+  layout:string;
+  elements:any[];
   sectionColor: string;
+  showSectionTitle: boolean;
 }
 
 export default function Generate() {
@@ -35,9 +39,19 @@ export default function Generate() {
   const navigate = useNavigate();
 
   const proposalData: SectionType[] =
-    JSON.parse(
-      localStorage.getItem("proposalSections") || "[]"
-    );
+  JSON.parse(
+    localStorage.getItem("generatedProposal") || "[]"
+  );
+  const savedSections = localStorage.getItem("generatedProposal");
+
+  const [sections, setSections] =
+    useState<SectionType[]>([]);
+
+    useEffect(() => {
+      if (savedSections) {
+        setSections(JSON.parse(savedSections));
+      }
+    }, [savedSections]);
 
   const [slides] =
     useState<SectionType[]>(proposalData);
@@ -61,25 +75,162 @@ export default function Generate() {
   const [selectedTheme, setSelectedTheme] =
     useState("Professional"); 
 
-  /* =========================
-     SECTION COLORS
-  ========================= */
+  const [showLayoutPanel, setShowLayoutPanel] = useState(false);
 
+// chaged for theme
+    // Theme definitions (like Gamma)
+  const themes = {
+    Professional: {
+      name: "Professional",
+      gradient: "from-slate-600 to-slate-800",
+      bg: "from-slate-100 to-slate-200",
+      description: "Clean and professional",
+    },
+    Ocean: {
+      name: "Ocean",
+      gradient: "from-blue-500 to-cyan-400",
+      bg: "from-blue-50 to-cyan-50",
+      description: "Fresh and modern",
+    },
+    Sunset: {
+      name: "Sunset",
+      gradient: "from-orange-500 to-pink-500",
+      bg: "from-orange-50 to-pink-50",
+      description: "Warm and energetic",
+    },
+    Forest: {
+      name: "Forest",
+      gradient: "from-emerald-500 to-green-600",
+      bg: "from-emerald-50 to-green-50",
+      description: "Natural and calming",
+    },
+    Purple: {
+      name: "Purple",
+      gradient: "from-violet-500 to-purple-600",
+      bg: "from-violet-50 to-purple-50",
+      description: "Creative and bold",
+    },
+    Dark: {
+      name: "Dark",
+      gradient: "from-gray-800 to-black",
+      bg: "from-gray-100 to-gray-200",
+      description: "Sleek and modern",
+    },
+  };
+
+  const currentTheme = themes[selectedTheme as keyof typeof themes];
+
+  // Section colors for slides
   const sectionColors = [
     "from-blue-500 to-cyan-400",
     "from-violet-500 to-purple-400",
     "from-emerald-500 to-green-400",
     "from-orange-500 to-amber-400",
     "from-pink-500 to-rose-400",
-  ];
+    "from-indigo-500 to-blue-400",
+    "from-red-500 to-pink-400",
+    "from-yellow-500 to-orange-400",
+  ];   // eneded the change
+  
+    function splitSlideContent(content: string): string[] {
+      if (!content.trim()) {
+        return [""];
+      }
 
+      const MAX_CHARS = 420;
+
+      const slides: string[] = [];
+
+      // Split into blocks
+      const blocks = content
+        .split(/\n\s*\n/)
+        .map((b) => b.trim())
+        .filter(Boolean);
+
+      let currentSlide = "";
+
+      const pushSlide = () => {
+        if (currentSlide.trim()) {
+          slides.push(currentSlide.trim());
+          currentSlide = "";
+        }
+      };
+
+      blocks.forEach((block) => {
+
+        // Detect bullet list
+        const isBulletBlock =
+          block.includes("•") ||
+          block.includes("- ") ||
+          block.includes("* ");
+
+        // ----------------------------------------
+        // BULLET CONTENT
+        // ----------------------------------------
+
+        if (isBulletBlock) {
+
+          const lines = block
+            .split("\n")
+            .map((l) => l.trim())
+            .filter(Boolean);
+
+          lines.forEach((line) => {
+
+            if (
+              (currentSlide + "\n" + line).length >
+              MAX_CHARS
+            ) {
+              pushSlide();
+            }
+
+            currentSlide +=
+              (currentSlide ? "\n" : "") + line;
+          });
+
+          currentSlide += "\n";
+
+        }
+
+        // ----------------------------------------
+        // NORMAL PARAGRAPH
+        // ----------------------------------------
+
+        else {
+
+          // Split into sentences
+          const sentences =
+            block.match(/[^.!?]+[.!?]+/g) || [block];
+
+          sentences.forEach((sentence) => {
+
+            if (
+              (currentSlide + " " + sentence).length >
+              MAX_CHARS
+            ) {
+              pushSlide();
+            }
+
+            currentSlide +=
+              (currentSlide ? " " : "") +
+              sentence.trim();
+          });
+
+          currentSlide += "\n\n";
+        }
+      });
+
+      pushSlide();
+
+      return slides;
+    }
   /* =========================
      GENERATE SLIDES
   ========================= */
 
   const generatedSlides = useMemo<GeneratedSlideType[]>(() => {
 
-    const slidesData: GeneratedSlideType[] = [];
+  const slidesData: GeneratedSlideType[] = [];
 
     slides.forEach(
       (
@@ -88,14 +239,14 @@ export default function Generate() {
       ) => {
 
         const sectionColor =
-          sectionColors[
-            sectionIndex %
-            sectionColors.length
-          ];
+          currentTheme.gradient; // changed for theme change
+          
+
 
         (section.subsections || []).forEach(
           (
-            subsection: SubsectionType
+            subsection: SubsectionType,
+            subsectionIndex: number
           ) => {
 
             const content =
@@ -106,9 +257,7 @@ export default function Generate() {
               )?.content || "";
 
             const splitContent =
-              content.match(
-                /(.|[\r\n]){1,450}/g
-              ) || [];
+              splitSlideContent(content);
 
             splitContent.forEach(
               (
@@ -117,13 +266,12 @@ export default function Generate() {
               ) => {
 
                 slidesData.push({
-
                   id: `${subsection.id}-${splitIndex}`,
 
                   title:
                     splitContent.length > 1
-                      ? `${subsection.name} (Part ${splitIndex + 1})`
-                      : subsection.name || "Untitled",
+                      ? `${subsection.name} (${splitIndex + 1}/${splitContent.length})`
+                      : subsection.name,
 
                   content: part || "",
 
@@ -133,9 +281,15 @@ export default function Generate() {
                   subsectionName:
                     subsection.name || "Subsection",
 
-                  sectionColor:
-                    sectionColor || "from-blue-500 to-cyan-400",
+                  layout: "blank",
+                  elements: [],
 
+                  sectionColor: currentTheme.gradient,  // changed for new theme
+
+                  // ONLY FIRST SLIDE OF SECTION
+                  showSectionTitle:
+                    subsectionIndex === 0 &&
+                    splitIndex === 0,
                 });
 
               }
@@ -149,18 +303,29 @@ export default function Generate() {
 
     return slidesData;
 
-  }, [slides]);
+  }, [currentTheme.gradient, selectedTheme]); // Re-generate when theme changes(new change)
 
- const currentSlide: GeneratedSlideType =
+const currentSlide: GeneratedSlideType =
   generatedSlides[activeSlide] || {
     id: "default-slide",
     title: "",
     content: "",
     sectionName: "",
     subsectionName: "",
-    sectionColor:
-      "from-blue-500 to-cyan-400",
+    layout: "blank",
+    elements: [],
+    sectionColor:currentTheme.gradient,  // changed for theme
+    showSectionTitle: false,
   };
+
+  // function applyLayout(layoutId:string) {
+  //   const updated=[...slides];
+  //     updated[activeSlide]={
+  //     ...updated[activeSlide],
+  //     layout:layoutId
+  //     }
+  //   setSlides(updated);
+  // } // added for apply layout for all slides
 
   return (
 
@@ -244,6 +409,33 @@ export default function Generate() {
             <Plus size={18} />
             New Slide
           </button>
+          <button
+            onClick={() => navigate("/proposal-builder")}
+            className="
+            mt-4
+            w-full
+            px-4
+            py-2
+            rounded-2xl
+            bg-white/80
+            backdrop-blur-lg
+            border
+            border-white/40
+            shadow-sm
+            hover:shadow-lg
+            hover:scale-[1.02]
+            transition-all
+            duration-300
+            flex
+            items-center
+            gap-2
+            text-[#0F172A]
+            font-medium
+            "
+          >
+            <Plus size={18} />
+            Edit Proposal
+          </button>
 
         </div>
 
@@ -260,10 +452,7 @@ export default function Generate() {
               ) => {
 
                 const sectionColor =
-                  sectionColors[
-                    sectionIndex %
-                      sectionColors.length
-                  ];
+                  currentTheme.gradient; // changed for theme change
 
                 return (
 
@@ -337,9 +526,7 @@ export default function Generate() {
                             )?.content || "";
 
                           const splitContent =
-                            content.match(
-                              /(.|[\r\n]){1,300}/g
-                            ) || [];
+                           splitSlideContent(content);
 
                           return (
 
@@ -354,34 +541,20 @@ export default function Generate() {
 
                               {/* SUBSECTION TITLE */}
 
-                              <div className="flex items-center justify-between mb-2">
+                              <div className="mb-2">
 
-                                <h3
-                                  className="
-                                    text-[11px]
-                                    font-semibold
-                                    text-[#0F172A]
-                                    truncate
-                                  "
-                                >
-                                  {subsection.name}
-                                </h3>
+                              <h3
+                                className="
+                                  text-[11px]
+                                  font-semibold
+                                  text-[#0F172A]
+                                  truncate
+                                "
+                              >
+                                {subsection.name}
+                              </h3>
 
-                                <div
-                                  className="
-                                    text-[9px]
-                                    bg-[#EFF6FF]
-                                    text-[#2563EB]
-                                    px-2
-                                    py-1
-                                    rounded-full
-                                    font-bold
-                                  "
-                                >
-                                  {splitContent.length}
-                                </div>
-
-                              </div>
+                            </div>
 
                               {/* =========================================================
                                 SLIDES
@@ -831,11 +1004,10 @@ export default function Generate() {
             bg-[radial-gradient(circle_at_top_left,_#dbeafe,_#eff6ff,_#e0f2fe)]
           "
         >
-         
-         {/* THEME PANEL */}
-           {showThemePanel && (
-              <div
-                className="
+          {/* THEME PANEL */}
+          {showThemePanel && (
+            <div
+              className="
                   absolute
                   top-0
                   right-0
@@ -848,12 +1020,11 @@ export default function Generate() {
                   shadow-2xl
                   overflow-y-auto
                 "
-              >
+            >
+              {/* HEADER */}
 
-                {/* HEADER */}
-
-                <div
-                  className="
+              <div
+                className="
                     flex
                     items-center
                     justify-between
@@ -862,175 +1033,68 @@ export default function Generate() {
                     border-b
                     border-[#CBD5E1]
                   "
-                >
-
-                  <div>
-
-                    <h2
-                      className="
+              >
+                <div>
+                  <h2
+                    className="
                         text-[34px]
                         font-bold
                         text-[#0F172A]
                       "
-                    >
-                      Theme
-                    </h2>
+                  >
+                    Theme
+                  </h2>
 
-                    <p
-                      className="
+                  <p
+                    className="
                         text-sm
                         text-[#64748B]
                         mt-1
                       "
-                    >
-                      Customize your presentation design
-                    </p>
+                  >
+                    Customize your presentation design
+                  </p>
+                </div>
 
-                  </div>
-
-                  <button
-                    onClick={() =>
-                      setShowThemePanel(false)
-                    }
-                    className="
+                <button
+                  onClick={() => setShowThemePanel(false)}
+                  className="
                       text-2xl
                       text-[#64748B]
                       hover:text-black
                     "
-                  >
-                    ✕
-                  </button>
+                >
+                  <X/>
+                </button>
+              </div>
 
-                </div>
+              {/* THEMES */}
 
-                {/* NEW THEME */}
-
-                <div className="px-6 pt-5">
-
-                  <button
-                    className="
-                      px-5
-                      py-3
-                      rounded-2xl
-                      border
-                      border-[#D6E4FF]
-                      bg-[#F8FBFF]
-                      text-[#2563EB]
-                      font-semibold
-                      flex
-                      items-center
-                      gap-2
-                      hover:bg-[#EFF6FF]
-                    "
-                  >
-                    <Plus size={18} />
-                    New theme
-                  </button>
-
-                </div>
-
-                {/* CATEGORY */}
-
-                <div className="px-6 pt-6">
-
-                  <div className="flex flex-wrap gap-2">
-
-                    {[
-                      "Dark",
-                      "Light",
-                      "Professional",
-                      "Colorful",
-                      "Minimal",
-                    ].map((item) => (
-
-                      <button
-                        key={item}
-                        onClick={() =>
-                          setSelectedTheme(item)
-                        }
-                        className={`
-                          px-4
-                          py-2
-                          rounded-xl
-                          text-sm
-                          font-medium
-                          transition-all
-
-                          ${
-                            selectedTheme === item
-                              ? "bg-[#2563EB] text-white"
-                              : "bg-[#F1F5F9] text-[#0F172A]"
-                          }
-                        `}
-                      >
-                        {item}
-                      </button>
-
-                    ))}
-
-                  </div>
-
-                </div>
-
-                {/* THEMES */}
-
-                <div
-                  className="
+              <div
+                className="
                     p-6
                     grid
                     grid-cols-2
                     gap-5
                   "
-                >
-
-                  {[
-                    {
-                      name: "Flamingo",
-                      bg: "from-orange-200 to-rose-400",
-                    },
-
-                    {
-                      name: "Canaveral",
-                      bg: "from-black to-[#1E293B]",
-                    },
-
-                    {
-                      name: "Oasis",
-                      bg: "from-[#DDE7DF] to-[#B7C9BE]",
-                    },
-
-                    {
-                      name: "Fluo",
-                      bg: "from-[#111827] to-black",
-                    },
-
-                    {
-                      name: "Elegant",
-                      bg: "from-[#F5F3FF] to-[#DDD6FE]",
-                    },
-
-                    {
-                      name: "Cyber",
-                      bg: "from-cyan-500 to-blue-700",
-                    },
-                  ].map((theme) => (
-
-                    <div
-                      key={theme.name}
-                      className="
+              >
+                {Object.entries(themes).map(([themeKey, theme]) => (
+                  <div
+                    key={themeKey}
+                    onClick={() => setSelectedTheme(themeKey)}
+                    className="
                         cursor-pointer
                         group
                       "
-                    >
+                  >
+                    {/* CARD */}
 
-                      {/* CARD */}
-
-                      <div
-                        className={`
+                    <div
+                      className={`
                           h-[180px]
                           rounded-3xl
                           bg-gradient-to-br
-                          ${theme.bg}
+                          ${theme.gradient}
                           p-5
                           flex
                           items-center
@@ -1040,11 +1104,12 @@ export default function Generate() {
                           shadow-md
                           hover:scale-[1.03]
                           transition-all
+                          border-4
+                          ${selectedTheme === themeKey ? "border-blue-500" : "border-transparent"}
                         `}
-                      >
-
-                        <div
-                          className="
+                    >
+                      <div
+                        className="
                             w-full
                             h-full
                             rounded-2xl
@@ -1055,147 +1120,70 @@ export default function Generate() {
                             items-center
                             justify-center
                           "
-                        >
-
-                          <h2
-                            className="
+                      >
+                        <h2
+                          className="
                               text-4xl
                               font-bold
                               text-[#0F172A]
                             "
-                          >
-                            Title
-                          </h2>
+                        >
+                          Title
+                        </h2>
 
-                          <p
-                            className="
+                        <p
+                          className="
                               mt-3
                               text-lg
                               text-[#475569]
                             "
-                          >
-                            Body & link
-                          </p>
-
-                        </div>
-
+                        >
+                          Content preview
+                        </p>
                       </div>
 
-                      {/* FOOTER */}
+                      {selectedTheme === themeKey && (
+                        <div className="absolute top-2 right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs">✓</span>
+                        </div>
+                      )}
+                    </div>
 
-                      <div
-                        className="
+                    {/* FOOTER */}
+
+                    <div
+                      className="
                           mt-3
                           flex
                           items-center
                           justify-between
                         "
-                      >
-
+                    >
+                      <div>
                         <p
                           className="
-                            text-[17px]
-                            font-semibold
-                            text-[#0F172A]
-                          "
+                              text-[17px]
+                              font-semibold
+                              text-[#0F172A]
+                            "
                         >
                           {theme.name}
                         </p>
-
-                        <button
+                        <p
                           className="
-                            text-[#64748B]
-                          "
+                              text-sm
+                              text-[#64748B]
+                            "
                         >
-                          ⋯
-                        </button>
-
-                      </div>
-
-                    </div>
-
-                  ))}
-
-                </div>
-
-                {/* CUSTOMIZE */}
-
-                <div className="px-6 pb-10">
-
-                  <div
-                    className="
-                      rounded-3xl
-                      border
-                      border-[#CBD5E1]
-                      p-5
-                      bg-[#F8FAFC]
-                    "
-                  >
-
-                    <h3
-                      className="
-                        text-lg
-                        font-bold
-                        text-[#0F172A]
-                      "
-                    >
-                      Customize Theme
-                    </h3>
-
-                    <div className="mt-4 space-y-4">
-
-                      <div>
-
-                        <p className="text-sm mb-2">
-                          Primary Color
+                          {theme.description}
                         </p>
-
-                        <input
-                          type="color"
-                          className="
-                            w-full
-                            h-12
-                            rounded-xl
-                          "
-                        />
-
                       </div>
-
-                      <div>
-
-                        <p className="text-sm mb-2">
-                          Font Family
-                        </p>
-
-                        <select
-                          className="
-                            w-full
-                            h-12
-                            rounded-xl
-                            border
-                            border-[#CBD5E1]
-                            px-4
-                          "
-                        >
-
-                          <option>Inter</option>
-                          <option>Poppins</option>
-                          <option>Roboto</option>
-                          <option>Montserrat</option>
-
-                        </select>
-
-                      </div>
-
                     </div>
-
                   </div>
-
-                </div>
-
+                ))}
               </div>
-
-            )}
+            </div>
+          )}
 
           {/* =========================================================
             AGENT PANEL
@@ -1205,7 +1193,8 @@ export default function Generate() {
             <div
               className="
                 absolute
-                right-[170px]
+                 top-6
+                right-6
                 z-50
                 w-[500px]
                 bg-white/90
@@ -1490,6 +1479,7 @@ export default function Generate() {
                       </button>
 
                     </div>
+
                   </div>
 
                 </div>
@@ -1555,6 +1545,16 @@ export default function Generate() {
             </div>
           )}
 
+          {/* LAYOUT PANEL */}
+          {showLayoutPanel &&(
+          <LayoutSidebar
+          onClose={()=>setShowLayoutPanel(false)}
+          // onSelect={(layoutId)=>{
+          // applyLayout(layoutId);
+          // setShowLayoutPanel(false);
+          // }}
+          />
+          )}
 
           {/* =========================================================
             SLIDE CANVAS
@@ -1603,31 +1603,33 @@ export default function Generate() {
                   "
                 >
 
-                  <div
-                    className={`
-                      inline-flex
-                      px-4
-                      py-2
-                      rounded-full
-                      text-white
-                      text-xs
-                      font-bold
-                      mb-6
-                      bg-gradient-to-r
-                      ${
-                        currentSlide?.sectionColor ||
-                        "from-blue-500 to-cyan-400"
-                      }
-                    `}
-                  >
-                    {currentSlide?.sectionName}
-                  </div>
+                  {currentSlide?.showSectionTitle && (
+                    <div
+                      className={`
+                        inline-flex
+                        px-4
+                        py-2
+                        rounded-full
+                        text-white
+                        text-xs
+                        font-bold
+                        mb-6
+                        bg-gradient-to-r
+                        ${
+                          currentSlide?.sectionColor ||
+                          "from-blue-500 to-cyan-400"
+                        }
+                      `}
+                    >
+                      {currentSlide?.sectionName}
+                    </div>
+                  )}
 
                   <h1
                     contentEditable
                     suppressContentEditableWarning
                     className="
-                      text-5xl
+                      text-4xl
                       font-bold
                       text-[#1E293B]
                       leading-[1.1]
@@ -1642,7 +1644,7 @@ export default function Generate() {
                     suppressContentEditableWarning
                     className="
                       mt-5
-                      text-[20px]
+                      text-[17px]
                       text-[#64748B]
                       leading-relaxed
                       whitespace-pre-line
@@ -1735,15 +1737,15 @@ export default function Generate() {
                   {/* FLOATING SMALL CIRCLES */}
 
                   <div
-                        className="
-                        absolute
-                        top-20
-                        left-20
-                        w-4
-                        h-4
-                        rounded-full
-                        bg-white/70
-                        "
+                    className="
+                      absolute
+                      top-20
+                      left-20
+                      w-4
+                      h-4
+                      rounded-full
+                      bg-white/70
+                    "
                   />
 
                   <div
@@ -1786,22 +1788,18 @@ export default function Generate() {
                       duration-500
                     "
                   />
-
                 </div>
-
               </div>
-
             </div>
-
           </div>
-          <BottomInsertToolbar />
-
-        </div>
-          
-      </div>
-                  
+          <BottomInsertToolbar
+          onToolClick={(tool:string)=>{
+          if(tool==="Layout")
+          {setShowLayoutPanel(true);}
+          }}
+          /> 
+        </div>  
+      </div>           
     </div>
-
   );
-
 }

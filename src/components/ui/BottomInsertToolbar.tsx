@@ -3,7 +3,7 @@ import {
   Shapes,
   LayoutTemplate,
   GitBranch,
-  ChartNoAxesCombined,
+  BarChart3,
   BadgePlus,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -13,7 +13,9 @@ type Tool = {
   icon: LucideIcon;
 };
 
-function BottomInsertToolbar() {
+function BottomInsertToolbar({
+onToolClick     //new when tool click
+}:any) {
   const tools: Tool[] = [
      {
         name: "Layout",
@@ -33,7 +35,7 @@ function BottomInsertToolbar() {
     },
     {
       name: "Graph & Chart",
-      icon:  ChartNoAxesCombined,
+      icon:  BarChart3,
     },
     {
     name: "Icons",
@@ -74,6 +76,9 @@ function BottomInsertToolbar() {
             {/* ICON BUTTON */}
 
             <button
+              onClick={() =>
+              onToolClick(tool.name)
+              }     // new for tool click
               className="
                 p-3
                 rounded-xl
