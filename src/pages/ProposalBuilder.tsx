@@ -743,6 +743,205 @@ export default function ProposalBuilder() {
     setSections(items);
   };
 
+
+    // Rename Section
+    const handleRenameSection = (sectionId: number) => {
+    const section = sections.find((s) => s.id === sectionId);
+
+    if (!section) return;
+
+    const newName = prompt(
+      "Enter section name",
+      section.name
+    );
+
+    if (!newName?.trim()) return;
+
+    setSections((prev) =>
+      prev.map((s) =>
+        s.id === sectionId
+          ? {
+              ...s,
+              name: newName,
+            }
+          : s,
+      ),
+    );
+  };
+
+  // Delete Section
+  const handleDeleteSection = (
+    sectionId: number,
+  ) => {
+    setSections((prev) =>
+      prev.filter(
+        (section) =>
+          section.id !== sectionId,
+      ),
+    );
+  };
+
+   // Change Version
+    const handleVersionChange = (
+    sectionId: number,
+    subsectionId: number,
+    version: string,
+  ) => {
+    setSections((prev) =>
+      prev.map((section) =>
+        section.id === sectionId
+          ? {
+              ...section,
+              subsections:
+                section.subsections.map((sub) =>
+                  sub.id === subsectionId
+                    ? {
+                        ...sub,
+                        currentVersion: version,
+                      }
+                    : sub,
+                ),
+            }
+          : section,
+      ),
+    );
+  };
+
+    //Regenerate Subsection
+    const handleRegenerateSubsection = (
+    sectionId: number,
+    subsectionId: number,
+  ) => {
+    setSections((prev) =>
+      prev.map((section) => {
+        if (section.id !== sectionId)
+          return section;
+
+        return {
+          ...section,
+          subsections:
+            section.subsections.map((sub) => {
+              if (sub.id !== subsectionId)
+                return sub;
+
+              const nextVersion = `v${
+                sub.versions.length + 1
+              }`;
+
+              const regeneratedContent =
+                generateContent(
+                  section.name,
+                  sub.name,
+                  promptText,
+                  sub.versions.length,
+                );
+
+              return {
+                ...sub,
+                currentVersion: nextVersion,
+                versions: [
+                  ...sub.versions,
+                  {
+                    version: nextVersion,
+                    content:
+                      regeneratedContent,
+                  },
+                ],
+              };
+            }),
+        };
+      }),
+    );
+  };
+
+  //Start Editing Content
+  const handleEditSubsection = (
+    sub: SubsectionType,
+  ) => {
+    setEditingSubId(sub.id);
+
+    setEditingContent(
+      sub.versions.find(
+        (v) =>
+          v.version === sub.currentVersion,
+      )?.content || "",
+    );
+  };
+
+  //Save Edited Content
+  const handleSaveContent = (
+    sectionId: number,
+    subsectionId: number,
+  ) => {
+    setSections((prev) =>
+      prev.map((section) => {
+        if (section.id !== sectionId)
+          return section;
+
+        return {
+          ...section,
+          subsections:
+            section.subsections.map((sub) =>
+              sub.id === subsectionId
+                ? {
+                    ...sub,
+                    versions: sub.versions.map(
+                      (version) =>
+                        version.version ===
+                        sub.currentVersion
+                          ? {
+                              ...version,
+                              content:
+                                editingContent,
+                            }
+                          : version,
+                    ),
+                  }
+                : sub,
+            ),
+        };
+      }),
+    );
+
+    setEditingSubId(null);
+  };
+
+  //Upload File
+  const handleFileUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    sectionId: number,
+    subsectionId: number,
+  ) => {
+    const file =
+      e.target.files?.[0];
+
+    if (!file) return;
+
+    setSections((prev) =>
+      prev.map((section) => {
+        if (section.id !== sectionId)
+          return section;
+
+        return {
+          ...section,
+          subsections:
+            section.subsections.map((sub) =>
+              sub.id === subsectionId
+                ? {
+                    ...sub,
+                    document: {
+                      name: file.name,
+                      size: file.size,
+                      type: file.type,
+                    },
+                  }
+                : sub,
+            ),
+        };
+      }),
+    );
+  };
+
   return (
     <div className="h-screen bg-[#E6E6E6] p-3 overflow-hidden">
       {/* MAIN CONTAINER */}
@@ -920,25 +1119,9 @@ export default function ProposalBuilder() {
                     <div className="flex items-center gap-3">
                       {/* EDIT */}
                       <button
-                        onClick={() => {
-                          const newName = prompt(
-                            "Enter section name",
-                            section.name,
-                          );
-
-                          if (newName && newName.trim() !== "") {
-                            setSections(
-                              sections.map((s) =>
-                                s.id === section.id
-                                  ? {
-                                      ...s,
-                                      name: newName,
-                                    }
-                                  : s,
-                              ),
-                            );
-                          }
-                        }}
+                     onClick={() =>
+                        handleRenameSection(section.id)
+                      }
                         className="border border-[#C6C6C6] text-[#242525] px-4 py-2 rounded-xl text-sm"
                       >
                         ✏ Edit
@@ -946,11 +1129,9 @@ export default function ProposalBuilder() {
 
                       {/* DELETE */}
                       <button
-                        onClick={() => {
-                          setSections(
-                            sections.filter((s) => s.id !== section.id),
-                          );
-                        }}
+                        onClick={() =>
+                          handleDeleteSection(section.id)
+                        }
                         className="border border-[#C6C6C6] text-red-500 px-4 py-2 rounded-xl text-sm"
                       >
                         🗑 Delete
@@ -991,28 +1172,13 @@ export default function ProposalBuilder() {
                           {/* VERSION */}
                           <select
                             value={sub.currentVersion}
-                            onChange={(e) => {
-                              setSections(
-                                sections.map((sec) => {
-                                  if (sec.id === section.id) {
-                                    return {
-                                      ...sec,
-
-                                      subsections: sec.subsections.map((s) =>
-                                        s.id === sub.id
-                                          ? {
-                                              ...s,
-                                              currentVersion: e.target.value,
-                                            }
-                                          : s,
-                                      ),
-                                    };
-                                  }
-
-                                  return sec;
-                                }),
-                              );
-                            }}
+                            onChange={(e) =>
+                              handleVersionChange(
+                                section.id,
+                                sub.id,
+                                e.target.value,
+                              )
+                            }
                             className="border border-[#C6C6C6] rounded-lg px-3 py-1 text-sm"
                           >
                             {sub.versions.map((v) => (
@@ -1026,53 +1192,12 @@ export default function ProposalBuilder() {
                         <div className="flex gap-3">
                           {/* REGENERATE */}
                           <button
-                            onClick={() => {
-                              setSections(
-                                sections.map((sec) => {
-                                  if (sec.id === section.id) {
-                                    return {
-                                      ...sec,
-
-                                      subsections: sec.subsections.map((s) => {
-                                        if (s.id === sub.id) {
-                                          const nextVersion = `v${
-                                            s.versions.length + 1
-                                          }`;
-
-                                          // Generate new content variation
-                                          const regeneratedContent =
-                                            generateContent(
-                                              section.name,
-                                              s.name,
-                                              promptText,
-                                              s.versions.length,
-                                            );
-
-                                          return {
-                                            ...s,
-
-                                            currentVersion: nextVersion,
-
-                                            versions: [
-                                              ...s.versions,
-
-                                              {
-                                                version: nextVersion,
-                                                content: regeneratedContent,
-                                              },
-                                            ],
-                                          };
-                                        }
-
-                                        return s;
-                                      }),
-                                    };
-                                  }
-
-                                  return sec;
-                                }),
-                              );
-                            }}
+                            onClick={() =>
+                              handleRegenerateSubsection(
+                                section.id,
+                                sub.id,
+                              )
+                            }
                             className="bg-[#242525] text-white px-4 py-2 rounded-xl text-sm"
                           >
                             🔄 Regenerate
@@ -1080,15 +1205,9 @@ export default function ProposalBuilder() {
 
                           {/* EDIT */}
                           <button
-                            onClick={() => {
-                              setEditingSubId(sub.id);
-
-                              setEditingContent(
-                                sub.versions.find(
-                                  (v) => v.version === sub.currentVersion,
-                                )?.content || "",
-                              );
-                            }}
+                            onClick={() =>
+                              handleEditSubsection(sub)
+                            }
                             className="border border-[#C6C6C6] px-4 py-2 rounded-xl text-sm"
                           >
                             ✏ Edit
@@ -1117,38 +1236,12 @@ export default function ProposalBuilder() {
                             />
 
                             <button
-                              onClick={() => {
-                                setSections(
-                                  sections.map((sec) => {
-                                    if (sec.id === section.id) {
-                                      return {
-                                        ...sec,
-
-                                        subsections: sec.subsections.map((s) =>
-                                          s.id === sub.id
-                                            ? {
-                                                ...s,
-
-                                                versions: s.versions.map((v) =>
-                                                  v.version === s.currentVersion
-                                                    ? {
-                                                        ...v,
-                                                        content: editingContent,
-                                                      }
-                                                    : v,
-                                                ),
-                                              }
-                                            : s,
-                                        ),
-                                      };
-                                    }
-
-                                    return sec;
-                                  }),
-                                );
-
-                                setEditingSubId(null);
-                              }}
+                              onClick={() =>
+                                handleSaveContent(
+                                  section.id,
+                                  sub.id,
+                                )
+                              }
                               className="bg-[#242525] text-white px-5 py-2 rounded-xl"
                             >
                               Save Content
@@ -1189,37 +1282,13 @@ export default function ProposalBuilder() {
                             <input
                               type="file"
                               className="hidden"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-
-                                if (!file) return;
-
-                                setSections(
-                                  sections.map((sec) => {
-                                    if (sec.id === section.id) {
-                                      return {
-                                        ...sec,
-
-                                        subsections: sec.subsections.map((s) =>
-                                          s.id === sub.id
-                                            ? {
-                                                ...s,
-
-                                                document: {
-                                                  name: file.name,
-                                                  size: file.size,
-                                                  type: file.type,
-                                                },
-                                              }
-                                            : s,
-                                        ),
-                                      };
-                                    }
-
-                                    return sec;
-                                  }),
-                                );
-                              }}
+                              onChange={(e) =>
+                                handleFileUpload(
+                                  e,
+                                  section.id,
+                                  sub.id,
+                                )
+                              }
                             />
                           </label>
 
