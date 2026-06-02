@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button.js";
 import type { DropResult } from "@hello-pangea/dnd";
@@ -448,7 +447,7 @@ const customizeContentWithTerms = (
 };
 
 // Function to analyze prompt and suggest relevant sections
-const analyzePromptAndGenerateSections = (prompt: string): SectionType[] => {
+const analyzePromptAndGenerateSections = ( prompt: string,): SectionType[] => {
   console.log(`🔍 Analyzing prompt: "${prompt}"`);
 
   const promptLower = prompt.toLowerCase();
@@ -819,105 +818,35 @@ export default function ProposalBuilder() {
 
   const [promptText, setPromptText] = useState<string>(DEFAULT_PROMPT);
 
-  const [sections, setSections] = useState<SectionType[]>(() => {
-    const savedSections = localStorage.getItem("proposalSections");
+  const [sections, setSections] = useState<SectionType[]>([]);
+     
+    useEffect(() => {
 
-    // For testing purposes, let's always use fresh data with our new content generation
-    // Comment out the next 2 lines if you want to keep using saved data
-    localStorage.removeItem("proposalSections");
-    return [
-      {
-        id: 1,
-        name: "Executive Summary",
-        checked: true,
+      const savedSections =
+        localStorage.getItem("proposalSections");
 
-        subsections: [
-          {
-            id: 11,
-            name: "System Architecture",
-            checked: true,
-            currentVersion: "v1",
+      if (
+        savedSections &&
+        JSON.parse(savedSections).length > 0
+      ) {
 
-            versions: [
-              {
-                version: "v1",
-                content: generateContent(
-                  "Executive Summary",
-                  "System Architecture",
-                  DEFAULT_PROMPT,
-                  0,
-                ),
-              },
-              {
-                version: "v2",
-                content: generateContent(
-                  "Executive Summary",
-                  "System Architecture",
-                  DEFAULT_PROMPT,
-                  1,
-                ),
-              },
-            ],
+        setSections(JSON.parse(savedSections));
 
-            url: "https://example.com/system-architecture-demo",
-            document: null,
+      } else {
 
-            generatedFiles: [
-              {
-                type: "pdf",
-                name: "summary.pdf",
-              },
-              {
-                type: "doc",
-                name: "architecture.docx",
-              },
-              {
-                type: "pdf",
-                name: "technical-overview.pdf",
-              },
-            ],
-          },
-        ],
-      },
+        const generatedSections =
+          analyzePromptAndGenerateSections(DEFAULT_PROMPT);
 
-      {
-        id: 2,
-        name: "Technical Overview",
-        checked: true,
-        subsections: [],
-      },
+        setSections(generatedSections);
 
-      {
-        id: 3,
-        name: "Features & Benefits",
-        checked: false,
-        subsections: [],
-      },
+        localStorage.setItem(
+          "proposalSections",
+          JSON.stringify(generatedSections)
+        );
+      }
 
-      {
-        id: 4,
-        name: "Compliance Information",
-        checked: false,
-        subsections: [],
-      },
+    }, []);
 
-      {
-        id: 5,
-        name: "Pricing & Terms",
-        checked: false,
-        subsections: [],
-      },
-    ];
-
-    // Original code (commented out for testing):
-    // return savedSections
-    //   ? JSON.parse(savedSections)
-    //   : [default sections...]
-  });
-
-  useEffect(() => {
-    localStorage.setItem("proposalSections", JSON.stringify(sections));
-  }, [sections]);
 
   /* =========================================================
      ADD SECTION
@@ -1000,7 +929,8 @@ export default function ProposalBuilder() {
   ========================================================= */
 
   const toggleSection = (sectionId: number) => {
-    setSections(
+
+    const updatedSections =
       sections.map((section) =>
         section.id === sectionId
           ? {
@@ -1008,7 +938,13 @@ export default function ProposalBuilder() {
               checked: !section.checked,
             }
           : section,
-      ),
+      );
+
+    setSections(updatedSections);
+
+    localStorage.setItem(
+      "proposalSections",
+      JSON.stringify(updatedSections)
     );
   };
 
@@ -1016,10 +952,16 @@ export default function ProposalBuilder() {
      TOGGLE SUBSECTION
   ========================================================= */
 
-  const toggleSubsection = (sectionId: number, subsectionId: number) => {
-    setSections(
+  const toggleSubsection = (
+    sectionId: number,
+    subsectionId: number,
+  ) => {
+
+    const updatedSections =
       sections.map((section) => {
+
         if (section.id === sectionId) {
+
           return {
             ...section,
 
@@ -1035,10 +977,15 @@ export default function ProposalBuilder() {
         }
 
         return section;
-      }),
+      });
+
+    setSections(updatedSections);
+
+    localStorage.setItem(
+      "proposalSections",
+      JSON.stringify(updatedSections)
     );
   };
-
   /* =========================================================
      DRAG END
   ========================================================= */
@@ -1554,7 +1501,7 @@ export default function ProposalBuilder() {
             </div>
           </div>
 
-          {/* FOOTER */}
+            {/* FOOTER */}
               <div className="p-4 border-t border-[#C6C6C6] flex justify-end bg-[#FDFCFD]">
                 <button
                   onClick={() => {

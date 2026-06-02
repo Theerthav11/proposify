@@ -61,7 +61,6 @@ onToolClick     //new when tool click
         gap-2
         flex
         items-center
-        //gap-3
         z-50
       "
     >
