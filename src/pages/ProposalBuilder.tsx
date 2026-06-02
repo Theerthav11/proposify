@@ -558,6 +558,12 @@ export default function ProposalBuilder() {
   const [promptText, setPromptText] = useState<string>(DEFAULT_PROMPT);
 
   const [sections, setSections] = useState<SectionType[]>([]);
+
+  const [editingSectionId, setEditingSectionId] =    // add state
+    useState<number | null>(null);
+
+  const [editingSectionName, setEditingSectionName] =
+    useState<string>("");
      
     useEffect(() => {
 
@@ -745,28 +751,40 @@ export default function ProposalBuilder() {
 
 
     // Rename Section
-    const handleRenameSection = (sectionId: number) => {
-    const section = sections.find((s) => s.id === sectionId);
+ 
+  const handleRenameSection = (       // Start Editing
+    sectionId: number,
+  ) => {
+    const section = sections.find(
+      (s) => s.id === sectionId,
+    );
 
     if (!section) return;
 
-    const newName = prompt(
-      "Enter section name",
-      section.name
-    );
+    setEditingSectionId(sectionId);
+    setEditingSectionName(section.name);
+  };
 
-    if (!newName?.trim()) return;
+  // Save Section Name
+  const handleSaveSectionName = (
+    sectionId: number,
+  ) => {
+    if (!editingSectionName.trim())
+      return;
 
     setSections((prev) =>
       prev.map((s) =>
         s.id === sectionId
           ? {
               ...s,
-              name: newName,
+              name: editingSectionName,
             }
           : s,
       ),
     );
+
+    setEditingSectionId(null);
+    setEditingSectionName("");
   };
 
   // Delete Section
@@ -1112,9 +1130,62 @@ export default function ProposalBuilder() {
                 >
                   {/* HEADER */}
                   <div className="bg-[#F3F3F3] p-4 flex items-center justify-between">
-                    <h3 className="font-semibold text-[#242525] text-xl">
-                      {section.name}
-                    </h3>
+                    {editingSectionId === section.id ? (             //Replace Section Header UI
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={editingSectionName}
+                          onChange={(e) =>
+                            setEditingSectionName(
+                              e.target.value,
+                            )
+                          }
+                          className="
+                            border
+                            border-[#C6C6C6]
+                            rounded-lg
+                            px-3
+                            py-2
+                          "
+                        />
+
+                        <button
+                          onClick={() =>
+                            handleSaveSectionName(
+                              section.id,
+                            )
+                          }
+                          className="
+                            bg-green-600
+                            text-white
+                            px-3
+                            py-2
+                            rounded-lg
+                          "
+                        >
+                          Save
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            setEditingSectionId(null)
+                          }
+                          className="
+                            bg-gray-400
+                            text-white
+                            px-3
+                            py-2
+                            rounded-lg
+                          "
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <h3 className="font-semibold text-[#242525] text-xl">
+                        {section.name}
+                      </h3>
+                    )}
 
                     <div className="flex items-center gap-3">
                       {/* EDIT */}

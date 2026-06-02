@@ -71,7 +71,6 @@ export default function Generate() {
 
   const [editableSlides, setEditableSlides] =   // initialize it from generatedSlides(add slide i between)
    useState<GeneratedSlideType[]>([]);
-
     useEffect(() => {
       setEditableSlides(generatedSlides);
     }, [generatedSlides]); 
