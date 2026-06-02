@@ -557,7 +557,15 @@ export default function ProposalBuilder() {
 
   const [promptText, setPromptText] = useState<string>(DEFAULT_PROMPT);
 
-  const [sections, setSections] = useState<SectionType[]>([]);
+  const [sections, setSections] = useState<SectionType[]>([]);   
+      useEffect(() => {                         // Auto-save sections whenever they change
+      if (sections.length > 0) {
+        localStorage.setItem(
+          "proposalSections",
+          JSON.stringify(sections)
+        );
+      }
+    }, [sections]);
 
   const [editingSectionId, setEditingSectionId] =    // add state
     useState<number | null>(null);
@@ -565,31 +573,33 @@ export default function ProposalBuilder() {
   const [editingSectionName, setEditingSectionName] =
     useState<string>("");
      
-    useEffect(() => {
-
+   useEffect(() => {
       const savedSections =
         localStorage.getItem("proposalSections");
 
-      if (
-        savedSections &&
-        JSON.parse(savedSections).length > 0
-      ) {
+      if (savedSections) {
+        try {
+          const parsed =
+            JSON.parse(savedSections);
 
-        setSections(JSON.parse(savedSections));
-
-      } else {
-
-        const generatedSections =
-          analyzePromptAndGenerateSections(DEFAULT_PROMPT);
-
-        setSections(generatedSections);
-
-        localStorage.setItem(
-          "proposalSections",
-          JSON.stringify(generatedSections)
-        );
+          if (parsed.length > 0) {
+            setSections(parsed);
+            return;
+          }
+        } catch (error) {
+          console.error(
+            "Failed to parse proposalSections",
+            error,
+          );
+        }
       }
 
+      const generatedSections =
+        analyzePromptAndGenerateSections(
+          DEFAULT_PROMPT,
+        );
+
+      setSections(generatedSections);
     }, []);
 
 
@@ -597,7 +607,7 @@ export default function ProposalBuilder() {
      ADD SECTION
   ========================================================= */
 
-  const addSection = () => {
+  const addSection = () => {             // Update addSection()
     const newSection: SectionType = {
       id: Date.now(),
       name: `Section ${sections.length + 1}`,
@@ -607,7 +617,6 @@ export default function ProposalBuilder() {
 
     setSections([...sections, newSection]);
   };
-
   /* =========================================================
      ADD SUBSECTION
   ========================================================= */
@@ -687,10 +696,6 @@ export default function ProposalBuilder() {
 
     setSections(updatedSections);
 
-    localStorage.setItem(
-      "proposalSections",
-      JSON.stringify(updatedSections)
-    );
   };
 
   /* =========================================================
@@ -725,26 +730,26 @@ export default function ProposalBuilder() {
       });
 
     setSections(updatedSections);
-
-    localStorage.setItem(
-      "proposalSections",
-      JSON.stringify(updatedSections)
-    );
   };
   /* =========================================================
      DRAG END
   ========================================================= */
 
-  const handleDragEnd = (result: DropResult) => {
+  const handleDragEnd = (result: DropResult) => {       //Update handleDragEnd()
     if (!result.destination) return;
 
     const items = Array.from(sections);
 
-    const [reorderedItem] = items.splice(result.source.index, 1);
+    const [reorderedItem] =
+      items.splice(result.source.index, 1);
 
     if (!reorderedItem) return;
 
-    items.splice(result.destination.index, 0, reorderedItem);
+    items.splice(
+      result.destination.index,
+      0,
+      reorderedItem,
+    );
 
     setSections(items);
   };
@@ -1382,43 +1387,16 @@ export default function ProposalBuilder() {
 
             {/* FOOTER */}
               <div className="p-4 border-t border-[#C6C6C6] flex justify-end bg-[#FDFCFD]">
-                <button
+                <Button
                   onClick={() => {
-                    // FILTER ONLY CHECKED SECTIONS
-                    const filteredSections = sections
-                      .filter((section) => section.checked)
+                    const generatedSections =
+                      analyzePromptAndGenerateSections(promptText);
 
-                      .map((section) => ({
-                        ...section,
-
-                        // FILTER ONLY CHECKED SUBSECTIONS
-                        subsections: section.subsections.filter(
-                          (sub) => sub.checked,
-                        ),
-                      }));
-
-                    // SAVE FILTERED DATA
-                    localStorage.setItem(
-                      "generatedProposal",
-                      JSON.stringify(filteredSections),
-                    );
-
-                    // NAVIGATE
-                    navigate("/generate");
+                    setSections(generatedSections);
                   }}
-                  className="
-                    bg-[#242525]
-                    text-white
-                    px-6
-                    py-3
-                    rounded-xl
-                    font-medium
-                    hover:bg-black
-                    transition
-                  "
                 >
-                  Generate
-                </button>
+                  Generate from Prompt
+                </Button>
               </div>
         </div>
       </div>
