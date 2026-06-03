@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Sparkles, Palette, X, Crown, Plus, Play, Share2, Send, ChevronDown,} from "lucide-react";
 import BottomInsertToolbar from "../components/ui/BottomInsertToolbar.js";
 import LayoutSidebar from "../components/ui/LayoutSidebar.js";
+import { themes } from '../data/themes.js';
+import { splitSlideContent } from "../lib/utils.js";
 
 interface VersionType {
   version: string;
@@ -39,10 +41,10 @@ export default function Generate() {
 
    const navigate = useNavigate();
 
-  const [generatedSlides, setGeneratedSlides] =
+   const [generatedSlides, setGeneratedSlides] =
    useState<GeneratedSlideType[]>([]);
 
-  const slideRefs = useRef<(HTMLDivElement | null)[]>([]); // useref for store references to slide elements on the right panel so you can automatically scroll to them.
+   const slideRefs = useRef<(HTMLDivElement | null)[]>([]); // useref for store references to slide elements on the right panel so you can automatically scroll to them.
 
     useEffect(() => {                      // If the user manually scrolls the right panel, the left sidebar should automatically select the visible slide
     const observer = new IntersectionObserver(
@@ -64,299 +66,139 @@ export default function Generate() {
 
     slideRefs.current.forEach((slide) => {
       if (slide) observer.observe(slide);
-    });
-
-    return () => observer.disconnect();
-  }, [generatedSlides]);
-
-  const [editableSlides, setEditableSlides] =   // initialize it from generatedSlides(add slide i between)
-   useState<GeneratedSlideType[]>([]);
-    useEffect(() => {
-      setEditableSlides(generatedSlides);
-    }, [generatedSlides]); 
-
-  const proposalData: SectionType[] =
-    JSON.parse(
-      localStorage.getItem("generatedProposal") || "[]"
-    );
-  const savedSections = localStorage.getItem("generatedProposal");
-
-  const [sections, setSections] =
-    useState<SectionType[]>([]);
-
-    useEffect(() => {
-      if (savedSections) {
-        setSections(JSON.parse(savedSections));
-      }
-    }, [savedSections]);
-
-  // const [slides] =
-  //   useState<SectionType[]>(proposalData);
-
-  const [activeSlide, setActiveSlide] =
-    useState(0);
-
-  const [uploadedFile, setUploadedFile] =
-    useState<File | null>(null);
-
-  const [message, setMessage] =
-    useState("");
-
-  const [zoom, setZoom] = useState(1);
-  const [showAgent, setShowAgent] =
-  useState(false);
-
-  const [showThemePanel, setShowThemePanel] =
-  useState(false);
-
-  const [selectedTheme, setSelectedTheme] =
-    useState("Professional"); 
-
-  const [showLayoutPanel, setShowLayoutPanel] = useState(false);
-
-    // chaged for theme
-    // Theme definitions (like Gamma)
-  const themes = {
-    Professional: {
-      name: "Professional",
-      gradient: "from-slate-600 to-slate-800",
-      bg: "from-slate-100 to-slate-200",
-      description: "Clean and professional",
-    },
-    Ocean: {
-      name: "Ocean",
-      gradient: "from-blue-500 to-cyan-400",
-      bg: "from-blue-50 to-cyan-50",
-      description: "Fresh and modern",
-    },
-    Sunset: {
-      name: "Sunset",
-      gradient: "from-orange-500 to-pink-500",
-      bg: "from-orange-50 to-pink-50",
-      description: "Warm and energetic",
-    },
-    Forest: {
-      name: "Forest",
-      gradient: "from-emerald-500 to-green-600",
-      bg: "from-emerald-50 to-green-50",
-      description: "Natural and calming",
-    },
-    Purple: {
-      name: "Purple",
-      gradient: "from-violet-500 to-purple-600",
-      bg: "from-violet-50 to-purple-50",
-      description: "Creative and bold",
-    },
-    Dark: {
-      name: "Dark",
-      gradient: "from-gray-800 to-black",
-      bg: "from-gray-100 to-gray-200",
-      description: "Sleek and modern",
-    },
-  };
-
-  const currentTheme = themes[selectedTheme as keyof typeof themes];
-
-  // Section colors for slides
-  const sectionColors = [
-    "from-blue-500 to-cyan-400",
-    "from-violet-500 to-purple-400",
-    "from-emerald-500 to-green-400",
-    "from-orange-500 to-amber-400",
-    "from-pink-500 to-rose-400",
-    "from-indigo-500 to-blue-400",
-    "from-red-500 to-pink-400",
-    "from-yellow-500 to-orange-400",
-  ];   // eneded the change
-  
-    function splitSlideContent(content: string): string[] {
-      if (!content.trim()) {
-        return [""];
-      }
-
-      const MAX_CHARS = 420;
-
-      const slides: string[] = [];
-
-      // Split into blocks
-      const blocks = content
-        .split(/\n\s*\n/)
-        .map((b) => b.trim())
-        .filter(Boolean);
-
-      let currentSlide = "";
-
-      const pushSlide = () => {
-        if (currentSlide.trim()) {
-          slides.push(currentSlide.trim());
-          currentSlide = "";
-        }
-      };
-
-      blocks.forEach((block) => {
-
-        // Detect bullet list
-        const isBulletBlock =
-          block.includes("•") ||
-          block.includes("- ") ||
-          block.includes("* ");
-
-        // ----------------------------------------
-        // BULLET CONTENT
-        // ----------------------------------------
-
-        if (isBulletBlock) {
-
-          const lines = block
-            .split("\n")
-            .map((l) => l.trim())
-            .filter(Boolean);
-
-          lines.forEach((line) => {
-
-            if (
-              (currentSlide + "\n" + line).length >
-              MAX_CHARS
-            ) {
-              pushSlide();
-            }
-
-            currentSlide +=
-              (currentSlide ? "\n" : "") + line;
-          });
-
-          currentSlide += "\n";
-
-        }
-
-        // ----------------------------------------
-        // NORMAL PARAGRAPH
-        // ----------------------------------------
-
-        else {
-
-          // Split into sentences
-          const sentences =
-            block.match(/[^.!?]+[.!?]+/g) || [block];
-
-          sentences.forEach((sentence) => {
-
-            if (
-              (currentSlide + " " + sentence).length >
-              MAX_CHARS
-            ) {
-              pushSlide();
-            }
-
-            currentSlide +=
-              (currentSlide ? " " : "") +
-              sentence.trim();
-          });
-
-          currentSlide += "\n\n";
-        }
       });
 
-      pushSlide();
+      return () => observer.disconnect();
+    }, [generatedSlides]);
 
-      return slides;
-    }
-  /* =========================
-     GENERATE SLIDES
-  ========================= */
+    const [sections, setSections] =        // initialize state directly from localStorage and remove the effect completely:
+      useState<SectionType[]>(() => {
+        const saved =
+          localStorage.getItem("generatedProposal");
 
-  useEffect(() => {
-    const slidesData: GeneratedSlideType[] = [];
+        return saved
+          ? JSON.parse(saved)
+          : [];
+      });
 
-    sections.forEach((section) => {
-      (section.subsections || []).forEach((subsection, subsectionIndex) => {
-        const content =
-          subsection.versions?.find(
-            (v) => v.version === subsection.currentVersion
-          )?.content || "";
+    const slideIndexMap = useMemo(() => {
+    const map = new Map();
 
-        const splitContent = splitSlideContent(content);
+      generatedSlides.forEach((slide, index) => {
+        map.set(slide.id, index);
+      });
 
-        splitContent.forEach((part, splitIndex) => {
-          slidesData.push({
-            id: `${subsection.id}-${splitIndex}`,
-            title:
-              splitContent.length > 1
-                ? `${subsection.name} (${splitIndex + 1}/${splitContent.length})`
-                : subsection.name,
-            content: part,
-            sectionName: section.name,
-            subsectionName: subsection.name,
-            layout: "blank",
-            elements: [],
-            sectionColor: currentTheme.gradient,
-            showSectionTitle:
-              subsectionIndex === 0 && splitIndex === 0,
+      return map;
+    }, [generatedSlides]); 
+    
+    const [activeSlide, setActiveSlide] = useState(0);
+
+    const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+
+    const [message, setMessage] = useState("");
+
+    const [zoom, setZoom] = useState(1);
+
+    const [showAgent, setShowAgent] = useState(false);
+
+    const [showThemePanel, setShowThemePanel] = useState(false);
+
+    const [selectedTheme, setSelectedTheme] = useState<keyof typeof themes>("Professional"); 
+
+    const [showLayoutPanel, setShowLayoutPanel] = useState(false);
+
+    const currentTheme = themes[selectedTheme]!;
+
+  
+   
+    /* =========================
+      GENERATE SLIDES
+    ========================= */
+
+    useEffect(() => {
+      const slidesData: GeneratedSlideType[] = [];
+
+      sections.forEach((section) => {
+        (section.subsections || []).forEach((subsection, subsectionIndex) => {
+          const content =
+            subsection.versions?.find(
+              (v) => v.version === subsection.currentVersion
+            )?.content || "";
+
+          const splitContent = splitSlideContent(content);
+
+          splitContent.forEach((part, splitIndex) => {
+            slidesData.push({
+              id: `${subsection.id}-${splitIndex}`,
+              title:
+                splitContent.length > 1
+                  ? `${subsection.name} (${splitIndex + 1}/${splitContent.length})`
+                  : subsection.name,
+              content: part,
+              sectionName: section.name,
+              subsectionName: subsection.name,
+              layout: "blank",
+              elements: [],
+              sectionColor: currentTheme.gradient,
+              showSectionTitle:
+                subsectionIndex === 0 && splitIndex === 0,
+            });
           });
         });
       });
-    });
 
-    setGeneratedSlides(slidesData);
-  }, [sections, currentTheme.gradient]);// Re-generate when theme changes(new change)
+      setGeneratedSlides(slidesData);
+    }, [sections, currentTheme.gradient]);// Re-generate when theme changes(new change)
 
-const currentSlide: GeneratedSlideType =
-  generatedSlides[activeSlide] || {
-    id: "default-slide",
-    title: "",
-    content: "",
-    sectionName: "",
-    subsectionName: "",
-    layout: "blank",
-    elements: [],
-    sectionColor:currentTheme.gradient,  // changed for theme
-    showSectionTitle: false,
-  };
-
-  const handleAddSlide = () => {
-      const newSlide: GeneratedSlideType = {
-      id: Date.now(),
-      title: "New Slide",
-      content: "Click here to edit content",
-      sectionName: currentSlide.sectionName, // important
-      subsectionName: currentSlide.subsectionName,
+    const currentSlide: GeneratedSlideType =
+    generatedSlides[activeSlide] || {
+      id: "default-slide",
+      title: "",
+      content: "",
+      sectionName: "",
+      subsectionName: "",
       layout: "blank",
       elements: [],
-      sectionColor: currentTheme.gradient,
+      sectionColor:currentTheme.gradient,  // changed for theme
       showSectionTitle: false,
-      isCustom: true,
     };
+
+    const handleAddSlide = () => {
+        const newSlide: GeneratedSlideType = {
+        id: Date.now(),
+        title: "New Slide",
+        content: "Click here to edit content",
+        sectionName: currentSlide.sectionName, // important
+        subsectionName: currentSlide.subsectionName,
+        layout: "blank",
+        elements: [],
+        sectionColor: currentTheme.gradient,
+        showSectionTitle: false,
+        isCustom: true,
+      };
   
     
 
-    setGeneratedSlides((prev) => {
-    const updated = [...prev];
-    updated.splice(activeSlide + 1, 0, newSlide);
-    return updated;
-  });
+      setGeneratedSlides((prev) => {
+      const updated = [...prev];
+      updated.splice(activeSlide + 1, 0, newSlide);
+      return updated;
+    });
 
     const newIndex = activeSlide + 1;
 
-    setTimeout(() => {
-      setActiveSlide(newIndex);
+      setTimeout(() => {
+        setActiveSlide(newIndex);
 
-      slideRefs.current[newIndex]?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }, 100);
-  };
+        slideRefs.current[newIndex]?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 100);
+    };
+    
 
-  // function applyLayout(layoutId:string) {
-  //   const updated=[...slides];
-  //     updated[activeSlide]={
-  //     ...updated[activeSlide],
-  //     layout:layoutId
-  //     }
-  //   setSlides(updated);
-  // } // added for apply layout for all slides
-
-  return (
+   return (
 
     <div className="h-screen flex overflow-hidden bg-[#EDF5FF]">
 
@@ -385,27 +227,32 @@ const currentSlide: GeneratedSlideType =
 
             <div
               className="
-                w-11
-                h-11
+                w-10
+                h-10
                 rounded-2xl
-                bg-[#2563EB]
+                bg-gradient-to-br
+                from-[#242525]
+                to-[#4D4D4D]
                 flex
                 items-center
                 justify-center
                 text-white
+                font-bold
+                text-sm
+                shadow-lg
               "
             >
-              <Sparkles size={20} />
+              P
             </div>
 
             <div>
 
               <h2 className="font-bold text-[#0F172A]">
-                AI Presentation
+                Proposify
               </h2>
 
               <p className="text-xs text-[#64748B]">
-                Gamma Style Editor
+               Proposal Intelligence
               </p>
 
             </div>
@@ -417,6 +264,7 @@ const currentSlide: GeneratedSlideType =
           <button
              onClick={handleAddSlide}
             className="
+            mt-2
             px-4
             py-2
             rounded-2xl
@@ -442,7 +290,7 @@ const currentSlide: GeneratedSlideType =
           <button
             onClick={() => navigate("/proposal-builder")}
             className="
-            mt-4
+            mt-2
             w-full
             px-4
             py-2
@@ -476,7 +324,7 @@ const currentSlide: GeneratedSlideType =
           <div className="flex-1 overflow-y-auto px-3 py-4">
 
             {sections.map(
-              (section, sectionIndex) => {
+              (section) => {
 
                 const sectionColor =
                   currentTheme.gradient; // changed for theme change
@@ -555,12 +403,6 @@ const currentSlide: GeneratedSlideType =
                           const splitContent =
                            splitSlideContent(content);
 
-                           const sidebarSlides = generatedSlides.filter(
-                              (slide) =>
-                                slide.sectionName === section.name &&
-                                slide.subsectionName === subsection.name
-                            );
-
                           return (
 
                             <div
@@ -602,13 +444,9 @@ const currentSlide: GeneratedSlideType =
                                   ) => {
 
                                     const slideIndex =
-                                      generatedSlides.findIndex(
-                                        (
-                                          slide: GeneratedSlideType
-                                        ) =>
-                                          slide.id ===
-                                          `${subsection.id}-${splitIndex}`
-                                      );
+                                      slideIndexMap.get(
+                                        `${subsection.id}-${splitIndex}`
+                                      ) ?? -1;
 
                                     return (
 
@@ -996,32 +834,7 @@ const currentSlide: GeneratedSlideType =
             <Play size={16} />
             Present
           </button>
-
-          <button
-            className="
-            px-4
-            py-2
-            rounded-2xl
-            bg-white/80
-            backdrop-blur-lg
-            border
-            border-white/40
-            shadow-sm
-            hover:shadow-lg
-            hover:scale-[1.02]
-            transition-all
-            duration-300
-            flex
-            items-center
-            gap-2
-            text-[#0F172A]
-            font-medium
-            "
-          >
-            <Crown size={16} />
-            Upgrade
-          </button>
-
+          
         </div>
 
         </div>

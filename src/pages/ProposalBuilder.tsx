@@ -541,9 +541,8 @@ Thanks,
 John Smith`;
 
 export default function ProposalBuilder() {
+  
   const navigate = useNavigate();
-
-  const [selectedTab, setSelectedTab] = useState<string>("builder");
 
   const sectionRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
@@ -558,39 +557,34 @@ export default function ProposalBuilder() {
   const [promptText, setPromptText] = useState<string>(DEFAULT_PROMPT);
 
   const [sections, setSections] = useState<SectionType[]>([]);   
-      useEffect(() => {                         // Auto-save sections whenever they change
-      if (sections.length > 0) {
-        localStorage.setItem(
-          "proposalSections",
-          JSON.stringify(sections)
-        );
-      }
+
+    useEffect(() => {               // Automatically saves every change to sections in localStorage.
+      if (sections.length === 0) return;         //  No need to manually call localStorage.setItem() in multiple functions.
+
+      localStorage.setItem(
+        "proposalSections",
+        JSON.stringify(sections),
+      );
     }, [sections]);
 
-  const [editingSectionId, setEditingSectionId] =    // add state
-    useState<number | null>(null);
+  
+    const [editingSectionId, setEditingSectionId] =      // Section editing state
+      useState<number | null>(null);
 
-  const [editingSectionName, setEditingSectionName] =
-    useState<string>("");
+    const [editingSectionName, setEditingSectionName] =
+      useState<string>("");
      
-   useEffect(() => {
+    useEffect(() => {                       // Removes unnecessary blank lines and nested formatting, making the loading logic easier to read.
       const savedSections =
         localStorage.getItem("proposalSections");
 
       if (savedSections) {
-        try {
-          const parsed =
-            JSON.parse(savedSections);
+        const parsedSections =
+          JSON.parse(savedSections);
 
-          if (parsed.length > 0) {
-            setSections(parsed);
-            return;
-          }
-        } catch (error) {
-          console.error(
-            "Failed to parse proposalSections",
-            error,
-          );
+        if (parsedSections.length > 0) {
+          setSections(parsedSections);
+          return;
         }
       }
 
@@ -1288,6 +1282,16 @@ export default function ProposalBuilder() {
                           >
                             ✏ Edit
                           </button>
+
+                          {/* DELETE */}
+                          <button
+                            onClick={() =>
+                              handleDeleteSection(section.id)
+                            }
+                            className="border border-[#C6C6C6] text-red-500 px-4 py-2 rounded-xl text-sm"
+                          >
+                            🗑 Delete
+                          </button>
                         </div>
                       </div>
 
@@ -1385,19 +1389,47 @@ export default function ProposalBuilder() {
             </div>
           </div>
 
-            {/* FOOTER */}
-              <div className="p-4 border-t border-[#C6C6C6] flex justify-end bg-[#FDFCFD]">
-                <Button
-                  onClick={() => {
-                    const generatedSections =
-                      analyzePromptAndGenerateSections(promptText);
+            
+             {/* FOOTER */}
+            <div className="p-4 border-t border-[#C6C6C6] flex justify-end bg-[#FDFCFD]">
+             <button
+                onClick={() => {
+                    // FILTER ONLY CHECKED SECTIONS
+                  const filteredSections = sections
+                      .filter((section) => section.checked)
 
-                    setSections(generatedSections);
+                      .map((section) => ({
+                        ...section,
+
+                        // FILTER ONLY CHECKED SUBSECTIONS
+                        subsections: section.subsections.filter(
+                          (sub) => sub.checked,
+                        ),
+                      }));
+
+                    // SAVE FILTERED DATA
+                    localStorage.setItem(
+                      "generatedProposal",
+                      JSON.stringify(filteredSections),
+                    );
+
+                    // NAVIGATE
+                    navigate("/generate");
                   }}
+                  className="
+                    bg-[#242525]
+                    text-white
+                    px-6
+                    py-3
+                    rounded-xl
+                    font-medium
+                    hover:bg-black
+                    transition
+                  "
                 >
-                  Generate from Prompt
-                </Button>
-              </div>
+                Generate
+              </button>
+            </div>
         </div>
       </div>
     </div>
