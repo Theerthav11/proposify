@@ -137,7 +137,7 @@ export default function Generate() {
               content: part,
               sectionName: section.name,
               subsectionName: subsection.name,
-              layout: "blank",
+              layout: "default",
               elements: [],
               sectionColor: currentTheme.gradient,
               showSectionTitle:
@@ -157,7 +157,7 @@ export default function Generate() {
       content: "",
       sectionName: "",
       subsectionName: "",
-      layout: "blank",
+      layout: "default",
       elements: [],
       sectionColor:currentTheme.gradient,  // changed for theme
       showSectionTitle: false,
@@ -170,7 +170,7 @@ export default function Generate() {
         content: "Click here to edit content",
         sectionName: currentSlide.sectionName, // important
         subsectionName: currentSlide.subsectionName,
-        layout: "blank",
+        layout: "deafult",
         elements: [],
         sectionColor: currentTheme.gradient,
         showSectionTitle: false,
@@ -196,6 +196,20 @@ export default function Generate() {
         });
       }, 100);
     };
+
+    const handleLayoutChange = (layoutId: string) => {
+      setGeneratedSlides((prev) => {
+        const updated = [...prev];
+        if (updated[activeSlide]) {
+          updated[activeSlide] = {
+            ...updated[activeSlide],
+            layout: layoutId,
+          };
+        }
+        return updated;
+      });
+    };
+
     
 
    return (
@@ -1393,15 +1407,16 @@ export default function Generate() {
           )}
 
           {/* LAYOUT PANEL */}
-          {showLayoutPanel &&(
-          <LayoutSidebar
-          onClose={()=>setShowLayoutPanel(false)}
-          // onSelect={(layoutId)=>{
-          // applyLayout(layoutId);
-          // setShowLayoutPanel(false);
-          // }}
-          />
+          {showLayoutPanel && (
+            <LayoutSidebar
+              onClose={() => setShowLayoutPanel(false)}
+              onSelect={(layoutId: string) => {
+                handleLayoutChange(layoutId);
+                setShowLayoutPanel(false);
+              }}
+            />
           )}
+
 
           {/* =========================================================
             SLIDE CANVAS
@@ -1457,205 +1472,133 @@ export default function Generate() {
                   `}
                 >
 
-                  <div className="flex h-full">
-
-                    {/* LEFT CONTENT */}
-
-                    <div
-                      className="
-                        w-[60%]
-                        p-14
-                        flex
-                        flex-col
-                        justify-center
-                      "
-                    >
-
-                      {slide.showSectionTitle && (
-                        <div
-                          className={`
-                            inline-flex
-                            px-4
-                            py-2
-                            rounded-full
-                            text-white
-                            text-xs
-                            font-bold
-                            mb-6
-                            bg-gradient-to-r
-                            ${slide.sectionColor}
-                          `}
+                  {/* Render based on layout */}
+                  {/* BLANK LAYOUT - Centered content only */}
+                  {slide.layout === "blank" && (
+                    <div className="flex h-full items-center justify-center p-14">
+                      <div className="text-center">
+                        <h1
+                          contentEditable
+                          suppressContentEditableWarning
+                          className="text-5xl font-bold text-[#1E293B] leading-[1.1] outline-none"
                         >
-                          {slide.sectionName}
-                        </div>
-                      )}
-
-                      <h1
-                        contentEditable
-                        suppressContentEditableWarning
-                        className="
-                          text-4xl
-                          font-bold
-                          text-[#1E293B]
-                          leading-[1.1]
-                          outline-none
-                        "
-                      >
-                        {slide.title}
-                      </h1>
-
-                      <p
-                        contentEditable
-                        suppressContentEditableWarning
-                        className="
-                          mt-5
-                          text-[17px]
-                          text-[#64748B]
-                          leading-relaxed
-                          whitespace-pre-line
-                          outline-none
-                        "
-                      >
-                        {slide.content}
-                      </p>
-
+                          {slide.title}
+                        </h1>
+                        <p
+                          contentEditable
+                          suppressContentEditableWarning
+                          className="mt-5 text-[20px] text-[#64748B] leading-relaxed outline-none"
+                        >
+                          {slide.content}
+                        </p>
+                      </div>
                     </div>
+                  )}
 
-                    {/* RIGHT DESIGN PANEL */}
-
-                    <div
-                      className={`
-                        w-[40%]
-                        relative
-                        overflow-hidden
-                        flex
-                        items-center
-                        justify-center
-                        bg-gradient-to-br
-                        ${slide.sectionColor}
-                      `}
-                    >
-
-                      {/* BIG CURVE */}
-
-                      <div
-                        className="
-                          absolute
-                          -left-28
-                          top-0
-                          w-[320px]
-                          h-full
-                          bg-white/85
-                          backdrop-blur-xl
-                          rounded-r-[180px]
-                          opacity-95
-                        "
-                      />
-
-                      {/* GLASS CIRCLE */}
-
-                      <div
-                        className="
-                          absolute
-                          w-[380px]
-                          h-[380px]
-                          rounded-full
-                          border
-                          border-white/30
-                          bg-white/10
-                          backdrop-blur-xl
-                        "
-                      />
-
-                      {/* TOP LIGHT */}
-
-                      <div
-                        className="
-                          absolute
-                          top-10
-                          right-10
-                          w-28
-                          h-28
-                          rounded-full
-                          bg-white/20
-                          blur-2xl
-                        "
-                      />
-
-                      {/* BOTTOM LIGHT */}
-
-                      <div
-                        className="
-                          absolute
-                          bottom-10
-                          left-10
-                          w-36
-                          h-36
-                          rounded-full
-                          bg-cyan-300/30
-                          blur-3xl
-                        "
-                      />
-
-                      {/* FLOATING DOTS */}
-
-                      <div
-                        className="
-                          absolute
-                          top-20
-                          left-20
-                          w-4
-                          h-4
-                          rounded-full
-                          bg-white/70
-                        "
-                      />
-
-                      <div
-                        className="
-                          absolute
-                          bottom-24
-                          right-20
-                          w-6
-                          h-6
-                          rounded-full
-                          bg-cyan-200/60
-                        "
-                      />
-
-                      <div
-                        className="
-                          absolute
-                          top-1/2
-                          right-10
-                          w-3
-                          h-3
-                          rounded-full
-                          bg-white/70
-                        "
-                      />
-
-                      {/* IMAGE */}
-
-                      <img
-                        src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png"
-                        alt="ppt"
-                        className="
-                          w-[300px]
-                          h-[300px]
-                          object-contain
-                          z-10
-                          drop-shadow-[0_20px_40px_rgba(0,0,0,0.25)]
-                          hover:scale-105
-                          transition-all
-                          duration-500
-                        "
-                      />
-
+                  {/* TITLE SLIDE - Large centered title only */}
+                  {slide.layout === "title-slide" && (
+                    <div className="flex h-full items-center justify-center p-14">
+                      <div className="text-center w-full">
+                        <h1
+                          contentEditable
+                          suppressContentEditableWarning
+                          className="text-6xl font-bold text-[#1E293B] leading-[1.1] outline-none"
+                        >
+                          {slide.title}
+                        </h1>
+                      </div>
                     </div>
+                  )}
 
-                  </div>
+                  {/* TWO CONTENT - Split 50/50 */}
+                  {slide.layout === "two-content" && (
+                    <div className="flex h-full">
+                      {/* LEFT SIDE */}
+                      <div className="w-1/2 p-14 flex flex-col justify-center border-r border-gray-200">
+                        {slide.showSectionTitle && (
+                          <div
+                            className={`inline-flex px-4 py-2 rounded-full text-white text-xs font-bold mb-6 bg-gradient-to-r ${
+                              slide.sectionColor || "from-blue-500 to-cyan-400"
+                            }`}
+                          >
+                            {slide.sectionName}
+                          </div>
+                        )}
+                        <h1
+                          contentEditable
+                          suppressContentEditableWarning
+                          className="text-4xl font-bold text-[#1E293B] leading-[1.1] outline-none"
+                        >
+                          {slide.title}
+                        </h1>
+                      </div>
+                      {/* RIGHT SIDE */}
+                      <div className="w-1/2 p-14 flex flex-col justify-center">
+                        <p
+                          contentEditable
+                          suppressContentEditableWarning
+                          className="text-[17px] text-[#64748B] leading-relaxed whitespace-pre-line outline-none"
+                        >
+                          {slide.content}
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
+                  {/* DEFAULT LAYOUT - 60/40 split with decorative right side */}
+                  {(slide.layout === "default" ||
+                    !slide.layout ||
+                    !["blank", "title-slide", "two-content"].includes(slide.layout)) && (
+                    <div className="flex h-full">
+                      {/* LEFT 60% */}
+                      <div className="w-[60%] p-14 flex flex-col justify-center">
+                        {slide.showSectionTitle && (
+                          <div
+                            className={`inline-flex px-4 py-2 rounded-full text-white text-xs font-bold mb-6 bg-gradient-to-r ${
+                              slide.sectionColor || "from-blue-500 to-cyan-400"
+                            }`}
+                          >
+                            {slide.sectionName}
+                          </div>
+                        )}
+                        <h1
+                          contentEditable
+                          suppressContentEditableWarning
+                          className="text-4xl font-bold text-[#1E293B] leading-[1.1] outline-none"
+                        >
+                          {slide.title}
+                        </h1>
+                        <p
+                          contentEditable
+                          suppressContentEditableWarning
+                          className="mt-5 text-[17px] text-[#64748B] leading-relaxed whitespace-pre-line outline-none"
+                        >
+                          {slide.content}
+                        </p>
+                      </div>
+
+                      {/* RIGHT 40% - DECORATIVE */}
+                      <div
+                        className={`w-[40%] relative overflow-hidden flex items-center justify-center bg-gradient-to-br ${
+                          slide.sectionColor || "from-[#4F46E5] via-[#6366F1] to-[#06B6D4]"
+                        }`}
+                      >
+                        {/* All the decorative elements */}
+                        <div className="absolute -left-28 top-0 w-[320px] h-full bg-white/85 backdrop-blur-xl rounded-r-[180px] opacity-95" />
+                        <div className="absolute w-[380px] h-[380px] rounded-full border border-white/30 bg-white/10 backdrop-blur-xl" />
+                        <div className="absolute top-10 right-10 w-28 h-28 rounded-full bg-white/20 blur-2xl" />
+                        <div className="absolute bottom-10 left-10 w-36 h-36 rounded-full bg-cyan-300/30 blur-3xl" />
+                        <div className="absolute top-20 left-20 w-4 h-4 rounded-full bg-white/70" />
+                        <div className="absolute bottom-24 right-20 w-6 h-6 rounded-full bg-cyan-200/60" />
+                        <div className="absolute top-1/2 right-10 w-3 h-3 rounded-full bg-white/70" />
+                        <img
+                          src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png"
+                          alt="ppt"
+                          className="w-[300px] h-[300px] object-contain z-10 drop-shadow-[0_20px_40px_rgba(0,0,0,0.25)] hover:scale-105 transition-all duration-500"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
               ))}
