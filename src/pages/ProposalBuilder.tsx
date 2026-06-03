@@ -4,6 +4,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button.js";
 import type { DropResult } from "@hello-pangea/dnd";
 import { contentTemplates } from "@/data/contentTemplates.js";
+import { contentGenerationConfig } from "@/data/contentGenerationConfig.js";
 
 /* =========================================================
    TYPES
@@ -50,31 +51,10 @@ interface SectionType {
 
 // Function to extract key terms from prompt
 const extractKeyTerms = (prompt: string): string[] => {
-  const commonTerms = [
-    "smart building",
-    "management system",
-    "architecture",
-    "features",
-    "timeline",
-    "cost",
-    "budget",
-    "integration",
-    "security",
-    "performance",
-    "scalability",
-    "user experience",
-    "mobile",
-    "cloud",
-    "database",
-    "api",
-    "dashboard",
-    "reporting",
-    "analytics",
-    "automation",
-  ];
-
   const promptLower = prompt.toLowerCase();
-  return commonTerms.filter((term) => promptLower.includes(term));
+  return contentGenerationConfig.commonTerms.filter((term) => 
+    promptLower.includes(term)
+  );
 };
 
 // Function to generate contextual content
@@ -131,235 +111,158 @@ const generateContent = (
   return content;
 };
 
-// Fallback content generator
+// Fallback content generator (now uses config)
 const generateFallbackContent = (
   sectionName: string,
   subsectionName: string,
   keyTerms: string[],
 ): string => {
-  const termsList =
-    keyTerms.length > 0
-      ? keyTerms.slice(0, 3).join(", ")
-      : "system requirements";
+  const termsList = keyTerms.length > 0
+    ? keyTerms.slice(0, 3).join(", ")
+    : "system requirements";
 
-  return `This ${subsectionName.toLowerCase()} section addresses the key aspects of ${termsList} as outlined in your requirements.
+  let content = contentGenerationConfig.fallbackContent.template;
+  content = content.replace(/{subsectionName}/g, subsectionName.toLowerCase());
+  content = content.replace(/{termsList}/g, termsList);
+  content = content.replace(/{sectionNameLower}/g, sectionName.toLowerCase());
+  
+  const bulletPoints = contentGenerationConfig.fallbackContent.bulletPoints.join("\n");
+  content = content.replace(/{bulletPoints}/g, bulletPoints);
 
-Key Considerations:
-• Comprehensive analysis of project requirements
-• Industry best practices and standards compliance
-• Scalable solution architecture and design
-• Performance optimization and security measures
-• User experience and interface design principles
-• Integration capabilities with existing systems
-
-Our approach ensures that all ${sectionName.toLowerCase()} requirements are met while providing a foundation for future growth and enhancement.
-
-The proposed solution incorporates modern technologies and methodologies to deliver exceptional results that align with your business objectives and technical requirements.`;
+  return content;
 };
 
-// Function to customize content with extracted terms
+// Function to customize content with extracted terms (now uses config)
 const customizeContentWithTerms = (
   content: string,
   keyTerms: string[],
 ): string => {
   let customizedContent = content;
 
-  // Add context-specific enhancements
-  if (keyTerms.includes("smart building")) {
-    customizedContent = customizedContent.replace(
-      "system",
-      "smart building management system",
-    );
-  }
+  // Apply customizations from config
+  contentGenerationConfig.contentCustomizations.forEach((customization) => {
+    if (keyTerms.includes(customization.keyword)) {
+      // Apply replacements
+      if (customization.replacements) {
+        customization.replacements.forEach((replacement) => {
+          customizedContent = customizedContent.replace(
+            replacement.find,
+            replacement.replace
+          );
+        });
+      }
 
-  if (keyTerms.includes("mobile")) {
-    customizedContent +=
-      "\n\nMobile Optimization:\n• Native mobile app development\n• Responsive web design\n• Offline capability support";
-  }
-
-  if (keyTerms.includes("security")) {
-    customizedContent +=
-      "\n\nSecurity Features:\n• End-to-end encryption\n• Multi-factor authentication\n• Regular security audits and updates";
-  }
+      // Add additional content
+      if (customization.additions) {
+        customizedContent += customization.additions;
+      }
+    }
+  });
 
   return customizedContent;
 };
 
-// Function to analyze prompt and suggest relevant sections
-const analyzePromptAndGenerateSections = ( prompt: string,): SectionType[] => {
+// Function to analyze prompt and suggest relevant sections (now uses config)
+const analyzePromptAndGenerateSections = (prompt: string): SectionType[] => {
   console.log(`🔍 Analyzing prompt: "${prompt}"`);
 
   const promptLower = prompt.toLowerCase();
   const suggestedSections: SectionType[] = [];
   let sectionId = 1;
 
-  // Always include Executive Summary
-  suggestedSections.push({
-    id: sectionId++,
-    name: "Executive Summary",
-    checked: true,
-    subsections: [
-      {
-        id: 11,
-        name: "Project Overview",
+  contentGenerationConfig.sectionSuggestions.forEach((suggestion) => {
+    // Check if section should be included
+    const shouldInclude = 
+      suggestion.keywords.length === 0 || // Always include (like Executive Summary)
+      suggestion.keywords.some((keyword) => promptLower.includes(keyword));
+
+    if (shouldInclude) {
+      suggestedSections.push({
+        id: sectionId,
+        name: suggestion.sectionName,
         checked: true,
-        currentVersion: "v1",
-        versions: [
+        subsections: [
           {
-            version: "v1",
-            content: generatePromptBasedContent(
-              "Executive Summary",
-              "Project Overview",
-              prompt,
-            ),
+            id: sectionId * 10 + 1,
+            name: suggestion.defaultSubsection.name,
+            checked: true,
+            currentVersion: "v1",
+            versions: [
+              {
+                version: "v1",
+                content: generatePromptBasedContent(
+                  suggestion.sectionName,
+                  suggestion.defaultSubsection.name,
+                  prompt,
+                ),
+              },
+            ],
+            url: "",
+            document: null,
+            generatedFiles: [],
           },
         ],
-        url: "",
-        document: null,
-        generatedFiles: [],
-      },
-    ],
+      });
+      sectionId++;
+    }
   });
-
-  // Analyze prompt for specific requirements
-  if (
-    promptLower.includes("architecture") ||
-    promptLower.includes("system") ||
-    promptLower.includes("technical")
-  ) {
-    suggestedSections.push({
-      id: sectionId++,
-      name: "Technical Architecture",
-      checked: true,
-      subsections: [
-        {
-          id: sectionId * 10 + 1,
-          name: "System Design",
-          checked: true,
-          currentVersion: "v1",
-          versions: [
-            {
-              version: "v1",
-              content: generatePromptBasedContent(
-                "Technical Architecture",
-                "System Design",
-                prompt,
-              ),
-            },
-          ],
-          url: "",
-          document: null,
-          generatedFiles: [],
-        },
-      ],
-    });
-  }
-
-  if (
-    promptLower.includes("features") ||
-    promptLower.includes("functionality") ||
-    promptLower.includes("capabilities")
-  ) {
-    suggestedSections.push({
-      id: sectionId++,
-      name: "Features & Functionality",
-      checked: true,
-      subsections: [
-        {
-          id: sectionId * 10 + 1,
-          name: "Core Features",
-          checked: true,
-          currentVersion: "v1",
-          versions: [
-            {
-              version: "v1",
-              content: generatePromptBasedContent(
-                "Features & Functionality",
-                "Core Features",
-                prompt,
-              ),
-            },
-          ],
-          url: "",
-          document: null,
-          generatedFiles: [],
-        },
-      ],
-    });
-  }
-
-  if (
-    promptLower.includes("timeline") ||
-    promptLower.includes("schedule") ||
-    promptLower.includes("delivery")
-  ) {
-    suggestedSections.push({
-      id: sectionId++,
-      name: "Project Timeline",
-      checked: true,
-      subsections: [
-        {
-          id: sectionId * 10 + 1,
-          name: "Implementation Schedule",
-          checked: true,
-          currentVersion: "v1",
-          versions: [
-            {
-              version: "v1",
-              content: generatePromptBasedContent(
-                "Project Timeline",
-                "Implementation Schedule",
-                prompt,
-              ),
-            },
-          ],
-          url: "",
-          document: null,
-          generatedFiles: [],
-        },
-      ],
-    });
-  }
-
-  if (
-    promptLower.includes("cost") ||
-    promptLower.includes("budget") ||
-    promptLower.includes("price") ||
-    promptLower.includes("investment")
-  ) {
-    suggestedSections.push({
-      id: sectionId++,
-      name: "Cost & Investment",
-      checked: true,
-      subsections: [
-        {
-          id: sectionId * 10 + 1,
-          name: "Budget Breakdown",
-          checked: true,
-          currentVersion: "v1",
-          versions: [
-            {
-              version: "v1",
-              content: generatePromptBasedContent(
-                "Cost & Investment",
-                "Budget Breakdown",
-                prompt,
-              ),
-            },
-          ],
-          url: "",
-          document: null,
-          generatedFiles: [],
-        },
-      ],
-    });
-  }
 
   console.log(
     `✅ Generated ${suggestedSections.length} sections based on prompt analysis`,
   );
+  
   return suggestedSections;
 };
+
+
+const generateFallbackFromConfig = (
+  sectionName: string,
+  subsectionName: string,
+  keyTerms: string[],
+): string => {
+  const termsList = keyTerms.length > 0
+    ? keyTerms.slice(0, 3).join(", ")
+    : "system requirements";
+
+  let content = contentGenerationConfig.fallbackContent.template;
+  content = content.replace(/{subsectionName}/g, subsectionName.toLowerCase());
+  content = content.replace(/{termsList}/g, termsList);
+  content = content.replace(/{sectionNameLower}/g, sectionName.toLowerCase());
+  
+  const bulletPoints = contentGenerationConfig.fallbackContent.bulletPoints.join("\n");
+  content = content.replace(/{bulletPoints}/g, bulletPoints);
+
+  return content;
+};
+
+const extractRequirementsFromConfig = (
+  prompt: string,
+  mappings: { keyword: string; bullet: string }[]
+): string => {
+  const promptLower = prompt.toLowerCase();
+  const requirements = mappings
+    .filter((mapping) => promptLower.includes(mapping.keyword))
+    .map((mapping) => mapping.bullet);
+
+  return requirements.length > 0
+    ? requirements.join("\n")
+    : "• A comprehensive solution that meets your business objectives";
+};
+
+const extractFeaturesFromConfig = (
+  prompt: string,
+  mappings: { keyword: string; bullet: string }[]
+): string => {
+  const promptLower = prompt.toLowerCase();
+  const features = mappings
+    .filter((mapping) => promptLower.includes(mapping.keyword))
+    .map((mapping) => mapping.bullet);
+
+  return features.length > 0
+    ? features.join("\n")
+    : "• Core functionality tailored to your specific requirements\n• User-friendly interface with intuitive navigation\n• Scalable architecture supporting future growth";
+};
+
 
 // Function to generate content specifically based on the user's prompt
 const generatePromptBasedContent = (
@@ -369,163 +272,61 @@ const generatePromptBasedContent = (
 ): string => {
   const promptLower = prompt.toLowerCase();
 
-  // Extract the main subject/project from the prompt
+  // Extract project type
   let projectType = "system";
-  if (promptLower.includes("smart building"))
-    projectType = "Smart Building Management System";
-  else if (promptLower.includes("e-commerce"))
-    projectType = "E-commerce Platform";
-  else if (promptLower.includes("mobile app"))
-    projectType = "Mobile Application";
-  else if (promptLower.includes("website")) projectType = "Website";
-  else if (promptLower.includes("dashboard")) projectType = "Dashboard System";
-  else if (promptLower.includes("api")) projectType = "API Solution";
-
-  // Generate content based on section type and extracted project info
-  switch (sectionName) {
-    case "Executive Summary":
-      return `This proposal outlines our comprehensive approach to developing your ${projectType}.
-
-Based on your requirements, we understand you need:
-${extractRequirementsFromPrompt(prompt)}
-
-Our solution will deliver:
-• A robust and scalable ${projectType.toLowerCase()}
-• Modern technology stack ensuring future-proof architecture
-• User-centric design focused on excellent user experience
-• Comprehensive testing and quality assurance
-• Full documentation and training support
-
-We are confident this solution will meet your objectives and provide significant value to your organization.`;
-
-    case "Technical Architecture":
-      return `The ${projectType} will be built using modern, industry-standard technologies and architectural patterns.
-
-Proposed Architecture:
-• Frontend: React-based responsive web application
-• Backend: Node.js with Express framework
-• Database: PostgreSQL with Redis caching layer
-• Cloud Infrastructure: AWS with auto-scaling capabilities
-• Security: JWT authentication with role-based access control
-• Integration: RESTful APIs with comprehensive documentation
-
-${promptLower.includes("mobile") ? "• Mobile: React Native for cross-platform mobile apps" : ""}
-${promptLower.includes("real-time") ? "• Real-time: WebSocket integration for live updates" : ""}
-${promptLower.includes("analytics") ? "• Analytics: Advanced reporting and dashboard capabilities" : ""}
-
-This architecture ensures scalability, maintainability, and optimal performance.`;
-
-    case "Features & Functionality":
-      return `The ${projectType} will include comprehensive features designed to address your specific requirements.
-
-Core Features:
-${generateFeaturesFromPrompt(prompt)}
-
-Additional Capabilities:
-• Intuitive user interface with modern design
-• Advanced search and filtering options
-• Comprehensive reporting and analytics
-• Role-based permissions and access control
-• Data export and import functionality
-• Mobile-responsive design for all devices
-
-All features will be thoroughly tested and optimized for performance and usability.`;
-
-    case "Project Timeline":
-      return `We propose a structured timeline to deliver your ${projectType} efficiently and on schedule.
-
-Proposed Timeline:
-• Week 1-2: Requirements analysis and system design
-• Week 3-6: Core development and feature implementation
-• Week 7-8: Integration and testing phase
-• Week 9-10: User acceptance testing and refinements
-• Week 11-12: Deployment and go-live support
-
-${
-  promptLower.includes("urgent") || promptLower.includes("asap")
-    ? "Given the urgency mentioned, we can accelerate the timeline with additional resources."
-    : "This timeline allows for thorough development and testing to ensure quality delivery."
-}
-
-Milestones and deliverables will be clearly defined for each phase.`;
-
-    case "Cost & Investment":
-      return `Investment breakdown for your ${projectType} development project.
-
-Development Costs:
-• Planning & Design: $15,000 - $25,000
-• Core Development: $45,000 - $75,000
-• Testing & QA: $10,000 - $15,000
-• Deployment & Training: $8,000 - $12,000
-
-Total Investment: $78,000 - $127,000
-
-${promptLower.includes("budget") ? "We understand budget considerations and can work within your specified range." : ""}
-${promptLower.includes("phases") ? "Payment can be structured in phases aligned with project milestones." : ""}
-
-This investment includes:
-• Complete source code and documentation
-• 6 months of warranty and bug fixes
-• User training and support materials
-• Deployment assistance and go-live support`;
-
-    default:
-      return generateFallbackContent(
-        sectionName,
-        subsectionName,
-        extractKeyTerms(prompt),
-      );
+  const matchedProject = contentGenerationConfig.projectTypes.find(
+    (pt) => promptLower.includes(pt.keywords)
+  );
+  if (matchedProject) {
+    projectType = matchedProject.label;
   }
-};
 
-// Helper function to extract requirements from prompt
-const extractRequirementsFromPrompt = (prompt: string): string => {
-  const requirements = [];
-  const promptLower = prompt.toLowerCase();
+  // Get section template
+  const sectionConfig = contentGenerationConfig.sectionTemplates[sectionName];
+  
+  if (!sectionConfig) {
+    return generateFallbackFromConfig(sectionName, subsectionName, extractKeyTerms(prompt));
+  }
 
-  if (promptLower.includes("architecture"))
-    requirements.push(
-      "• Detailed system architecture and technical specifications",
-    );
-  if (promptLower.includes("features"))
-    requirements.push("• Comprehensive feature set and functionality overview");
-  if (promptLower.includes("timeline"))
-    requirements.push("• Clear project timeline and delivery schedule");
-  if (promptLower.includes("cost") || promptLower.includes("budget"))
-    requirements.push("• Transparent cost breakdown and investment details");
-  if (promptLower.includes("team"))
-    requirements.push("• Information about project team and resources");
-  if (promptLower.includes("security"))
-    requirements.push("• Security measures and compliance considerations");
+  let content = sectionConfig.template;
+  
+  // Replace placeholders
+  content = content.replace(/{projectType}/g, projectType);
+  content = content.replace(/{projectTypeLower}/g, projectType.toLowerCase());
+  content = content.replace(/{sectionName}/g, sectionName);
+  content = content.replace(/{subsectionName}/g, subsectionName);
 
-  return requirements.length > 0
-    ? requirements.join("\n")
-    : "• A comprehensive solution that meets your business objectives";
-};
+  // Handle requirement mappings
+  if (sectionConfig.requirementMappings) {
+    const requirements = extractRequirementsFromConfig(prompt, sectionConfig.requirementMappings);
+    content = content.replace(/{requirements}/g, requirements);
+  }
 
-// Helper function to generate features from prompt
-const generateFeaturesFromPrompt = (prompt: string): string => {
-  const features = [];
-  const promptLower = prompt.toLowerCase();
+  // Handle feature mappings
+  if (sectionConfig.featureMappings) {
+    const features = extractFeaturesFromConfig(prompt, sectionConfig.featureMappings);
+    content = content.replace(/{features}/g, features);
+  }
 
-  if (promptLower.includes("dashboard"))
-    features.push("• Interactive dashboard with real-time data visualization");
-  if (promptLower.includes("user management"))
-    features.push("• Comprehensive user management and role-based access");
-  if (promptLower.includes("reporting"))
-    features.push("• Advanced reporting and analytics capabilities");
-  if (promptLower.includes("mobile"))
-    features.push("• Mobile-responsive design and native app support");
-  if (promptLower.includes("integration"))
-    features.push("• Third-party system integration capabilities");
-  if (promptLower.includes("notification"))
-    features.push("• Real-time notifications and alert system");
-  if (promptLower.includes("search"))
-    features.push("• Advanced search and filtering functionality");
+  // Handle conditional additions
+  if (sectionConfig.conditionalAdditions) {
+    let conditionalContent = "";
+    sectionConfig.conditionalAdditions.forEach((condition) => {
+      if (promptLower.includes(condition.keyword)) {
+        conditionalContent += "\n" + condition.content;
+      }
+    });
+    content = content.replace(/{conditionalContent}/g, conditionalContent);
+    
+    // Handle individual conditional placeholders
+    sectionConfig.conditionalAdditions.forEach((condition) => {
+      const placeholder = `{${condition.keyword.replace(/\s+/g, "")}Note}`;
+      const value = promptLower.includes(condition.keyword) ? condition.content : "";
+      content = content.replace(new RegExp(placeholder, "g"), value);
+    });
+  }
 
-  return features.length > 0
-    ? features.join("\n")
-    : "• Core functionality tailored to your specific requirements\n• User-friendly interface with intuitive navigation\n• Scalable architecture supporting future growth";
+  return content;
 };
 
 // Default prompt text
@@ -1089,7 +890,7 @@ export default function ProposalBuilder() {
                     //   text-sm
                     //   "
                   >
-                    Generate from Prompt
+                    Regenerate from Prompt
                   </Button>
               </div>
 
@@ -1281,16 +1082,6 @@ export default function ProposalBuilder() {
                             className="border border-[#C6C6C6] px-4 py-2 rounded-xl text-sm"
                           >
                             ✏ Edit
-                          </button>
-
-                          {/* DELETE */}
-                          <button
-                            onClick={() =>
-                              handleDeleteSection(section.id)
-                            }
-                            className="border border-[#C6C6C6] text-red-500 px-4 py-2 rounded-xl text-sm"
-                          >
-                            🗑 Delete
                           </button>
                         </div>
                       </div>
