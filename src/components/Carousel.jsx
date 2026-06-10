@@ -4,11 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import "./Carousel.css";
 
 const images = [
-  "/images/aip1.png",
-  "/images/aip2.png",
-  "/images/aip3.png",
-  "/images/aip4.png",
-];
+]
 
 export default function Carousel() {
   const [current, setCurrent] = useState(0);

@@ -1,0 +1,86 @@
+.border-glow-card {
+  position: relative;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.border-glow-inner {
+  position: relative;
+  z-index: 2;
+  border-radius: inherit;
+  background: var(--card-bg);
+}
+
+.edge-light {
+  position: absolute;
+  inset: calc(var(--glow-padding) * -1);
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+
+  background:
+    conic-gradient(
+      from var(--cursor-angle),
+      transparent 0deg,
+      var(--glow-color-20) calc(var(--cone-spread) * 0.5deg),
+      var(--glow-color-40) calc(var(--cone-spread) * 1deg),
+      var(--glow-color-60) calc(var(--cone-spread) * 1.5deg),
+      var(--glow-color) calc(var(--cone-spread) * 2deg),
+      transparent calc(var(--cone-spread) * 3deg)
+    );
+
+  opacity: calc(var(--edge-proximity) / 100);
+  transition: opacity 0.2s ease;
+  filter: blur(18px);
+}
+
+.border-glow-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+
+  background:
+    var(--gradient-one),
+    var(--gradient-two),
+    var(--gradient-three),
+    var(--gradient-four),
+    var(--gradient-five),
+    var(--gradient-six),
+    var(--gradient-seven),
+    var(--gradient-base);
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  opacity: 0.8;
+  z-index: 1;
+}
+
+.sweep-active .edge-light {
+  animation: glowSweep 4s linear forwards;
+}
+
+@keyframes glowSweep {
+  0% {
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}

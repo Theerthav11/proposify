@@ -1,60 +1,198 @@
-/* Global Reset */
+/* ================= GLOBAL RESET ================= */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Body */
+/* ================= BODY ================= */
+
 body {
   font-family: "Inter", sans-serif;
-  background-color: #f9fafb;
-  color: #111827;
+  background: #050816;
+  color: white;
+  overflow-x: hidden;
+}
+/* ================= ROOT ================= */
+
+#root {
+  background: #050816;
+  min-height: 100vh;
+}
+/* ================= SMOOTH SCROLL ================= */
+
+html {
+  scroll-behavior: smooth;
 }
 
-/* Scrollbar (optional but looks modern) */
+/* ================= PREMIUM SCROLLBAR ================= */
+
 ::-webkit-scrollbar {
   width: 6px;
 }
 
+::-webkit-scrollbar-track {
+  background: #050816;
+}
+
 ::-webkit-scrollbar-thumb {
-  background: #c4b5fd;
-  border-radius: 10px;
+  background: linear-gradient(
+    to bottom,
+    #9333ea,
+    #c026d3
+  );
+  border-radius: 20px;
 }
 
-/* Reusable Utility Classes */
+/* ================= GRID BACKGROUND ================= */
 
-/* Center Layout */
-.center {
-  @apply flex items-center justify-center;
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+
+  background-size: 70px 70px;
 }
 
-/* Card */
-.card {
-  @apply bg-white rounded-xl shadow-md p-4;
+/* ================= GLASS EFFECT ================= */
+
+.glass {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
-/* Input */
-.input {
-  @apply w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-purple-500;
+/* ================= GLOW EFFECT ================= */
+
+.glow-purple {
+  box-shadow:
+    0 0 30px rgba(168,85,247,0.4),
+    0 0 80px rgba(168,85,247,0.15);
 }
 
-/* Button */
-.btn {
-  @apply bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition;
+/* ================= BUTTONS ================= */
+
+.btn-primary {
+  background: white;
+  color: black;
+  padding: 14px 30px;
+  border-radius: 18px;
+  font-weight: 700;
+  transition: 0.3s;
 }
 
-/* Secondary Button */
+.btn-primary:hover {
+  transform: translateY(-3px);
+}
+
 .btn-secondary {
-  @apply bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300 transition;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  padding: 14px 30px;
+  border-radius: 18px;
+  backdrop-filter: blur(20px);
+  transition: 0.3s;
 }
 
-/* Danger Button */
-.btn-danger {
-  @apply bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition;
+.btn-secondary:hover {
+  background: white;
+  color: black;
 }
 
-/* Title */
-.title {
-  @apply text-xl font-semibold mb-4;
+/* ================= CARD ================= */
+
+.card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  border-radius: 28px;
+}
+
+/* ================= ANIMATIONS ================= */
+
+.fade-up {
+  animation: fadeUp 1s ease;
+}
+
+@keyframes fadeUp {
+
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= GRADIENT TEXT ================= */
+
+.gradient-text {
+  background: linear-gradient(
+    to right,
+    #a855f7,
+    #d946ef,
+    #ec4899
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ================= HERO GLOW ================= */
+
+.hero-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: rgba(168,85,247,0.25);
+  filter: blur(140px);
+  border-radius: 9999px;
+}
+
+/* ================= HOVER EFFECTS ================= */
+
+.hover-card {
+  transition: all 0.4s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(168,85,247,0.3);
+}
+
+/* ================= NAVBAR BLUR ================= */
+
+.nav-blur {
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ================= PREMIUM BORDER ================= */
+
+.premium-border {
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ================= TEXT COLORS ================= */
+
+.text-muted {
+  color: #9ca3af;
+}
+
+.text-soft {
+  color: #d1d5db;
+}
+
+/* ================= SECTION SPACING ================= */
+
+.section-padding {
+  padding-top: 120px;
+  padding-bottom: 120px;
 }

@@ -10,8 +10,10 @@ import Proposals from "./pages/Proposals";
 import NewProject from "./pages/NewProject";
 import ProposalBuilder from "./pages/ProposalBuilder";
 import Preview from "./pages/Preview";
-import Pricing from "./pages/Pricing";
-import Industries from "./pages/Industries";
+
+import Docs from "./pages/Docs";
+import Presentation from "./pages/Presentation";
+import BlogPage from "./pages/BlogPage";
 
 function App() {
   return (
@@ -69,21 +71,30 @@ function App() {
 
           {/* ================= DOCS PAGE ================= */}
           <Route
-            path="/docs"
-            element={<h1 className="text-white text-5xl p-20">Docs Page</h1>}
-          />
+  path="/docs"
+  element={<Docs />}
+/>         
+          {/* ================= PRESENTATION PAGE ================= */}
+<Route
+  path="/presentation"
+  element={<Presentation />}
 
-          {/* ================= PRICING PAGE ================= */}
+
+/>
+          {/*==================bloggpage==============*/}
           <Route
-            path="/pricing"
-            element={<Pricing />}
-          />
+  path="/blog"
+  element={<BlogPage />}
+/>
+         
+         
+
+
+          
 
           {/* ================= INDUSTRIES PAGE ================= */}
-          <Route
-            path="/industries"
-            element={<Industries />}
-          />
+          
+          
 
         </Routes>
 
